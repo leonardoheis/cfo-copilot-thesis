@@ -1,0 +1,799 @@
+\documentclass[12pt,letterpaper,oneside]{report}
+
+% =============================================================
+% CFO COPILOT - Universidad Austral thesis template
+% Structure based on the official Word target supplied by the user.
+% Content migrated from "Heis Leonardo TP5 vf1 19-02-25.docx".
+% References are derived from the embedded Mendeley citation metadata.
+% =============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{newtxtext,newtxmath}
+\usepackage{geometry}
+\geometry{letterpaper,left=4cm,right=2cm,top=2cm,bottom=2cm,headsep=.5cm,footskip=1.2cm}
+\usepackage{setspace}
+\singlespacing
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array,float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tocbibind}
+\usepackage{titlesec}
+\usepackage[backend=biber,style=apa,sorting=nyt]{biblatex}
+\addbibresource{mendeley.bib}
+
+\titleformat{\chapter}[display]{\normalfont\bfseries\centering\Large}{Capítulo \thechapter}{.6em}{\Large}
+\titleformat{name=\chapter,numberless}[display]{\normalfont\bfseries\centering\Large}{}{0pt}{\Large}
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection}{.7em}{}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\pagestyle{plain}
+
+\newcommand{\TituloTrabajo}{CFO COPILOT: Herramienta de predicción y automatización financiera}
+\newcommand{\Alumno}{Leonardo Heis}
+\newcommand{\Director}{Fernanda Mendez}
+\newcommand{\TituloObtenido}{obtener el título de Magíster en Explotación de Datos y Gestión del Conocimiento}
+\newcommand{\FechaTrabajo}{Febrero 2025}
+
+\begin{document}
+
+% =============================================================
+% PORTADA
+% =============================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{2cm}
+{\Large\bfseries \TituloTrabajo\par}
+\vfill
+{\large Alumno: \Alumno\par}
+\vspace{1cm}
+{\large Directora: \Director\par}
+\vfill
+{\large Trabajo presentado para\par}
+{\large \TituloObtenido\par}
+\vfill
+{\large (\FechaTrabajo)\par}
+\end{center}
+\end{titlepage}
+
+\pagenumbering{gobble}
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+En el contexto actual, donde los departamentos financieros y, en particular, los CFOs enfrentan diferentes desafíos de toma de decisión basada en datos, la aplicación de CFO Copilot surge como respuesta a la optimización del análisis financiero mediante el uso de inteligencia artificial generativa (GenAI) y modelos de aprendizaje automático
+
+(machine learming). En un entorno donde los departamentos de finanzas y sobre todo los CFOs enfrentan volúmenes masivos de datos financieros y deben tomar decisiones estratégicas con rapidez y solidez, esta herramienta permitirá reducir los posibles errores humanos, automatizando la extracción de información y mejorando la precisión de las proyecciones financieras basadas en variables discretas. Además, la volatilidad de los mercados y la complejidad regulatoria actuales exigen soluciones que integren datos en tiempo real y brinden análisis predictivos confiables.
+
+Con el fin de abordar esta necesidad, CFO Copilot automatizará la recopilación, estructuración y análisis de datos financieros provenientes de documentos empresariales (reportes 10K, estados financieros, informes anuales) y APIs de datos económicos globales. Utilizará modelos de series temporales como ARIMA, SARIMA y LSTM para proyectar tendencias económicas y optimizar la planificación financiera. Además, integrará GenAI para permitir consultas avanzadas sobre gráficos y reportes, generando respuestas contextualizadas y explicativas sobre las predicciones generadas.
+
+En términos de arquitectura, CFO Copilot propone combinar la IA Generativa para la extracción de información con modelos de Machine Learning avanzados para la predicción de series temporales. Primero, empleará GenAI (OpenAI, Gemini, Claude 3.5) para interpretar y extraer datos de documentos no estructurados. Luego, utilizará AutoML (PyCaret, StatForecasting) junto con modelos como ARIMA y LSTM permitiendo generar predicciones financieras basada en los datos recolectados. Finalmente, la herramienta permitirá a los CFOs y sus departamentos de finanzas, realizar consultas interactivas, mediante el uso de NLP e IA generativa, sobre los datos obtenidos, facilitando la interpretación de proyecciones y gráficos financieros.
+
+Como resultado, la implementación de CFO Copilot ofrecerá múltiples beneficios, los cuales incluyen reducción del tiempo de análisis financiero, mayor precisión en las proyecciones económicas y automatización de procesos manuales. Al eliminar errores humanos y estructurar información no estructurada de manera eficiente, las empresas podrán tomar decisiones estratégicas fundamentadas en datos. Además, la integración con APIs de datos financieros globales y su capacidad de personalización mediante módulos modulares lo convierten en una herramienta escalable para diferentes sectores, desde corporaciones hasta PyMEs y entidades gubernamentales.
+
+\section*{Palabras claves}
+Finanzas basadas en datos, Inteligencia artificial generativa, Automatización de procesos financieros, Optimización financiera, ML para series de tiempo, Planificación basada en análisis predictivo.
+
+\textbackslash{}\textbackslash{}
+
+
+\clearpage
+\chapter*{Dedicatoria}
+\addcontentsline{toc}{chapter}{Dedicatoria}
+Para mamá quien siempre creyó que podía llegar lejos y que tenía que tener un título.
+Para mi viejo con el cual no hablabamos mucho pero siempre estuvo ahí para ayudarme en silencio sin preguntar.
+Para mi esposa, el soporte vital de mi vida, esto es gracias a vos y a tu paciencia, amor y apoyo incondicional.
+Para mis hijos, quienes de una manera u otra siempre estuvieron ahí para darme fuerzas y motivación para seguir adelante.
+
+
+\clearpage
+\chapter*{Reconocimientos}
+\addcontentsline{toc}{chapter}{Reconocimientos}
+% Opcional: completar si corresponde.
+
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter{Introducción}
+\section{Problema de investigación preliminar}
+La problemática a resolver radica en la falta de una herramienta automatizada y eficiente que permita a los directores financieros (CFOs) y sus equipos, extraer y analizar datos clave de documentos financieros de diferentes fuentes, como informes anuales y estados financieros, con el objetivo de generar modelos de pronóstico que faciliten la toma de decisiones estratégicas. Actualmente, la extracción de información esencial, como ingresos, gastos y otros indicadores financieros, se realiza de forma manual o usando técnicas poco precisas, lo cual consume tiempo y es susceptible a errores. Este proceso no solo retrasa el acceso a información valiosa, sino que también puede dar lugar a interpretaciones inexactas debido a posibles errores humanos de transcripción y análisis.
+
+La falta de integración entre la extracción de datos y la creación de modelos predictivos afecta la capacidad para anticipar tendencias y realizar una planificación financiera adecuada. Sin una previsión precisa, la empresa corre el riesgo de tomar decisiones financieras subóptimas, lo cual puede impactar negativamente en su rentabilidad y sostenibilidad a mediano y largo plazo.
+
+Este proyecto busca optimizar el proceso de análisis financiero mediante la automatización de la extracción de distintas variables financieras de diferentes fuentes públicas, acompañada de la generación de modelos de pronóstico que presenten gráficos predictivos basados en series temporales sobre dichas variables recolectadas. Esta integración no solo acelerará la obtención de datos, sino que también aumentará la precisión y consistencia de la información a ser procesada. Este enfoque brindará la posibilidad de visualizar tendencias y posibles escenarios a futuro permitiendo una planificación financiera basada en datos y de forma estratégica. En última instancia, este proyecto pretende dotar a los líderes financieros de herramientas avanzadas que conviertan datos complejos en información procesable, fortaleciendo así la capacidad de la empresa para adaptarse y prosperar en un entorno económico en constante cambio.
+
+En este sentido, la importancia de este problema radica en la creciente necesidad de los líderes financieros de tomar decisiones basadas en datos confiables y actualizados en un entorno económico dinámico y cada vez más complejo. Dado que los reportes financieros incluyen enormes cantidades de datos esenciales y detallados, es fundamental que deben analizarse con rapidez y precisión para anticipar posibles escenarios y responder a ellos de manera efectiva. Por ello la toma de decisiones oportuna basada en estos análisis es esencial para mantener la estabilidad y competitividad de las empresas, sobre todo en sectores sujetos a fluctuaciones de mercado, cambios regulatorios, variabilidad en los costos y fuentes de ingresos.
+
+El proyecto en cuestión aborda esta necesidad crítica mediante la implementación de inteligencia artificial generativa no solo para automatizar el proceso de extracción y análisis de datos de reportes financieros públicos \parencite{Jimenez2024}, sino también con el fin de obtener una interfaz de comunicación amena para que el usuario pueda consultar resultados. Esta automatización no solo reducirá significativamente el tiempo y recursos necesarios para realizar estos análisis, sino que también minimizará el riesgo de errores humanos, mejorando la precisión en la interpretación de los datos financieros \parencite{Ravi2021}. Además, al integrar capacidades predictivas, el CFO Copilot ofrecerá a los CFOs proyecciones y gráficos detallados que permiten anticipar tendencias financieras y planificar en consecuencia.
+
+La capacidad de generar pronósticos basados en datos anuales y cuatrimestrales de manera automatizada \parencite{Arun2023} permitirá que los líderes financieros de las empresas, los cuales toman decisiones cruciales, obtener una visión clara y detallada de la situación financiera de la organización a la que pertenecen y de sus proyecciones a futuro, facilitando una toma de decisiones más informada y estratégica. Este sistema puede ser esencial para empresas que buscan mantenerse competitivas, ya que proporciona un soporte analítico robusto para la toma de decisiones oportunas, lo cual es cada vez más relevante en un entorno empresarial volátil y altamente productivo.
+
+Sin embargo, muchas empresas aún enfrentan dificultades en este proceso de automatización, en particular, a sus departamentos financieros, los cuales deben gestionar y analizar manualmente reportes extensos y detallados para tomar decisiones informadas. En estos entornos, el proceso manual de extracción y análisis de datos financieros puede generar retrasos significativos y errores que impactan en la calidad de las decisiones estratégicas \parencite{Kanaparthi2024}. La precisión y rapidez en el análisis de datos son esenciales para mantener a la empresa competente y estable financieramente hablando, especialmente en un contexto empresarial que exige respuestas rápidas y sobre todo basadas en evidencia objetiva.
+
+Las consecuencias de no contar con una herramienta automatizada se ven reflejadas en procesos de análisis financiero muy lentos y en decisiones potencialmente basadas en información desactualizada o interpretaciones imprecisas de los datos \parencite{PastranaBonilla2023}. Esto puede afectar la capacidad de la empresa para responder ágilmente a cambios del mercado, ajustar su estrategia de costos, optimizar inversiones o detectar riesgos financieros oportunamente. En sectores lideres, como el tecnológico o el financiero, donde las fluctuaciones del mercado pueden repetirse en el tiempo, cualquier ventaja en eficiencia y precisión en la toma de decisiones puede marcar una diferencia significativa en el posicionamiento empresarial.
+
+La implementación de una solución como el CFO Copilot tiene el potencial de transformar la manera en que las empresas abordan el análisis financiero \parencite{Cuervo2023}. Al automatizar la extracción y generación de pronósticos, esta herramienta permitiría a las organizaciones acceso a información financiera clave en todo momento, lo cual es crítico para optimizar los recursos y maximizar el retorno sobre la inversión. La magnitud de este problema se hace evidente cuando consideramos que incluso una pequeña mejora en la eficiencia financiera puede traducirse en importantes ventajas competitivas, dado que permite a la empresa mantenerse flexible y proactiva en un entorno de constante cambio, fortaleciendo su capacidad para adaptarse y prosperar en el mercado.
+
+\textbackslash{}\textbackslash{}
+
+\section{Vinculación del problema con el ámbito laboral}
+La propuesta del CFO Copilot aborda directamente problemas críticos en el ámbito laboral de las empresas, especialmente en el análisis y la previsión financiera. Los CFOs y sus equipos financieros, enfrentan el reto de procesar grandes volúmenes de información contenida en reportes financieros y documentos de acceso público, que incluyen datos clave como ingresos, gastos y otros indicadores esenciales que suelen estar en documentos/API (Interfaz de Programación de Aplicaciones, por sus siglas en inglés: Application Programming Interface \parencite{Fielding2000}) de acceso público. En su estado actual, este proceso es mayormente manual, lo que implica una considerable inversión de tiempo y recursos humanos en tareas repetitivas y susceptibles a errores. Esta falta de automatización no solo disminuye la eficiencia y eficacia, sino que también limita la capacidad del equipo para centrarse en análisis estratégicos de alto valor, dando su mayor esfuerzo en tareas manuales con el fin de no equivocarse.
+
+La implementación de una herramienta de este estilo permitiría superar estas limitaciones al automatizar la extracción y el análisis de datos financieros \parencite{OlakunleBabatundeA2024}. La solución optimizará el tiempo de procesamiento y reduciría el riesgo de errores, proporcionando resultados más precisos y consistentes. Esto permitiría que el equipo financiero libere recursos y enfoque sus esfuerzos en actividades que generen un mayor impacto estratégico para la organización, como la planificación y evaluación de escenarios futuros, generación de informes de valor para gerencias, entre otros. La herramienta, además, facilitaría la generación de pronósticos confiables, lo cual es esencial para la toma de decisiones estratégicas en un entorno de negocio cada vez más competitivo y dinámico \parencite{Che2024}.
+
+Al optimizar la precisión y velocidad del análisis financiero, el CFO Copilot ofrece un apoyo valioso en la toma de decisiones informadas o sea basada en datos fidedignos, ayudando a las empresas a adaptarse con agilidad a los cambios del mercado y a mejorar su capacidad de respuesta ante este tipo de situaciones. En última instancia, esta solución representa un avance significativo en la eficiencia operativa de los departamentos financieros, proporcionando herramientas necesarias para liderar con mayor certeza y proactividad, lo cual es fundamental para fortalecer la competitividad y sostenibilidad de la empresa. \parencite{Adeyeri2024}
+
+No obstante, la falta de automatización en el análisis financiero sigue representando un desafío, pudiendo traer diferentes perjuicios a las empresas. Primero, el tiempo necesario para extraer, revisar y analizar datos financieros es considerablemente alto, generando demoras que impactan en la capacidad de los CFOs y equipos financieros para responder de forma rápida a cambios en el mercado o a la situación económica de la empresa, especialmente en el caso de empresas que brindan asesoría financiera, como las Big Four. Segundo, este retraso también afecta la calidad y oportunidad de las decisiones estratégicas. \parencite{Ionix2024}
+
+Además, la manipulación manual de grandes volúmenes de datos incrementa el riesgo de errores de transcripción o interpretación, lo que puede llevar a decisiones mal fundamentadas con repercusiones negativas en la rentabilidad y estabilidad de la empresa. En sectores de alta competencia, como el financiero, la eficiencia en el análisis y en las respuestas a los clientes representa una ventaja estratégica; sin una herramienta automatizada, los equipos financieros pueden verse limitados para anticipar tendencias y realizar una planificación sólida y rápida. \parencite{Navarro2024}
+
+Por último y no menos importante, la intervención humana en el manejo de datos financieros no solo es susceptible a errores involuntarios, sino también a manipulaciones que podrían conducir a fraudes o a una interpretación inadecuada de la información. El hecho de automatizar la extracción y posterior procesamiento de estos datos, como lo propone el CFO Copilot, permite reducir estos riesgos y asegurar que la información usada en la toma de decisiones sea precisa y confiable.
+
+En conclusión, la falta de una herramienta automatizada afecta directamente la competitividad y agilidad de la empresa en un entorno dinámico, comprometiendo tanto la eficiencia del equipo financiero como la calidad de las decisiones estratégicas. \parencite{PerezMarroquin2024}
+
+\textbackslash{}\textbackslash{}
+
+\section{Solución al Problema Identificado}
+El CFO Copilot es una herramienta integral que combina inteligencia artificial generativa \parencite{Sauvola2024} con modelos avanzados de Machine Learning especializados en series de tiempo, utilizando diferentes variables iniciales predefinidas que podrán ser seleccionadas, con el fin de automatizar la extracción y análisis de datos, proporcionando un enfoque técnico y eficiente a los desafíos del análisis financiero \parencite{Fernandez2019}. La GenAI permite procesar datos no estructurados provenientes de diversas fuentes, como reportes financieros (reporte 10K, Annual Reports, Quarter Reports) y datos obtenidos de APIs financieras (Yahoo Finance, Alpha Vantage, Marketstack y SimFin).
+
+Estas APIs seleccionadas proporcionarán la información necesaria para alimentar los modelos elegidos, ya que ofrecen una cobertura adecuada de datos financieros, como reportes trimestrales o anuales. Además, todas las APIs involucradas se actualizan con regularidad, lo que garantiza la autenticidad y actualidad de los datos, los cuales son aspectos fundamentales para mantener la calidad del análisis. En caso de que existan coincidencias entre los datos obtenidos de las APIs y los valores presentes en los documentos preprocesados, se propone realizar comparaciones automáticas para asegurar la integridad y coherencia de la información.
+
+Un aspecto para considerar es la posible limitación de uso gratuito en algunas APIs. Para abordar este desafío, se sugiere emplear múltiples fuentes de datos, lo que no solo amplía la base de información disponible, sino que también diversifica las entradas para el modelo, aumentando su robustez.
+
+Las APIs utilizadas operan bajo el protocolo REST \parencite{Rodriguez2016}, lo que simplifica su integración con CFO Copilot. Todas ellas devuelven datos en formato JSON \parencite{Friesen2019}, un estándar ampliamente compatible, que puede ser procesado y consumido de manera eficiente por el sistema, garantizando una implementación fluida y efectiva. Este diseño asegura que el flujo de datos sea confiable, escalable y apto para satisfacer las necesidades tanto de pequeñas empresas como de grandes corporaciones.
+
+Estos datos son transformados en información estructurada y accesible para los usuarios específicos, lo que facilita su comprensión y aplicación en la toma de decisiones estratégicas.
+
+Por otro lado, la integración de modelos avanzados de ML, como aquellos utilizados para analizar series temporales, permite generar predicciones altamente personalizadas o adaptadas a las necesidades específicas de cada organización \parencite{Zuniga2024}.
+
+Para este caso, se propone utilizar los siguientes modelos:
+
+Modelo discreto: ARIMA y/o SARIMA \parencite{Fattah2018} / \parencite{Bajaj2023}
+
+Este modelo estadístico es utilizado para series temporales univariadas, ideal para detectar patrones históricos y con o sin estacionalidad. ARIMA y/o SARIMA es especialmente útil para datos financieros donde las relaciones lineales predominan y la estacionalidad es clara.
+
+Modelo basado en redes neuronales: LSTM (Long Short-Term Memory) \parencite{Staudemeyer2019}
+
+Este modelo de redes neuronales recurrentes es adecuado para series temporales complejas, ya que puede capturar dependencias a largo plazo en los datos. Es ideal para proyecciones que involucren múltiples variables financieras o comportamientos no lineales.
+
+Modelo AutoML: StatForecasting (o una alternativa como PyCaret's Time Series module) \parencite{Hutter2013} - \parencite{Baum2024}
+
+Este enfoque automatizado permite seleccionar y optimizar automáticamente el mejor modelo para las series temporales, combinando múltiples métodos (ARIMA, Prophet, ETS, etc.). Es especialmente útil para organizaciones que buscan eficiencia en la implementación sin necesidad de un profundo conocimiento técnico.
+
+Métricas de medición unificada:
+
+Para los 3 casos se seleccionarán métricas estándar que evalúen la precisión, robustez y capacidad de generalización de los modelos. Estas métricas permitirán comparar el desempeño de manera consistente entre los diferentes enfoques.
+
+RMSE (Root Mean Squared Error)
+
+MAE (Mean Absolute Error)
+
+MAPE (Mean Absolute Percentage Error)
+
+R$^2$ (Coeficiente de Determinación)
+
+Estas métricas se seleccionaron por su capacidad de cubrir diferentes aspectos del rendimiento del modelo:
+
+RMSE y MAE: Evalúan la precisión en términos absolutos.
+
+MAPE: Evalúa la precisión relativa al tamaño de los datos.
+
+R$^2$: Valida qué tan bien el modelo se ajusta a los datos globalmente.
+
+Este enfoque asegura que el modelo seleccionado no solo sea preciso, sino también confiable y comprensible, optimizando su desempeño en el CFO Copilot.
+
+Estas proyecciones ayudan a identificar patrones históricos, estacionalidad, anticipar tendencias financieras y prever posibles escenarios futuros mediante el uso de gráficos o cuadros representativos de fácil interpretación. Esto habilita a los CFOs y equipos financieros para planificar estratégicamente y reaccionar proactivamente a los cambios en el mercado.
+
+En concordancia con lo antes expuesto, la herramienta se destaca por su interfaz interactiva y amigable, diseñada para usuarios con diferentes niveles de experiencia técnica. Esta interfaz ofrece análisis detallados y gráficos predictivos fáciles de interpretar, mejorando la precisión de los resultados y minimizando errores humanos.
+
+Esta funcionalidad reduce significativamente el tiempo necesario para procesar y analizar datos financieros, eliminando errores humanos comunes en procesos manuales y mejorando la precisión en los resultados.
+
+CFO Copilot transforma el análisis financiero al combinar la automatización con inteligencia artificial y machine learning. Esto no solo reduce errores y optimiza la eficiencia operativa como venimos remarando, sino que también potencia la capacidad de las empresas para tomar decisiones basadas en datos confiables. De este modo, mejora la competitividad y sostenibilidad empresarial en un entorno económico en constante cambio.
+
+En este sentido, la solución propuesta, aborda el problema identificado mediante la automatización del análisis financiero, integrando inteligencia artificial generativa (GenAI, se propone utilizar la API de OpenAI u otra disponible ya sea por un modelo local de Hugging Facee u otra API comercial) y modelos avanzados de series temporales como los mencionados en el párrafo anterior \parencite{Liu2024}. Esta herramienta procesará documentos no estructurados, como informes anuales o cuatrimestrales, convirtiéndolos en datos estructurados aptos para análisis estratégico. Con el uso de GenAI, a través de prompts predefinidos \parencite{Krause2023}, se guiará la extracción de información clave, minimizando tiempos de procesamiento y errores derivados de métodos manuales. Esta tecnología asegura que los datos relevantes sean capturados con precisión, eliminando interpretaciones ambiguas y mejorando la calidad de los insumos analíticos.
+
+El uso de prompts predefinidos diseñados específicamente para ajustarse a las variables de entrada seleccionadas y su contexto histórico mejora la precisión, repetibilidad y relevancia de los análisis realizados por modelos LLMs. Es crucial que los prompts sean claros, bien estructurados y específicos para garantizar que el modelo entregue resultados alineados con las necesidades de cada empresa. Ciertas guías de buenas prácticas ayudan a optimizar la construcción de prompts, maximizando su efectividad y confiabilidad. Este enfoque permite a las empresas tomar decisiones estratégicas basadas en análisis consistentes y personalizados. La combinación de prompts bien diseñados y un modelo adaptado asegura un análisis empresarial eficaz y preciso. \parencite{DairAi2024}
+
+Tras la extracción, CFO Copilot utiliza modelos avanzados de machine learning específicos para series temporales como los mencionados inicialmente, con el fin de identificar patrones históricos, analizar estacionalidades y predecir tendencias financieras. Estos algoritmos generan predicciones anuales y/o cuatrimestrales (dependiendo de la elección del usuario), permitiendo anticipar escenarios económicos con alto grado de confiabilidad. Gracias a estas proyecciones, los CFOs y sus equipos financieros pueden ajustar sus estrategias y asignar recursos de manera óptima, fortaleciendo su posición en mercados competitivos y dinámicos. Este enfoque también facilita respuestas proactivas a cambios económicos predecibles, consolidando una ventaja estratégica.
+
+La interfaz diseñada para CFO Copilot busca ser intuitiva, accesible, simple y fácil de usar, orientada principalmente a pequeñas empresas que requieren una solución funcional sin complejidad técnica excesiva. Inicialmente, se construirá utilizando Streamlit \parencite{Streamlit2025} como interfaz de usuario (front-end), complementada con un back-end desarrollado en Python. Este enfoque permite crear una herramienta práctica y ligera, adecuada para usuarios con o sin conocimientos avanzados, garantizando facilidad de uso desde el primer contacto.
+
+A pesar de su simplicidad inicial, la solución es escalable y puede adaptarse a las necesidades específicas de organizaciones de más envergadura o con mayores exigencias técnicas. Por ejemplo, es posible evolucionar hacia un diseño más profesional con una arquitectura no solo de respecto al código sino también a la infraestructura solicitada, permitiendo así que el software soporte otro tipo de necesidades que se ajusten más al tipo de empresa que solicite su uso. Se plantea poder utilizar para estos casos frameworks/librerías como Angular/React.js para el front-end y .NET 8 o Python para el back-end, montando en un entorno cloud como puede ser Azure u otro proveedor.
+
+Este enfoque avanzado permitiría:
+
+Incorporar mejores prácticas de desarrollo de software.
+
+Diseñar una interfaz más personalizada, adaptable al perfil y nivel de experiencia del usuario.
+
+Aumentar la seguridad y redundancia en la gestión de datos, garantizando mayor confiabilidad y continuidad operativa.
+
+Utilizar recursos mas específicos para este tipo de proceso por medio del uso de proveedores cloud comerciales.
+
+La propuesta inicial no discrimina entre usuarios avanzados o principiantes, ya que está diseñada para ser universalmente accesible. Sin embargo, en función del tipo de organización que adopte la solución, se pueden implementar mejoras específicas que optimicen la experiencia del usuario, como configuraciones personalizadas, flujos de trabajo adaptativos y mayor robustez en la infraestructura tecnológica.
+
+La herramienta se enfoca en proporcionar representaciones visuales iniciales simples y detalladas, pero ofrece la capacidad de escalar hacia funcionalidades más avanzadas, adaptándose a las necesidades de usuarios básicos y expertos. Con opciones como tableros personalizables, gráficos predictivos interactivos y exportaciones avanzadas, CFO Copilot promueve la flexibilidad y utilidad en diversos contextos empresariales, consolidándose como una solución ágil y escalable para la visualización de datos financieros.
+
+Al eliminar tareas repetitivas y manuales, la herramienta contribuye a optimizar la eficiencia operativa y a fortalecer la toma de decisiones estratégicas en un entorno económico dinámico, reduciendo el error humano voluntario e involuntario. Con estas capacidades, CFO Copilot se posiciona como una solución integral que transforma la manera en que las empresas gestionan y analizan sus datos financieros con un fin específico de cada área que lo utilice.
+
+No obstante, esta solución innovadora, enfrenta varias limitaciones técnicas, operativas y estratégicas \parencite{Desai2024}. En primer lugar, depende de la disponibilidad de datos estructurados, de calidad y periódicos. Los modelos de predicción y análisis financiero son muy sensibles a la calidad de los datos. Si dichos datos proporcionados contienen errores, inconsistencias o están incompletos, los resultados pueden ser inexactos y llevar a decisiones erróneas. Esto resalta la necesidad de implementar procesos sólidos de limpieza, validación y preprocesamiento de datos antes de ser utilizados por la herramienta.
+
+Además, la interpretación de los resultados generados por CFO Copilot puede ser un desafío, especialmente para usuarios sin experiencia en análisis de datos o inteligencia artificial. Aunque la interfaz es intuitiva, existe el riesgo de malinterpretar los gráficos o indicadores clave, lo que podría derivar en decisiones financieras no del todo óptimas. Por lo tanto, es crucial que los usuarios reciban capacitación adecuada para comprender y utilizar correctamente los resultados en concordancia para una toma de decisión acorde a los datos recibidos.
+
+En términos técnicos, el uso de algoritmos avanzados de Machine Learning \parencite{Hoang2023} requiere recursos computacionales significativos, lo que puede representar un obstáculo para pequeñas empresas con presupuestos tecnológicos limitados. Adicionalmente, la integración de CFO Copilot con sistemas existentes puede enfrentar dificultades si las APIs financieras utilizadas no son compatibles (por ejemplo, si una API entrega datos en un formato que el sistema no puede procesar directamente (como XML en lugar de JSON), será necesario desarrollar módulos adicionales para transformar esos datos) o tienen restricciones en el acceso (políticas de uso que limitan la cantidad de datos que se pueden extraer en un período determinado o requieren suscripciones pagas para acceder a funcionalidades avanzadas o datos históricos extensos). Algo parecido puede ocurrir si para una determinada compañía el CFO Copilot necesita conectarse a un sistema interno como puede ser un ERP (SAP por ejemplo), si las APIs que permiten extraer la información no son compatibles con el tipo de formato a procesar por la aplicación, es probable que se tenga que construir un middleware o módulo adicional que los conecte.
+
+Otra posible limitación autoimpuesta radica en la privacidad de los datos utilizados, provocando que datos pertenecientes a una empresa no pueden ser divulgados o mezclados con otras variables no pertenecientes a ese ecosistema lo que con lleva un desafío para las organizaciones e incluso para la implementación de esta solución de brindar la seguridad necesaria para con los datos utilizados con el fin de generar resultados fiables para la toma de decisión. \parencite{Shabsigh2023}
+
+La transmisión de datos desde las APIs, repositorios de datos en la nube (por ejemplo, Azure Storage), como así también sistemas internos de cada empresa (por ejemplo, SAP) hacia CFO Copilot se realiza mediante conexiones cifradas utilizando estándares de seguridad como HTTPS/TLS. Esto garantiza que los datos estén protegidos contra accesos no autorizados durante su transferencia. Además, el acceso a la plataforma está controlado mediante un sistema de autenticación de usuario y contraseña, con la opción de habilitar autenticación multifactor (MFA) para mayor seguridad, según las necesidades de la organización.
+
+Cada usuario tendrá asignado un rol específico y un conjunto de permisos definidos, lo que permite gestionar quién puede acceder y qué acciones puede realizar dentro del sistema. En su configuración más general, el rol será único, pero la plataforma puede escalar para soportar configuraciones avanzadas con múltiples roles, adaptándose a estructuras organizativas más complejas.
+
+Para proteger valores sensibles almacenados en el sistema, se propone la implementación de técnicas para anonimizar datos (como data masking), que ayudan a prevenir la exposición de información crítica en caso de accesos no autorizados. Asimismo, se integrarán sistemas de logging y monitoreo de actividad para registrar accesos y detectar comportamientos inusuales, emitiendo alertas en tiempo real ante posibles incidentes.
+
+Se establecerán políticas de retención de datos para almacenar información únicamente por períodos de tiempo necesarios, garantizando el cumplimiento de normativas locales e internacionales. Para empresas con altos estándares de confidencialidad, se contempla la opción de mantener ciertos datos críticos on-premise, mientras que los cálculos de IA se procesan en la nube, asegurando un equilibrio entre flexibilidad y seguridad. Este enfoque cumple con normativas como el GDPR y estándares internacionales como ISO 27001, garantizando la confidencialidad y protección de la información financiera sensible.
+
+Por otra parte, los modelos predictivos no son capaces de manejar eventos económicos poco predecibles, como crisis financieras, desastres naturales o cambios regulatorios bruscos. Estos factores externos pueden desviar las predicciones, disminuyendo la precisión de los modelos y limitando su capacidad para anticipar escenarios futuros.
+
+Una limitación clave en el uso de modelos como CFO Copilot radica en la posible falta de calidad de los datos obtenidos, lo que puede provocar resultados inexactos y riesgos como el sobreajuste. Esto ocurre cuando el modelo se ajusta excesivamente a detalles irrelevantes o ruido presente en los datos, reduciendo su capacidad para generalizar con nuevos conjuntos de datos. Además, la falta de calidad puede generar implicaciones serias en el cumplimiento normativo, ya que los informes o análisis derivados podrían contener errores que comprometan decisiones estratégicas o regulatorias.
+
+Para mitigar estas limitaciones, existen diversas técnicas que permiten mejorar la calidad de los datos. Por ejemplo:
+
+Métodos estadísticos: Aplicar media, mediana o moda para imputar valores faltantes.
+
+Interpolación lineal: Aproximar valores ausentes utilizando tendencias lineales en los datos.
+
+K-Nearest Neighbors (KNN): Reemplazar valores faltantes basándose en la similitud con los datos más cercanos.
+
+Además, se pueden emplear modelos de detección de anomalías o filtros de datos para excluir valores atípicos que puedan distorsionar los resultados. Otra opción es ampliar el conjunto de datos mediante la generación de datos sintéticos, utilizando técnicas como SMOTE (técnica estadística de sobremuestreo de minorías sintéticas para aumentar el número de casos de un conjunto de datos de forma equilibrada) \parencite{Chawla2002}, lo que puede equilibrar el dataset y mejorar el rendimiento del modelo. Por último, la detección temprana de datos faltantes puede realizarse mediante la aplicación de reglas de negocio predefinidas, asegurando que los datos problemáticos sean identificados y corregidos antes de ser procesados.
+
+Finalmente, implementar y mantener una solución como CFO Copilot puede ser costoso, especialmente en lo referente a actualizaciones tecnológicas, soporte técnico y adaptaciones para nuevas necesidades. Esto podría limitar su adopción en empresas más pequeñas o con recursos financieros limitados.
+
+En conclusión, aunque CFO Copilot representa un avance significativo en la automatización del análisis financiero, requiere supervisión humana, mantenimiento técnico constante y una estrategia clara para abordar sus limitaciones.
+
+\textbackslash{}\textbackslash{}
+
+\section{Aplicaciones prácticas}
+La solución CFO Copilot está diseñada para optimizar procesos financieros a través de la automatización de tareas y el uso de inteligencia artificial avanzada \parencite{Andrade2023}. Una de las utilidades más importantes es la capacidad de procesar grandes volúmenes de datos financieros, provenientes de múltiples fuentes, y transformarlos en información procesable. Esto elimina la necesidad de tareas manuales repetitivas, reduciendo errores humanos y ahorrando tiempo, lo que permite a los equipos financieros enfocarse en actividades estratégicas.
+
+Otra utilidad clave es la capacidad de realizar análisis predictivo. CFO Copilot puede utilizar diferentes modelos LLM y librerías de Machine learning para identificar tendencias históricas y proyectar escenarios futuros\parencite{SerranoAnton2022}. Esto permite a las empresas anticiparse a cambios en el mercado, optimizar sus estrategias de planificación y tomar decisiones más informadas. En este sentido, la herramienta se convierte en un soporte indispensable para CFOs y otros líderes financieros en la toma de decisión.
+
+Adicionalmente, CFO Copilot mejora la precisión en la elaboración de reportes financieros al centralizar y estructurar los datos. Esto no solo agiliza la generación de informes, sino que también garantiza que las decisiones se basen en información actualizada, confiable y sobre todo estructurada en la forma que el departamento de finanzas necesita. La capacidad de integrar datos no estructurados, como los provenientes de informes anuales o APIs de datos financieros externos, es especialmente valiosa en sectores dinámicos.
+
+La solución presentada también contribuye al cumplimiento normativo y a la gestión del riesgo financiero. Al automatizar la recopilación de datos y detectar posibles anomalías, CFO Copilot asegura que las empresas cumplan con regulaciones y eviten problemas legales \parencite{Agarwal2024}. En resumen, la utilidad de CFO Copilot reside en su capacidad para aumentar la eficiencia operativa, mejorar la precisión de los análisis y fortalecer la toma de decisiones estratégicas, consolidando la competitividad de las empresas en un entorno dinámico.
+
+En este sentido, la investigación en CFO Copilot se traduce en múltiples aplicaciones prácticas que transformarán los procesos financieros en las organizaciones. Una de las principales aplicaciones es la automatización del análisis financiero. Por ejemplo, esta herramienta puede procesar datos históricos para generar presupuestos y proyecciones financieras precisas, lo que facilita la planificación estratégica, la optimización de recursos y la toma de decisión basada en datos. \parencite{MicrosoftKurpad2024}
+
+Otra aplicación relevante es en la gestión de flujos de caja. Con esta herramienta es posible monitorear en tiempo real los ingresos y egresos, optimizando las decisiones operativas para mantener una liquidez adecuada. Esto es crucial para empresas que operan en entornos económicos volátiles, donde una gestión eficiente del flujo de caja puede marcar la diferencia entre el éxito y el fracaso. \parencite{SanchezCaguana2024}
+
+El cumplimiento normativo es otro ámbito donde esta solución puede aplicarse eficazmente. CFO Copilot automatiza la recopilación y análisis de datos requeridos por regulaciones financieras, reduciendo el riesgo de incumplimiento y disminuyendo la carga de trabajo en auditorías internas y externas. Además, su capacidad para generar reportes claros y estructurados facilita la interacción con reguladores y auditores.
+
+La investigación también tiene aplicaciones en la gestión de riesgos. Al analizar grandes volúmenes de datos financieros, CFO Copilot puede identificar patrones o anomalías que indiquen riesgos potenciales, permitiendo a las empresas adoptar medidas preventivas. \parencite{HermitanoCastro2022}
+
+En base a las variables que la empresa proponga como relevantes, esta aplicación permitirá poder revisar su evolución en tiempo real de manera de tomar acción temprana y sobre todo poder predecir aspectos relevantes del comportamiento de dichas variables y como son afectadas entre sí.
+
+Esta aplicación puede ser utilizada para mejorar la comunicación financiera dentro de las organizaciones. La herramienta generará visualizaciones intuitivas que facilitan la comprensión de datos complejos, ayudando a los equipos a tomar decisiones más informadas y a colaborar de manera efectiva. En conclusión, las aplicaciones prácticas de CFO Copilot abarcan desde la planificación y gestión financiera hasta la mejora en el cumplimiento normativo y la mitigación de riesgos, consolidando su valor como una herramienta integral.
+
+CFO Copilot es una herramienta diseñada para la predicción de variables financieras, adaptándose a las necesidades de diferentes tipos de organizaciones, desde pequeñas empresas hasta grandes corporaciones. Su enfoque principal es proporcionar un análisis basado en datos que permita a las organizaciones tomar decisiones estratégicas informadas. Esta flexibilidad hace que CFO Copilot sea una solución útil tanto para empresas que desean analizar su propio desempeño a través de datos internos como para aquellas interesadas en comparar métricas con compañías similares, ya sean competidoras o referentes en el mercado.
+
+También facilita el uso de datos provenientes de fuentes públicas o privadas, permitiendo extraer información relevante para el análisis financiero y estratégico.
+
+Además, su diseño inicial simple, orientado a empresas pequeñas, puede escalar fácilmente para satisfacer las demandas más complejas de corporaciones, integrando capacidades avanzadas como la comparación de métricas de desempeño, análisis predictivo de la competencia y proyecciones basadas en múltiples escenarios de mercado.
+
+En esencia, CFO Copilot combina accesibilidad y escalabilidad, garantizando que cualquier organización, independientemente de su tamaño o complejidad, pueda beneficiarse de un enfoque basado en datos para optimizar su toma de decisiones financieras.
+
+En línea con esta tendencia, el problema de la automatización y optimización de procesos financieros se ha abordado en diferentes organizaciones y sectores mediante el uso de herramientas similares a CFO Copilot. Por ejemplo, Microsoft desarrolló Copilot for Finance \parencite{Microsoft2025}, una solución basada en inteligencia artificial que automatiza tareas como la elaboración de presupuestos y análisis de variación. Esta herramienta permite a los equipos financieros centrarse en actividades estratégicas y mejorar la precisión de los reportes, mostrando resultados significativos en la industria tecnológica. \parencite{Cao2023}
+
+Empresas como Vodafone han implementado herramientas de IA para agilizar la gestión de contratos y el cumplimiento normativo. Han demostrado que estas soluciones pueden escalar eficientemente en grandes organizaciones, logrando reducir los tiempos de trabajo manual en tareas rutinarias. Esta experiencia es aplicable al contexto financiero, donde la automatización y la velocidad de procesamiento son críticas para mantener la competitividad.
+
+Otra solución destacada es el uso de sistemas de análisis predictivo en instituciones financieras como bancos, aseguradoras y departamentos financieros dentro de diferentes industrias \parencite{MicorsoftEaton2024}. Estas organizaciones han utilizado modelos de series temporales, para anticipar tendencias económicas y gestionar riesgos financieros. Sin embargo, han enfrentado limitaciones similares, como la dependencia de datos de calidad y la necesidad de supervisión humana para interpretar resultados.
+
+Además, firmas consultoras han utilizado IA para ayudar a sus clientes en la planificación estratégica y la gestión de riesgos. Por ejemplo, PwC ha integrado soluciones de automatización en sus procesos internos, permitiendo una mayor eficiencia operativa y mejorando la experiencia del cliente. \parencite{MicrosoftPwc2024}
+
+Aunque se han implementado soluciones similares en otros contextos, CFO Copilot representa una propuesta única al combinar generación de datos estructurados, análisis predictivo y una interfaz intuitiva, abordando los desafíos clave de manera integral y eficiente.\textbackslash{}\textbackslash{}
+
+\section{Resumen de problemas y soluciones}
+La problemática central identificada es la dependencia de procesos manuales para extraer, estructurar y analizar información financiera, con el consecuente consumo de tiempo, riesgo de errores y dificultad para integrar esa información con modelos predictivos. La solución propuesta es CFO Copilot, que integra extracción asistida por IA generativa, estructuración de datos y modelos de series temporales para apoyar el análisis y la toma de decisiones financieras.
+
+\section{Objetivo del trabajo}
+\subsection{Objetivo general}
+\begin{itemize}
+\item Automatizar la extracción y el análisis de datos financieros de documentos de acceso público para optimizar la toma de decisiones estratégicas en el ámbito empresarial, reduciendo tiempos de procesamiento y minimizando el riesgo de errores humanos en los reportes financieros.
+\end{itemize}
+\subsection{Objetivos específicos}
+\begin{itemize}
+\item Implementar procesos de extracción de información financiera para reducir la dependencia de métodos manuales en el análisis de reportes financieros, mejorando la eficiencia y precisión en la obtención de datos clave.
+\end{itemize}
+\begin{itemize}
+\item Desarrollar modelos de pronóstico financiero que faciliten la visualización de tendencias y escenarios futuros, apoyando a los CFOs en la planificación estratégica y en la anticipación de cambios económicos.
+\end{itemize}
+\begin{itemize}
+\item Evaluar el impacto de la automatización en la calidad de las decisiones financieras para mejorar la capacidad de respuesta de la empresa ante cambios en el mercado, garantizando decisiones más precisas y rápidas.
+\end{itemize}
+\begin{itemize}
+\item Optimizar los procesos de análisis financiero mediante la automatización para incrementar la competitividad y sostenibilidad de la empresa en un entorno económico dinámico.
+\end{itemize}
+\begin{itemize}
+\item Integrar fuentes de datos de diferentes formatos, como documentos PDF e información proveniente de APIs, para garantizar una recopilación de información financiera más completa y precisa que respalde la automatización del análisis financiero.\textbackslash{}\textbackslash{}
+\end{itemize}
+\section{Transferencia de los resultados obtenidos}
+En el desarrollo del CFO Copilot se han identificado diversas limitaciones que, al ser abordadas estratégicamente, permitirían mejorar significativamente la herramienta y ampliar su aplicabilidad en diferentes contextos. La expansión de dicho trabajo se puede extrapolar en varias dimensiones clave, tales como la mejora de la calidad de los datos, la optimización de la interpretación de resultados, la escalabilidad del sistema, y la adaptabilidad a eventos económicos imprevistos.
+
+Mejora en la Calidad y Disponibilidad de Datos
+
+Una de las principales limitaciones de la solución actual es la dependencia de datos que tienen que estructurarse por medio de la aplicación y tienen que resultar en datos de calidad. Para mitigar este desafío, se pueden incorporar técnicas avanzadas de preprocesamiento y validación, tales como:
+
+Imputación de valores faltantes: Métodos como la interpolación lineal o la imputación mediante redes neuronales pueden mejorar la consistencia de los datos \parencite{Chawla2002}.
+
+Ampliación de fuentes de datos: Integrar múltiples APIs financieras y repositorios de datos abiertos para enriquecer la base de información. O también agregar repositorios internos que cada compañía pueda aportar, por ejemplo acceso a toma de datos de APIs de ERPs o CRMs.
+
+Uso de modelos de detección de anomalías: Algoritmos como Isolation Forest \parencite{Liu2008} o DBSCAN \parencite{Jain2021} pueden identificar y corregir valores atípicos automáticamente.
+
+Optimización de la Interpretación de Resultados
+
+Dado que los usuarios pueden tener dificultades para interpretar los gráficos generados por CFO Copilot, es clave mejorar la accesibilidad y comprensión de los resultados mediante:
+
+Explicaciones automatizadas con IA: Implementar modelos de lenguaje natural (LLMs) para generar explicaciones detalladas sobre las predicciones. Esto implica que el usuario pueda consultar mediante el uso de NLP información sobre los gráficos expuestos.
+
+Tableros informativos personalizables: Permitir que los usuarios configuren los indicadores clave de rendimiento según sus necesidades \parencite{Agarwal2024}.
+
+Capacitación y documentación: Desarrollar módulos de formación interactivos para que los usuarios comprendan cómo utilizar la herramienta y analizar los resultados.
+
+Escalabilidad del Sistema y Reducción de Costos Computacionales
+
+El uso de modelos avanzados como LSTM vs ARIMA \parencite{SiamiNamini2018} puede ser costoso computacionalmente, lo que limita la adopción de la herramienta en pequeñas empresas. Algunas estrategias para optimizar su implementación incluyen:
+
+Uso de modelos más eficientes: Implementar técnicas de quantization y pruning en modelos de redes neuronales para reducir el consumo de recursos \parencite{Liang2021,Bibi2024}.
+
+Computación en la nube híbrida: Permitir la ejecución de procesos de inferencia en entornos locales y en la nube según las necesidades del usuario.
+
+Desarrollo de versiones ligeras: Implementar versiones simplificadas de los modelos para usuarios con menos requerimientos computacionales.
+
+Seguridad, Privacidad de los Datos y Cumplimiento Normativo
+
+Dado que CFO Copilot maneja información financiera sensible, la privacidad y seguridad de los datos son elementos críticos. Algunas mejoras en este aspecto incluyen:
+
+Implementación de técnicas de anonimización: Aplicar data masking para proteger información confidencial.
+
+Autenticación avanzada: Uso de autenticación multifactor (MFA) para garantizar el acceso seguro a la plataforma.
+
+Cumplimiento normativo: Asegurar que la herramienta cumpla con regulaciones internacionales como el GDPR \parencite{Ponchietti2021} y la norma ISO 27001 \parencite{Kitsios2023}. También hay que mencionar que se aplica el cumplimento de la ley N.\textsuperscript{o} 25.326/2000 conocida como la Ley de Protección de los Datos Personales \parencite{HonorableCongresoD2000}.
+
+Cumplimiento con Normativas Globales: Adaptar la herramienta a regulaciones como IFRS \parencite{Lopez2009}, SOX \parencite{Barbafina2022} y Basilea IV \parencite{Thomas2022}.
+
+Monitoreo de Anomalías en Seguridad: Implementar detección de fraudes y monitoreo de actividad sospechosa en tiempo real. En este caso podemos utilizar modelos que ayuden a esta detección, por ejemplo, Isolation Forest para detectar transacciones inusuales, LTSM para analizar patrones temporales, LLM basado en GPT-4 para analizar reportes de auditoría y encontrar inconsistencias textuales. En términos de infraestructura podría implementarse Apache Kafka (https://kafka.apache.org/) + Apache Flink (https://flink.apache.org/) para monitoreo continuo desde un punto de vista open source \parencite{TorresAltez2023}, también podría usarse un enfoque más propietario usando soluciones comerciales integrando con AWS Lambda o Google Cloud Functions para automatizar alertas.
+
+Incorporación de Técnicas de Aprendizaje Automático más Avanzadas
+
+Una posible ampliación del trabajo es el uso de modelos más sofisticados y robustos que permitan mejorar la precisión de las predicciones financieras:
+
+Transformers para Series Temporales: Modelos como Temporal Fusion Transformer (TFT) \parencite{Lim2020} pueden ser una alternativa a LSTM y ARIMA, mejorando la interpretación y robustez en la predicción.
+
+Redes Neuronales Bayesianas: Permiten modelar la incertidumbre en los pronósticos financieros, mejorando la confiabilidad de las predicciones en entornos de alta volatilidad. \parencite{Goan2020}
+
+Modularización y Personalización del CFO Copilot
+
+Para mejorar la adaptabilidad de la herramienta, se podrían incluir:
+
+Módulos Específicos por Industria: Crear versiones especializadas para sectores como manufactura, tecnología, retail y banca.
+
+Configuración Personalizada de Dashboards: Permitir a los usuarios personalizar los indicadores y reportes según sus necesidades.
+
+Recomendaciones Basadas en IA: Implementar sistemas de recomendación que sugieran estrategias financieras basadas en patrones identificados en los datos \parencite{Lamas2015}.
+
+Expansión de la Cobertura de Datos
+
+El modelo actual depende de fuentes de datos estructuradas. Para enriquecer el análisis, se podrían agregar:
+
+Integración con Datos No Estructurados: Incorporar análisis de sentimiento de noticias financieras, reportes de prensa y redes sociales para evaluar el impacto de eventos externos en las predicciones.
+
+Datos Alternativos para Finanzas: Incluir fuentes de datos como tendencias de búsqueda en Google, actividad en redes sociales o análisis de sentimiento de informes de analistas financieros.
+
+Historial de Transacciones y Datos de ERP: Integrar sistemas ERP de empresas para generar análisis en tiempo real de la situación financiera.
+
+Implementación de Simulaciones y Análisis de Escenarios
+
+Para mejorar la planificación estratégica, se podría incluir:
+
+Modelado de Escenarios Económicos: Simular situaciones de crisis financieras y evaluar cómo afectaría a la empresa.
+
+Análisis de Sensibilidad: Permitir a los CFOs ajustar diferentes variables y observar su impacto en la estabilidad financiera.
+
+Generación de Estrategias de Mitigación: Basado en la predicción de eventos adversos, ofrecer recomendaciones para minimizar riesgos.
+
+Más allá del ámbito financiero, los avances y técnicas desarrolladas en el CFO Copilot pueden ser extrapolados a diversos sectores donde la automatización y el análisis de datos desempeñan un papel crucial.
+
+En este sentido, si bien la investigación sobre CFO Copilot se centra en la automatización y optimización del análisis financiero, sus hallazgos y metodologías pueden aplicarse en múltiples. La combinación de inteligencia artificial generativa (GenAI), modelos de machine learning para series temporales y análisis de datos estructurados y no estructurados tiene un gran potencial en diversas industrias. A continuación, se presentan algunas de las principales aplicaciones prácticas fuera del ámbito original de la solución.
+
+Análisis de Riesgos en el Sector Asegurador \parencite{Cai2024} \parencite{RamosPerez2021}
+
+Los modelos predictivos desarrollados para CFO Copilot pueden adaptarse para evaluar riesgos en el sector asegurador.
+
+Predicción de reclamos: Utilizando modelos de series temporales como ARIMA o LSTM, se pueden anticipar siniestros en base a datos históricos.
+
+Detección de fraudes en seguros: Isolation Forest y DBSCAN pueden identificar reclamaciones fraudulentas mediante patrones de comportamiento anómalos.
+
+Optimización de primas de seguros: Ajustando las tarifas en función del análisis predictivo de eventos futuros.
+
+Gestión de la Cadena de Suministro y Logística \parencite{Ahn2024} \parencite{Chang2024}
+
+El análisis de series temporales y la IA generativa pueden mejorar la eficiencia operativa en la gestión de la cadena de suministro.
+
+Predicción de demanda: Empresas de retail pueden usar estos modelos para anticipar necesidades de inventario y evitar desabastecimientos.
+
+Optimización de rutas y tiempos de entrega: LSTM y modelos de pronóstico pueden mejorar la logística en transporte.
+
+Evaluación de proveedores: Análisis de datos no estructurados de reportes de proveedores permite tomar decisiones más informadas.
+
+Aplicaciones en el Sector de la Salud \parencite{Hu2024,Vollmer2021}
+
+El uso de machine learning en la predicción de tendencias en el sector financiero puede trasladarse al ámbito médico para mejorar el diagnóstico y la planificación de recursos.
+
+Predicción de brotes de enfermedades: Los modelos de series temporales pueden anticipar aumentos en hospitalizaciones basadas en datos epidemiológicos.
+
+Optimización de asignación de recursos: Uso de análisis predictivo para gestionar camas en hospitales o stock de medicamentos.
+
+Análisis de costos en hospitales: Aplicación de modelos de proyección financiera para optimizar la administración de presupuestos hospitalarios.
+
+Análisis del Mercado Laboral y Recursos Humanos \parencite{Gan2024,Nelson2024}
+
+El análisis financiero de CFO Copilot puede adaptarse al estudio del comportamiento del mercado laboral.
+
+Predicción de tasas de desempleo: Utilizando modelos de pronóstico para evaluar tendencias en la contratación y despidos.
+
+Automatización del reclutamiento: Aplicación de GenAI en la evaluación de CVs para encontrar el mejor talento disponible.
+
+Optimización de sueldos y beneficios: Uso de modelos financieros para predecir el impacto de ajustes salariales en empresas.
+
+Planificación Urbana y Desarrollo Económico \parencite{Anapolsky2023,Novoa2021}
+
+Los modelos económicos de CFO Copilot pueden aplicarse en la gestión y planificación de ciudades.
+
+Análisis de ingresos municipales: Uso de series temporales para predecir recaudación fiscal y planificación presupuestaria.
+
+Gestión del tráfico y movilidad urbana: Modelos predictivos para optimizar el transporte público.
+
+Evaluación de impacto económico de políticas públicas: Aplicación de análisis financiero en la planificación de subsidios o inversiones gubernamentales.
+
+Optimización de Estrategias de Marketing \parencite{Patil2024,Haque2023}
+
+El análisis de tendencias financieras también puede aplicarse en el marketing digital y comercial.
+
+Segmentación de clientes basada en patrones de consumo: Uso de análisis de datos no estructurados para identificar audiencias clave.
+
+Predicción de ventas y preferencias del consumidor: Modelos de series temporales para estimar la demanda de productos.
+
+Optimización de campañas publicitarias: Aplicación de GenAI en la generación de estrategias personalizadas para clientes.
+
+Teniendo en cuenta lo antes mencionado, la propuesta del CFO Copilot, que originalmente fue diseñada para la automatización del análisis financiero y la optimización de la gestión económica en empresas desde chicas a grandes, tiene un gran potencial de expandirse a diversos ámbitos y sectores. La combinación de Inteligencia Artificial Generativa (GenAI), modelos de series temporales y machine learning permite que la herramienta pueda adaptarse a múltiples industrias que requieren procesamiento de datos, predicción de tendencias y automatización en la toma de decisiones. A continuación, se presentan estrategias para su transferencia a un ámbito más amplio:
+
+Expansión a Sectores Regulados y de Alto Impacto \parencite{Cerda2019}
+
+Si bien CFO Copilot ha sido concebido para el análisis financiero empresarial, su funcionalidad puede adaptarse para mejorar la gestión en sectores regulados como:
+
+Gobiernos y Administraciones Públicas: Predicción de ingresos fiscales, análisis presupuestario y optimización del gasto público basado en datos históricos.
+
+Gestión de la Demanda y Oferta Energética: Utilizando modelos de series temporales y análisis predictivo, es posible anticipar patrones de consumo energético, optimizando la producción y distribución de energía. Esto facilita una mejor planificación de recursos y una reducción de costos operativos.
+
+Gestión Financiera de Proyectos de Movilidad: La aplicación de modelos financieros permite evaluar el impacto económico de proyectos de movilidad urbana y rural, facilitando decisiones más acertadas en cuanto a inversiones y políticas públicas.
+
+Aplicación en la Cadena de Suministro y Logística \parencite{Hernandez2024}
+
+Las técnicas utilizadas en CFO Copilot pueden aplicarse en la optimización de la cadena de suministro y la logística:
+
+Gestión de Inventarios: Predicción de demanda de productos con modelos de series temporales.
+
+Optimización de Rutas: Uso de machine learning para reducir costos operativos y mejorar la distribución.
+
+Evaluación de Proveedores: Integración de análisis financiero para determinar la estabilidad económica de los proveedores y mitigar riesgos.
+
+Expansión a la Banca y Seguros \parencite{Addo2018}
+
+Los algoritmos de CFO Copilot pueden trasladarse al análisis de riesgos financieros y gestión de clientes en instituciones bancarias y aseguradoras:
+
+Modelos de Riesgo Crediticio: Predicción de impagos y gestión del portafolio de clientes mediante machine learning.
+
+Detección de Fraudes: Implementación de algoritmos como Isolation Forest para identificar anomalías en transacciones bancarias y de seguros.
+
+Optimización de Primas de Seguros: Uso de modelos de series temporales para ajustar tarifas en función del comportamiento del mercado.
+
+Adaptabilidad a Empresas de Diferentes Escalas \parencite{Nadler2024}
+
+Para ampliar su adopción, CFO Copilot puede adaptarse tanto a grandes corporaciones como a pequeñas y medianas empresas (PyMEs). Algunas estrategias incluyen:
+
+Versiones Modulares: Permitir que las empresas personalicen los módulos de la herramienta según sus necesidades.
+
+Plataforma SaaS (Software as a Service): Transformar CFO Copilot en un servicio en la nube accesible por suscripción.
+
+Integración con Herramientas Existentes: Conectividad con plataformas ERP, CRM y sistemas de contabilidad para facilitar su adopción.
+
+Transferencia a un Contexto Global \parencite{CastroAguilar2017}
+
+Para expandir su uso a nivel internacional, se pueden implementar:
+
+Localización e Idiomas: Adaptación de la interfaz y modelos de análisis financiero a distintos mercados y regulaciones.
+
+Incorporación de Datos Externos: Uso de APIs de datos económicos globales para mejorar la precisión de predicciones.
+
+Cumplimiento Normativo Internacional: Asegurar que la solución cumpla con regulaciones como IFRS, GDPR y normativas específicas de cada país.\textbackslash{}\textbackslash{}
+
+\section{Contribuciones principales}
+A partir del plan de trabajo, las contribuciones previstas se concentran en la integración de fuentes financieras heterogéneas, la automatización de la preparación de datos, la comparación de enfoques de pronóstico y una interfaz de consulta que facilite la interpretación de resultados. Estas contribuciones deberán contrastarse y actualizarse con los resultados empíricos obtenidos durante la implementación final.
+
+\section{Trabajos presentados vinculados con el trabajo final}
+% Completar únicamente si existen publicaciones, ponencias o trabajos presentados vinculados con esta tesis.
+
+\section{Estructura general del trabajo final}
+El trabajo se organiza en una introducción que presenta el problema, los objetivos y la solución propuesta; capítulos de desarrollo dedicados a la metodología y a las consideraciones éticas y sociales; un capítulo de trabajos relacionados; y, finalmente, los capítulos de conclusión y trabajos futuros.
+
+\chapter{Metodología}
+\chapter{Valor ético y social}
+Los siguientes párrafos tienen la función de evaluar el valor ético y social del proyecto CFO Copilot, el cual es una solución basada en Inteligencia Artificial Generativa (GenAI) y Machine Learning para la automatización y optimización del análisis financiero. Se procederá a analizar la compatibilidad del proyecto con principios éticos y sociales actuales, destacando su contribución al bien común, sobre todo la transparencia financiera, la sostenibilidad económica y el impacto social positivo en el entorno empresarial, el uso responsable de los datos y más allá.
+
+Es importante remarcar y aclarar que la herramienta CFO Copilot NO tomará las decisiones financieras por los CFOs o colaboradores del área financiera, sino que introduce la explotación y posterior exteriorización de los datos procesados dando opciones para analizar y accionar sobre diferentes escenarios posibles, además involucra los principios de responsabilidad corporativa, integridad y equidad en la automatización de procesos financieros. Así, se analiza su impacto en distintos sectores y cómo mitiga riesgos éticos potenciales asociados a la IA.
+
+Contribución al Bien Común y Desarrollo Humano
+
+Transparencia y Accesibilidad Financiera
+
+El CFO Copilot permite a empresas y organizaciones acceder a herramientas avanzadas de análisis financiero, eliminando barreras técnicas y económicas que limitaban a muchas PyMEs y entidades sin fines de lucro el acceso a este tipo de herramientas. La capacidad de extraer información precisa de reportes financieros y realizar predicciones basadas en series temporales (ARIMA, LSTM, AutoML, entre otros) democratiza el acceso a análisis financiero avanzado.
+
+Reducción de Asimetrías de Información
+
+Uno de los grandes problemas en el sector financiero es la asimetría de información, donde grandes corporaciones tienen acceso a datos y tecnologías que les otorgan ventajas sobre pequeños inversores y empresas emergentes. CFO Copilot ayuda a equilibrar esta situación al proporcionar herramientas accesibles para evaluar riesgos financieros, realizar presupuestos y optimizar estrategias de inversión.
+
+Contribución a la Educación Financiera
+
+El acceso a un sistema que simplifique la interpretación de reportes financieros también tiene un impacto positivo en la educación financiera de los usuarios de todo tipo de conocimientos. La generación de informes explicativos y visualizaciones intuitivas permite a personas sin formación específica en finanzas comprender mejor la situación de una empresa, tomar decisiones más informadas y evitar riesgos innecesarios.
+
+Sustentabilidad y Responsabilidad Social
+
+Sostenibilidad Económica
+
+CFO Copilot promueve la eficiencia económica ayudando a reducir costos operativos significativamente, mejorando la gestión de flujos y minimizando errores en la toma de decisiones financieras. Esto permite que las empresas sean más sostenibles a largo plazo, evitando crisis financieras internas derivadas de malas prácticas contables.
+
+Impacto en el Empleo
+
+Si bien la automatización de procesos financieros podría reducir la necesidad de ciertos roles operativos, también genera nuevas oportunidades laborales en análisis de datos, interpretación de predicciones financieras y supervisión de modelos de IA. La tecnología NO reemplaza el juicio humano, sino que lo complementa y permite que los profesionales se enfoquen en tareas estratégicas de mayor valor agregado dejando de lado el trabajo manual tedioso y propenso a errores.
+
+Reducción del Impacto Ambiental
+
+El uso de herramientas digitales como CFO Copilot disminuye la dependencia de papel, optimizando los reportes financieros en formato digital. Además, la capacidad de predicción ayuda a las empresas a reducir desperdicios en la gestión de recursos, alineándose con los principios de eficiencia energética y responsabilidad ambiental.
+
+Implicaciones Éticas y Consideraciones de Riesgo
+
+Transparencia, Trazabilidad e Interpretabilidad de las tareas que realiza la IA
+
+Uno de los principales desafíos éticos en el uso de IA en finanzas es la opacidad de los modelos. CFO Copilot está diseñado con un enfoque de transparencia, permitiendo a los usuarios comprender los criterios que llevan a una determinada predicción financiera.
+
+Privacidad y Seguridad de los Datos
+
+Dado que CFO Copilot maneja información sensible, se han incorporado mecanismos de cifrado de datos, control de acceso y auditorías de seguridad para garantizar la protección de la información financiera de las empresas usuarias.
+
+Sesgo en los Modelos Predictivos
+
+El uso de IA comúnmente conlleva un riesgo de sesgo en los datos de entrenamiento, lo que podría generar predicciones incorrectas o discriminatorias. Para mitigar esto, CFO Copilot utiliza set de datos diversos y mecanismos de ajuste de sesgo, asegurando predicciones equitativas y justas para distintos sectores.
+
+Desde un punto de vista ético se puede ajustar el sesgo:
+
+Equidad y No Discriminación: Asegurar que los modelos no favorezcan o perjudiquen injustamente a ciertos grupos.
+
+Transparencia: Explicar cómo se toman las decisiones y permitir auditorías del modelo.
+
+Responsabilidad: Garantizar que las empresas y desarrolladores sean responsables de los impactos de sus modelos.
+
+Desde un punto de vista técnico se puede ajustar el sesgo:
+
+Recolección de datos balanceados: Asegurar que los datos utilizados reflejen diversidad y no estén sesgados por histórico sesgado.
+
+Reponderación de muestras (Reweighting): Asignar pesos mayores a datos de grupos subrepresentados.
+
+Generación de datos sintéticos: Crear datos adicionales con algoritmos como SMOTE (Synthetic Minority Over-sampling Technique) para equilibrar clases desbalanceadas.
+
+Evaluación de Posibles Controversias Éticas
+
+Aunque CFO Copilot presenta múltiples beneficios, pudiendo existir ciertos cuestionamientos éticos sobre:
+
+Dependencia excesiva de la IA: Algunas empresas podrían confiar demasiado en la herramienta sin supervisión humana. Siempre hay que recalcar que es una herramienta de complemento y que no toma decisiones por los humanos, sino que propone escenarios a evaluar.
+
+Privacidad de los datos: Si bien se toman medidas de seguridad, siempre existe el riesgo de filtración de información financiera sensible. Se tendrá que proponer diferentes herramientas que puedan mitigar este tipo de cuestiones más allá de las ya propuestas anteriormente y que se adapten a los escenarios nuevos posibles.
+
+Impacto en el empleo: La automatización podría desplazar algunos puestos de trabajo si no se acompaña de capacitación para los empleados.
+
+Para abordar estas preocupaciones, el equipo de CFO Copilot promueve prácticas de IA responsable, asegurando supervisión humana, auditorías constantes y capacitaciones en el uso de la herramienta.
+
+El desarrollo de CFO Copilot representa un avance tecnológico significativo en la automatización financiera, con impactos positivos en transparencia, educación financiera y sostenibilidad económica. Si bien existen desafíos éticos a considerar, estos pueden abordarse mediante el diseño de mecanismos de transparencia, privacidad y reducción de sesgos en IA.
+
+Desde una perspectiva ética y social, CFO Copilot contribuye al desarrollo humano al democratizar el acceso a herramientas financieras avanzadas, fortaleciendo la toma de decisiones basada en datos y promoviendo la integridad en la gestión económica de empresas de todos los tamaños. Su compatibilidad con el Ideario del uso responsable de la IA radica en su enfoque en la equidad, la transparencia y el impacto positivo en la sociedad.
+
+En síntesis, CFO Copilot no solo es una herramienta financiera innovadora, sino que también es una solución alineada con principios éticos y sociales que buscan mejorar la calidad de vida de las personas y la sustentabilidad de las organizaciones.
+
+\textbackslash{}\textbackslash{}
+
+\chapter{Trabajos relacionados}
+El CFO Copilot es una solución que aborda problemáticas centrales que han sido objeto de estudio en diversas investigaciones académicas y desarrollos tecnológicos. A continuación, se detallan trabajos relevantes que abordan estas problemáticas:
+
+Automatización del Análisis Financiero \parencite{David2024}
+
+La automatización en el análisis financiero busca reducir la intervención manual en procesos repetitivos, mejorando la eficiencia y precisión en la gestión de datos financieros. Un ejemplo destacado es el estudio "Análisis de reportes financieros de empresas usando técnicas de inteligencia artificial", que explora el uso de modelos de IA, como redes neuronales y random forest, para mejorar la generación y análisis de reportes financieros. Este enfoque permite una comprensión más clara de las tendencias actuales y ofrece oportunidades para prever comportamientos financieros futuros.
+
+Mejora en la Toma de Decisiones Financieras \parencite{Andrade2023}
+
+La IA ha demostrado ser una herramienta valiosa para mejorar la toma de decisiones financieras corporativas. El estudio "Impacto de la Inteligencia Artificial en la toma de decisiones financieras corporativas" analiza cómo la IA influye en este proceso, destacando su capacidad para transformar la manera en que las empresas abordan y ejecutan decisiones financieras. La investigación señala que la IA permite una mayor eficiencia, precisión y rapidez en el análisis de datos financieros, la detección de tendencias y la predicción de resultados.
+
+Aplicación de IA en la Industria Financiera \parencite{Contreras2024}
+
+La integración de la IA en la industria financiera ha sido objeto de análisis en diversos estudios. El documento "El impacto de la inteligencia artificial en la industria financiera" del Instituto Español de Analistas Financieros aborda cómo la IA está remodelando profundamente la forma en que operan las instituciones financieras, desde la automatización de tareas hasta el análisis predictivo. Este trabajo destaca las promesas y amenazas asociadas con la adopción de IA en finanzas, proporcionando una visión integral de su impacto en el sector.
+
+Herramientas de IA para Finanzas \parencite{MetamandrillCom2024}
+
+Existen múltiples herramientas impulsadas por IA que abordan problemáticas similares a las que resuelve el CFO Copilot. Por ejemplo, la plataforma Planful (https://planful.com/) ofrece herramientas de inteligencia artificial para crear modelos financieros mediante cálculos y previsiones automatizados. Esta solución responde a la necesidad de la industria de contar con herramientas de planificación estratégica que utilicen una metodología orientada a los datos, facilitando la clasificación de métricas dentro de una colección unificada de análisis y flujos de trabajo.
+
+Análisis de Mercados Financieros utilizando Técnicas de IA \parencite{David2024}
+
+Las técnicas actuales de IA, en particular los algoritmos evolutivos y los agentes inteligentes, permiten modelar sistemas complejos como los mercados financieros. El estudio "Análisis de Mercados Financieros utilizando Técnicas de Inteligencia Artificial" explora cómo un modelo computacional de un mercado financiero puede utilizar elementos de IA para servir como un laboratorio útil en el estudio de mercados reales. Este enfoque facilita la comprensión de dinámicas complejas y la predicción de comportamientos en entornos financieros.
+
+Diversos trabajos académicos y desarrollos tecnológicos abordan las problemáticas que el CFO Copilot busca resolver. La integración de la IA en el análisis financiero y la toma de decisiones corporativas es una tendencia creciente, respaldada por investigaciones que demuestran su eficacia en la automatización, precisión y eficiencia de procesos financieros. Estas soluciones no solo optimizan operaciones internas, sino que también ofrecen ventajas competitivas en un mercado cada vez más orientado hacia la tecnología y el análisis de datos.
+
+Sin embargo, la inteligencia artificial (IA) ha emergido como una herramienta transformadora en el sector financiero, abordando una variedad de problemáticas relacionadas que complementan las funciones de herramientas como CFO Copilot. A continuación, se detallan algunos trabajos destacados que abordan estas problemáticas en relación a lo expuesto por la herramienta mencionada:
+
+Análisis de Sentimiento en Comunicaciones Financieras \parencite{DaraAbasi2025}
+
+Un área emergente es el uso de IA para analizar el sentimiento en las comunicaciones financieras. Un estudio reciente de la Universidad Estatal de Georgia y Chicago Booth analizó 75,000 transcripciones de llamadas de ganancias entre 2006 y 2020, utilizando modelos de lenguaje como ChatGPT para predecir cambios en políticas de inversión basados en el lenguaje empleado por los ejecutivos. Este enfoque permite captar cambios sutiles en el tono y lenguaje que podrían indicar modificaciones en la estrategia corporativa antes de que se hagan oficiales.
+
+Detección de Fraudes y Gestión de Riesgos \parencite{Baesens2015}
+
+La IA se ha aplicado extensamente en la detección de fraudes y la gestión de riesgos financieros. Según un documento del Banco de España, la IA permite identificar patrones anómalos (manipulación del euríbor) \parencite{Herrera2022} en grandes volúmenes de datos, mejorando la capacidad de las instituciones financieras para prevenir actividades fraudulentas y gestionar riesgos de manera más efectiva.
+
+Evaluación del Impacto de la IA en las Finanzas \parencite{Kearns2023}
+
+El Fondo Monetario Internacional (FMI) ha explorado las repercusiones de la IA en las finanzas, señalando que, aunque ofrece oportunidades significativas para mejorar la eficiencia y precisión en el sector financiero, también plantea desafíos en términos de transparencia, interpretabilidad y gestión de riesgos.
+
+Aplicaciones en Fintech y Servicios Financieros \parencite{AdenBusinessMagazi2023}
+
+La IA ha sido fundamental en el desarrollo de aplicaciones fintech, incluyendo chatbots para atención al cliente, algoritmos de análisis predictivo para inversiones y sistemas de asesoría financiera automatizada. Estas aplicaciones han permitido a las instituciones financieras ofrecer servicios más personalizados y eficientes a sus clientes.
+
+Gestión Financiera Empresarial \parencite{SosaSierra2007}
+
+Un estudio titulado "Inteligencia artificial en la gestión financiera empresarial" revisa diversas técnicas de IA, como sistemas expertos y redes neuronales, aplicadas a la gestión financiera. Estas técnicas ayudan a los directivos en la planificación, análisis y control financiero, mejorando la toma de decisiones y la eficiencia operativa.
+
+Evaluación del Impacto de la IA en la Toma de Decisiones Financieras \parencite{Andrade2023}
+
+Un estudio publicado en ResearchGate analiza cómo la IA está transformando la toma de decisiones financieras corporativas, permitiendo una mayor eficiencia, precisión y rapidez en el análisis de datos financieros, la detección de tendencias y la predicción de resultados.
+
+Regulación y Gobierno Corporativo en la Era de la IA \parencite{AlioLopez2022}
+
+La integración de la IA en las finanzas también ha llevado a examinar su impacto en la regulación y el gobierno corporativo. Un estudio titulado "Regulación del gobierno corporativo e impacto de la Inteligencia artificial" analiza cómo la IA influye en las prácticas de gobierno corporativo y la necesidad de marcos regulatorios adecuados para abordar los desafíos éticos y operativos que surgen con su adopción.
+
+Estos trabajos destacan la amplia gama de aplicaciones de la IA en el sector financiero, desde el análisis de comunicaciones y la detección de fraudes hasta la gestión de riesgos y la mejora de la toma de decisiones financieras. Si bien herramientas como CFO Copilot se centran en la optimización del análisis financiero corporativo, la IA está abordando problemáticas relacionadas que complementan y amplían las capacidades de dichas herramientas, contribuyendo a un ecosistema financiero más eficiente, seguro y orientado a datos.
+
+A continuación, se presentan investigaciones relevantes en el ámbito financiero que preceden al desarrollo del CFO Copilot. Estos estudios, respaldados por referencias académicas pertinentes, han abordado previamente el problema, proporcionando enfoques y hallazgos clave que fundamentan la necesidad de esta propuesta:
+
+Este estudio publicado por la Organización para la Cooperación y el Desarrollo Económicos \parencite{Oecd2023}, analiza las evoluciones recientes de la IA en las finanzas, los riesgos potenciales asociados y discute si los responsables de políticas deben reforzar las regulaciones existentes. El documento destaca cómo la GenAI puede transformar la industria financiera, pero también enfatiza la necesidad de marcos regulatorios adecuados para mitigar riesgos como sesgos algorítmicos y vulnerabilidades de seguridad.
+
+En este trabajo, Bryan T. Kelly y Dacheng Xiu \parencite{Kelly2023}, ofrecen una revisión exhaustiva de la literatura emergente sobre la aplicación del aprendizaje automático en el estudio de los mercados financieros. El artículo destaca ejemplos destacados de esta línea de investigación y recomienda direcciones prometedoras para futuras investigaciones. Está diseñado tanto para economistas financieros interesados en comprender las herramientas de ML como para estadísticos y especialistas en ML que buscan contextos financieros donde aplicar métodos avanzados.
+
+Andrea L. Eisfeldt y Gregor Schubert, en su estudio \parencite{Eisfeldt2025}, demuestran que las ocupaciones financieras están altamente expuestas a los efectos de productividad de la GenAI. Revisan la literatura sobre el impacto de herramientas como ChatGPT en el valor de las empresas y proporcionan direcciones para futuras investigaciones que exploren este cambio tecnológico significativo. Además, describen innovaciones en métodos de investigación vinculadas a mejoras en herramientas de IA y sus aplicaciones en finanzas.
+
+Este estudio ofrece una revisión integral de las aplicaciones del aprendizaje automático en los campos de negocios y finanzas \parencite{Gao2024}. Analiza cómo las técnicas de ML se han aplicado en diversas áreas, incluyendo la evaluación de riesgos, la detección de fraudes y la gestión de inversiones. El artículo también identifica desafíos actuales y propone direcciones para futuras investigaciones en la intersección de ML y finanzas.
+
+Este manuscrito presenta una visión general de las aplicaciones de técnicas de GenAI en el dominio financiero \parencite{Desai2024}. Discute las oportunidades y desafíos asociados con el uso de GenAI, ilustra las metodologías que pueden emplearse para entrenar estas técnicas y presenta diversas áreas de aplicación de las tecnologías GenAI en el ecosistema financiero.
+
+Este artículo \parencite{Lee2024} proporciona un examen detallado de las tendencias y desarrollos recientes en la intersección de la GenAI y las finanzas. Utilizando un método avanzado de modelado de temas, BERTopic \parencite{Grootendorst2022}, los autores categorizan y analizan sistemáticamente la investigación existente para descubrir temas predominantes y áreas emergentes de interés.
+
+Este informe del Servicio de Investigación del Congreso de los Estados Unidos \parencite{Tierno2024}, analiza las aplicaciones de la IA y el ML en los servicios financieros. Destaca cómo estas tecnologías se emplean en la evaluación de riesgos crediticios, la detección de fraudes y la gestión de inversiones, y discute las implicaciones regulatorias y de políticas asociadas con su adopción en el sector financiero.
+
+Este documento de trabajo del Banco de Pagos Internacionales \parencite{Aldasoro2024}, analiza las oportunidades y desafíos que surgen de las generaciones progresivas de IA, enfocándose en cuatro funciones clave del sistema financiero: intermediación financiera, seguros, gestión de activos y pagos. También explora las implicaciones de los avances en IA para la estabilidad financiera, la política prudencial y el riesgo de efectos de contagio financiero derivados de la disrupción de la IA en la economía real.
+
+Este documento del Fondo Monetario Internacional \parencite{Shabsigh2023} proporciona primeras ideas sobre los riesgos inherentes de la GenAI y su impacto potencial en el sector financiero. Discute cómo la GenAI puede afectar áreas como la estabilidad financiera, la integridad del mercado y la protección del consumidor, y sugiere consideraciones para los responsables de políticas y reguladores.
+
+Este estudio titulado, Aprendizaje Automático en la Industria Financiera \parencite{Zakaria2023}, ofrece una revisión bibliométrica de la literatura sobre el aprendizaje automático en la industria financiera. Identifica los aspectos influyentes e intelectuales clave del ML en finanzas, proporcionando una comprensión de las tendencias de investigación y las áreas de enfoque en este campo.
+
+Estos trabajos han identificado previamente diversas problemáticas relacionadas con la aplicación de la GenAI y el ML en finanzas, abordando temas como la evaluación de riesgos, la detección de fraudes, la gestión de inversiones y las implicaciones regulatorias. Sus hallazgos y propuestas han sentado las bases para desarrollos posteriores, incluyendo propuestas como la del CFO Copilot, que buscan integrar estas tecnologías de manera efectiva en la gestión financiera corporativa.
+
+En este apartado, se analizan seis estudios relevantes que emplean metodologías similares a las utilizadas en CFO Copilot, proporcionando un marco comparativo para su desarrollo y aplicación:
+
+Este estudio donde se mejoran las predicciones de Series Temporales a Largo Plazo introduce una estrategia denominada Generative Forecasting (GenF) \parencite{Liu2022}, que combina la generación de datos sintéticos mediante una red generativa adversarial (GAN) con un predictor basado en transformadores para mejorar las proyecciones a largo plazo de series temporales. Los autores implementan un generador llamado CWGAN-TS para crear datos sintéticos y un predictor que utiliza tanto datos generados como observados para realizar pronósticos. Los resultados demuestran que GenF supera a enfoques tradicionales en precisión de predicción.
+
+Este trabajo de Predicción Generativa de Series Temporales \parencite{Li2023} propone un modelo de autoencoder variacional bidireccional (BVAE) equipado con técnicas de difusión, denoise y desentanglement para abordar la predicción de series temporales. El modelo genera datos sintéticos para mejorar la precisión de las proyecciones y emplea técnicas de desentrelazado para mejorar la interpretabilidad y estabilidad de las predicciones. Los experimentos muestran que este enfoque supera a modelos tradicionales en diversas métricas de rendimiento.
+
+El siguiente estudio presenta una arquitectura de transformer jerárquico pre-entrenado generativo (GPHT) para la predicción de series temporales \parencite{Liu2024a}
+
+. El modelo se pre-entrena en un conjunto de datos mixto que abarca diversos dominios y emplea un enfoque de generación autorregresiva para modelar dependencias temporales en las series de salida. GPHT demuestra una mejora significativa en la precisión de las predicciones en comparación con modelos de referencia en múltiples conjuntos de datos.
+
+En este trabajo de desarrollo de modelos de predicción de series temporales con GenAI, los autores utilizan redes generativas adversariales (GANs) con el fin de generar datos sintéticos de temperatura en un invernadero ubicado en Murcia, España \parencite{MoralesGarcia2023}. Los resultados revelan que el uso de datos sintéticos mejora significativamente la precisión de los modelos de IA/ML dirigidos en comparación con el uso exclusivo de datos reales.
+
+Este artículo proporciona una introducción a los modelos de IA generativa aplicados a la predicción de series temporales \parencite{Yoshimatsu2024}. Se discuten enfoques que combinan técnicas de aprendizaje profundo con modelos generativos para mejorar la precisión de las proyecciones en diversos dominios, incluyendo finanzas y demanda de productos. El artículo también ofrece ejemplos prácticos y recursos para implementar estos modelos.
+
+El siguiente estudio explora la aplicación de modelos generativos profundos, como Redes Generativas Adversariales Condicionales (CGAN), Wasserstein GAN Condicional (CWGAN) y modelos de Difusión, para la generación de datos sintéticos de series temporales financieras. \parencite{Ericson2024}
+
+Los datos generados se utilizan para predecir distribuciones de factores de riesgo, lo cual es crucial para el modelado de riesgos de mercado y el cálculo del Valor en Riesgo (VaR).
+
+La investigación introduce un marco de evaluación integral, con indicadores clave de desempeño para analizar la calidad de las series temporales generadas, abordando aspectos como la distancia de distribución, la autocorrelación y las pruebas de backtesting.
+
+Los hallazgos indican que modelos como CWGAN superan a los métodos tradicionales en la captura de dinámicas complejas de las series temporales financieras.
+
+Estos trabajos destacan la aplicación de GenAI y ML en la generación de datos sintéticos y la mejora de la precisión en la predicción de series temporales, empleando metodologías similares a las propuestas por CFO Copilot.
+
+\textbackslash{}\textbackslash{}Metodología
+
+Para la construcción del CFO Copilot, se establece una serie de pasos estratégicos orientados a su desarrollo y posterior implementación en un entorno productivo:
+
+Inicialmente se procederá a la recolección de la información a utilizar de las diferentes fuentes pensadas para el proyecto y se irá realizando la depuración correspondiente para dejar solo aquellas fuentes de datos relacionadas con el proceso que intentan automatizar el CFO Copilot y por sobre todo que contengan las diferentes variables a ser procesadas por el mismo. En esta etapa también se evaluará que variables van a ser utilizadas por la aplicación de manera de en los pasos subsiguientes poder plasmarlas tanto en la interfaz de usuario como en el procesamiento de los modelos.
+
+Esta parte se va a focalizar el esfuerzo en la investigación de los mejores modelos para realizar obtención de datos mediante IA Generativa y Machine Learning tradicional (llámese Forecasting) de manera de poder obtener la información solicitada por el CFO Copilot de una manera eficaz y procesarla luego. Para ello se podrá utilizar modelos comerciales como el de OpenAI como así también modelos más discretos provenientes de mundo open-source (LLAMA, BERT, entre otros), además de librerías específicas para series temporales (ARIMA, LSTM, AutoML). Además de esta elección se procederá a revisar diferentes tipos de librerías para realizar gráfico que puedan ser ensamblados dentro de la interfaz de usuario del prototipo.
+
+Como paso siguiente es importante determinar la estructura del proyecto y como va a ser el mismo de cara a un usuario que va a utilizar la aplicación. Esto implica que se tenga en cuenta como se desarrollará, con que tecnologías y cuál será la posible interfaz final.
+
+En esta cuarta etapa procederá al desarrollo de la aplicación propuesta integrando el ensamblado de las partes y poder hacer un camino feliz dentro de lo propuesto como funcionalidad del CFO Copilot. En esta etapa se procurará tener un conjunto de pruebas acotado y un público que pueda verificar el uso de la herramienta sugiriendo escenario posible que puedan integrarse a la propuesta inicial y que sean realizables en un período de tiempo corto. Para este caso se seleccionará un conjunto de testeo llamados Friends and Family (conjunto reducido de usuarios con cierta experiencia en el proceso de que la aplicación quiere llevar adelante y que pueden dar una devolución certera de que mejorar) que usará la aplicación en basado en el camino feliz y de los cuales luego se recolectará información para la mejora del prototipo. Es importante destacar que en esta etapa se van a testear las eficacias de los modelos utilizados de manera de hacer el fine tuning necesario para que se puedan obtener los resultados esperados.
+
+Se procederá en esta etapa al traslado del prototipo a una aplicación más robusta y la misma se implementará en un ambiente productivo propicio para que pueda ser accedida por más usuario y a su vez testeada. Nuevamente cualquier tipo de tunning se podrá dar en esta etapa.
+
+Finalmente, ya probada la aplicación se procederá a liberarse para uso más masivo y se pondrá a prueba la aplicación en su conjunto. Se procederá en esta etapa a la redacción y corrección final del informe exponiendo las evaluaciones y resultados obtenidos del proceso de creación y uso de la aplicación CFO Copilot.
+
+\textbackslash{}\textbackslash{}
+
+\chapter{Conclusión}
+% Lineamientos aplicados desde "Cuadro de lineamientos de conclusión.pdf":
+% 1) Identificación de puntos fuertes y débiles.
+% 2) Evaluación e implicación de los resultados frente a investigaciones previas.
+% 3) Proyección de aplicaciones o recomendaciones conectadas con los hallazgos.
+%
+% El documento fuente es un Plan de Trabajo y no contiene todavía resultados empíricos finales.
+% Por ese motivo esta versión NO inventa resultados. Complete las siguientes subsecciones
+% cuando disponga de las métricas finales de ARIMA/SARIMA, LSTM y AutoML, los resultados
+% de extracción y la evaluación de usuarios.
+
+\section{Puntos fuertes y limitaciones}
+El trabajo propone una integración coherente entre extracción de información financiera, modelos de pronóstico y una capa de interacción basada en IA generativa. Entre las limitaciones ya identificadas en el plan se encuentran la dependencia de la calidad y periodicidad de los datos, el costo computacional de algunos enfoques, las restricciones de integración con APIs y sistemas empresariales, la privacidad de la información y la incapacidad de los modelos de anticipar eventos económicos abruptos. La evaluación final deberá determinar en qué medida estas limitaciones se observaron efectivamente durante la implementación.
+
+\section{Evaluación e implicación de los resultados}
+% TODO: incorporar aquí resultados cuantitativos finales (por ejemplo RMSE, MAE, MAPE y R^2),
+% comparación entre modelos y contraste con los trabajos relacionados citados en esta tesis.
+No corresponde afirmar superioridad de un modelo ni mejoras cuantitativas mientras no se incorporen los resultados experimentales finales. Esta sección queda preparada para comparar los hallazgos de CFO Copilot con la literatura revisada y explicar su contribución al análisis financiero automatizado.
+
+\section{Aplicaciones y recomendaciones}
+Las aplicaciones planteadas abarcan automatización del análisis financiero, apoyo a la planificación, gestión de flujos de caja, análisis de riesgos y generación de visualizaciones explicativas. Las recomendaciones definitivas deberán vincularse directamente con los resultados de la experimentación y con la evaluación de los usuarios del prototipo.
+
+\chapter{Trabajos futuros}
+% Lineamientos aplicados desde "Cuadro de lineamientos trabajos futuros.pdf":
+% 1) Cuestiones abiertas y líneas adicionales de investigación.
+% 2) Relación directa de cada propuesta con las limitaciones del trabajo actual.
+
+\section{Cuestiones abiertas y líneas adicionales de investigación}
+Entre las líneas ya planteadas en el trabajo se incluyen la incorporación de modelos más avanzados para series temporales, el uso de datos no estructurados y alternativos, la integración con ERP/CRM, el análisis de sensibilidad y escenarios, la personalización por industria, y el fortalecimiento de la explicación de resultados mediante modelos de lenguaje.
+
+\section{Relación con las limitaciones del trabajo actual}
+Estas líneas responden directamente a las limitaciones identificadas: mejorar la calidad y disponibilidad de datos requiere validación, imputación y detección de anomalías; reducir el costo computacional requiere modelos más eficientes y esquemas híbridos de ejecución; la privacidad exige controles de acceso, anonimización y gobierno de datos; y la sensibilidad a eventos externos motiva la incorporación futura de variables exógenas, análisis de escenarios y fuentes de información adicionales.
+
+\appendix
+\chapter{Material complementario}
+% Incorporar aquí anexos, diagramas, resultados detallados, tablas de experimentos o material adicional.
+
+\chapter{Material complementario II}
+% Segundo anexo opcional.
+
+\chapter*{Acrónimos y siglas}
+\addcontentsline{toc}{chapter}{Acrónimos y siglas}
+\begin{description}[leftmargin=3.5cm,style=nextline]
+\item[API] Application Programming Interface.
+\item[ARIMA] AutoRegressive Integrated Moving Average.
+\item[AutoML] Automated Machine Learning.
+\item[CFO] Chief Financial Officer.
+\item[GenAI] Generative Artificial Intelligence.
+\item[LLM] Large Language Model.
+\item[LSTM] Long Short-Term Memory.
+\item[ML] Machine Learning.
+\item[SARIMA] Seasonal AutoRegressive Integrated Moving Average.
+\end{description}
+
+\printbibliography[heading=bibintoc,title={Referencias}]
+\end{document}
