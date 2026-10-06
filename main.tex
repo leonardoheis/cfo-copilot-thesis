@@ -21,8 +21,13 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{tocbibind}
 \usepackage{titlesec}
+\usepackage{csquotes}
 \usepackage[backend=biber,style=apa,sorting=nyt]{biblatex}
-\addbibresource{mendeley.bib}
+\addbibresource{references.bib}
+\graphicspath{{figuras/eda/}}
+% Column names such as revenue\_usd\_m may break after an underscore.
+\let\UnderscoreOriginal\_
+\renewcommand{\_}{\UnderscoreOriginal\allowbreak}
 
 \titleformat{\chapter}[display]{\normalfont\bfseries\centering\Large}{Capítulo \thechapter}{.6em}{\Large}
 \titleformat{name=\chapter,numberless}[display]{\normalfont\bfseries\centering\Large}{}{0pt}{\Large}
@@ -75,9 +80,6 @@ Como resultado, la implementación de CFO Copilot ofrecerá múltiples beneficio
 \section*{Palabras claves}
 Finanzas basadas en datos, Inteligencia artificial generativa, Automatización de procesos financieros, Optimización financiera, ML para series de tiempo, Planificación basada en análisis predictivo.
 
-\textbackslash{}\textbackslash{}
-
-
 \clearpage
 \chapter*{Dedicatoria}
 \addcontentsline{toc}{chapter}{Dedicatoria}
@@ -117,7 +119,7 @@ Este proyecto busca optimizar el proceso de análisis financiero mediante la aut
 
 En este sentido, la importancia de este problema radica en la creciente necesidad de los líderes financieros de tomar decisiones basadas en datos confiables y actualizados en un entorno económico dinámico y cada vez más complejo. Dado que los reportes financieros incluyen enormes cantidades de datos esenciales y detallados, es fundamental que deben analizarse con rapidez y precisión para anticipar posibles escenarios y responder a ellos de manera efectiva. Por ello la toma de decisiones oportuna basada en estos análisis es esencial para mantener la estabilidad y competitividad de las empresas, sobre todo en sectores sujetos a fluctuaciones de mercado, cambios regulatorios, variabilidad en los costos y fuentes de ingresos.
 
-El proyecto en cuestión aborda esta necesidad crítica mediante la implementación de inteligencia artificial generativa no solo para automatizar el proceso de extracción y análisis de datos de reportes financieros públicos \parencite{Jimenez2024}, sino también con el fin de obtener una interfaz de comunicación amena para que el usuario pueda consultar resultados. Esta automatización no solo reducirá significativamente el tiempo y recursos necesarios para realizar estos análisis, sino que también minimizará el riesgo de errores humanos, mejorando la precisión en la interpretación de los datos financieros \parencite{Ravi2021}. Además, al integrar capacidades predictivas, el CFO Copilot ofrecerá a los CFOs proyecciones y gráficos detallados que permiten anticipar tendencias financieras y planificar en consecuencia.
+El proyecto en cuestión aborda esta necesidad crítica mediante la implementación de inteligencia artificial generativa no solo para automatizar el proceso de extracción y análisis de datos de reportes financieros públicos \parencite{Jimnez2024}, sino también con el fin de obtener una interfaz de comunicación amena para que el usuario pueda consultar resultados. Esta automatización no solo reducirá significativamente el tiempo y recursos necesarios para realizar estos análisis, sino que también minimizará el riesgo de errores humanos, mejorando la precisión en la interpretación de los datos financieros \parencite{Ravi2021}. Además, al integrar capacidades predictivas, el CFO Copilot ofrecerá a los CFOs proyecciones y gráficos detallados que permiten anticipar tendencias financieras y planificar en consecuencia.
 
 La capacidad de generar pronósticos basados en datos anuales y cuatrimestrales de manera automatizada \parencite{Arun2023} permitirá que los líderes financieros de las empresas, los cuales toman decisiones cruciales, obtener una visión clara y detallada de la situación financiera de la organización a la que pertenecen y de sus proyecciones a futuro, facilitando una toma de decisiones más informada y estratégica. Este sistema puede ser esencial para empresas que buscan mantenerse competitivas, ya que proporciona un soporte analítico robusto para la toma de decisiones oportunas, lo cual es cada vez más relevante en un entorno empresarial volátil y altamente productivo.
 
@@ -144,7 +146,6 @@ Por último y no menos importante, la intervención humana en el manejo de datos
 
 En conclusión, la falta de una herramienta automatizada afecta directamente la competitividad y agilidad de la empresa en un entorno dinámico, comprometiendo tanto la eficiencia del equipo financiero como la calidad de las decisiones estratégicas. \parencite{PerezMarroquin2024}
 
-\textbackslash{}\textbackslash{}
 
 \section{Solución al Problema Identificado}
 El CFO Copilot es una herramienta integral que combina inteligencia artificial generativa \parencite{Sauvola2024} con modelos avanzados de Machine Learning especializados en series de tiempo, utilizando diferentes variables iniciales predefinidas que podrán ser seleccionadas, con el fin de automatizar la extracción y análisis de datos, proporcionando un enfoque técnico y eficiente a los desafíos del análisis financiero \parencite{Fernandez2019}. La GenAI permite procesar datos no estructurados provenientes de diversas fuentes, como reportes financieros (reporte 10K, Annual Reports, Quarter Reports) y datos obtenidos de APIs financieras (Yahoo Finance, Alpha Vantage, Marketstack y SimFin).
@@ -176,15 +177,12 @@ Este enfoque automatizado permite seleccionar y optimizar automáticamente el me
 Métricas de medición unificada:
 
 Para los 3 casos se seleccionarán métricas estándar que evalúen la precisión, robustez y capacidad de generalización de los modelos. Estas métricas permitirán comparar el desempeño de manera consistente entre los diferentes enfoques.
-
-RMSE (Root Mean Squared Error)
-
-MAE (Mean Absolute Error)
-
-MAPE (Mean Absolute Percentage Error)
-
-R$^2$ (Coeficiente de Determinación)
-
+\begin{itemize}
+\item RMSE (Root Mean Squared Error)
+\item MAE (Mean Absolute Error)
+\item MAPE (Mean Absolute Percentage Error)
+\item R$^2$ (Coeficiente de Determinación)
+\end{itemize}
 Estas métricas se seleccionaron por su capacidad de cubrir diferentes aspectos del rendimiento del modelo:
 
 RMSE y MAE: Evalúan la precisión en términos absolutos.
@@ -211,7 +209,7 @@ Tras la extracción, CFO Copilot utiliza modelos avanzados de machine learning e
 
 La interfaz diseñada para CFO Copilot busca ser intuitiva, accesible, simple y fácil de usar, orientada principalmente a pequeñas empresas que requieren una solución funcional sin complejidad técnica excesiva. Inicialmente, se construirá utilizando Streamlit \parencite{Streamlit2025} como interfaz de usuario (front-end), complementada con un back-end desarrollado en Python. Este enfoque permite crear una herramienta práctica y ligera, adecuada para usuarios con o sin conocimientos avanzados, garantizando facilidad de uso desde el primer contacto.
 
-A pesar de su simplicidad inicial, la solución es escalable y puede adaptarse a las necesidades específicas de organizaciones de más envergadura o con mayores exigencias técnicas. Por ejemplo, es posible evolucionar hacia un diseño más profesional con una arquitectura no solo de respecto al código sino también a la infraestructura solicitada, permitiendo así que el software soporte otro tipo de necesidades que se ajusten más al tipo de empresa que solicite su uso. Se plantea poder utilizar para estos casos frameworks/librerías como Angular/React.js para el front-end y .NET 8 o Python para el back-end, montando en un entorno cloud como puede ser Azure u otro proveedor.
+A pesar de su simplicidad inicial, la solución es escalable y puede adaptarse a las necesidades específicas de organizaciones de más envergadura o con mayores exigencias técnicas. Por ejemplo, es posible evolucionar hacia un diseño más profesional con una arquitectura no solo de respecto al código sino también a la infraestructura solicitada, permitiendo así que el software soporte otro tipo de necesidades que se ajusten más al tipo de empresa que solicite su uso. Se plantea poder utilizar para estos casos frameworks/librerías como Angular/React.js/Streamlit para el front-end y Python (v3.12) para el back-end, montando en un entorno cloud como puede ser Azure u otro proveedor.
 
 Este enfoque avanzado permitiría:
 
@@ -276,7 +274,7 @@ La solución presentada también contribuye al cumplimiento normativo y a la ges
 
 En este sentido, la investigación en CFO Copilot se traduce en múltiples aplicaciones prácticas que transformarán los procesos financieros en las organizaciones. Una de las principales aplicaciones es la automatización del análisis financiero. Por ejemplo, esta herramienta puede procesar datos históricos para generar presupuestos y proyecciones financieras precisas, lo que facilita la planificación estratégica, la optimización de recursos y la toma de decisión basada en datos. \parencite{MicrosoftKurpad2024}
 
-Otra aplicación relevante es en la gestión de flujos de caja. Con esta herramienta es posible monitorear en tiempo real los ingresos y egresos, optimizando las decisiones operativas para mantener una liquidez adecuada. Esto es crucial para empresas que operan en entornos económicos volátiles, donde una gestión eficiente del flujo de caja puede marcar la diferencia entre el éxito y el fracaso. \parencite{SanchezCaguana2024}
+Otra aplicación relevante es en la gestión de flujos de caja. Con esta herramienta es posible monitorear en tiempo real los ingresos y egresos, optimizando las decisiones operativas para mantener una liquidez adecuada. Esto es crucial para empresas que operan en entornos económicos volátiles, donde una gestión eficiente del flujo de caja puede marcar la diferencia entre el éxito y el fracaso. \parencite{Snchez-Caguana2024}
 
 El cumplimiento normativo es otro ámbito donde esta solución puede aplicarse eficazmente. CFO Copilot automatiza la recopilación y análisis de datos requeridos por regulaciones financieras, reduciendo el riesgo de incumplimiento y disminuyendo la carga de trabajo en auditorías internas y externas. Además, su capacidad para generar reportes claros y estructurados facilita la interacción con reguladores y auditores.
 
@@ -300,7 +298,7 @@ Empresas como Vodafone han implementado herramientas de IA para agilizar la gest
 
 Otra solución destacada es el uso de sistemas de análisis predictivo en instituciones financieras como bancos, aseguradoras y departamentos financieros dentro de diferentes industrias \parencite{MicorsoftEaton2024}. Estas organizaciones han utilizado modelos de series temporales, para anticipar tendencias económicas y gestionar riesgos financieros. Sin embargo, han enfrentado limitaciones similares, como la dependencia de datos de calidad y la necesidad de supervisión humana para interpretar resultados.
 
-Además, firmas consultoras han utilizado IA para ayudar a sus clientes en la planificación estratégica y la gestión de riesgos. Por ejemplo, PwC ha integrado soluciones de automatización en sus procesos internos, permitiendo una mayor eficiencia operativa y mejorando la experiencia del cliente. \parencite{MicrosoftPwc2024}
+Además, firmas consultoras han utilizado IA para ayudar a sus clientes en la planificación estratégica y la gestión de riesgos. Por ejemplo, PwC ha integrado soluciones de automatización en sus procesos internos, permitiendo una mayor eficiencia operativa y mejorando la experiencia del cliente. \parencite{PWC2024}
 
 Aunque se han implementado soluciones similares en otros contextos, CFO Copilot representa una propuesta única al combinar generación de datos estructurados, análisis predictivo y una interfaz intuitiva, abordando los desafíos clave de manera integral y eficiente.\textbackslash{}\textbackslash{}
 
@@ -330,203 +328,185 @@ La problemática central identificada es la dependencia de procesos manuales par
 \end{itemize}
 \section{Transferencia de los resultados obtenidos}
 En el desarrollo del CFO Copilot se han identificado diversas limitaciones que, al ser abordadas estratégicamente, permitirían mejorar significativamente la herramienta y ampliar su aplicabilidad en diferentes contextos. La expansión de dicho trabajo se puede extrapolar en varias dimensiones clave, tales como la mejora de la calidad de los datos, la optimización de la interpretación de resultados, la escalabilidad del sistema, y la adaptabilidad a eventos económicos imprevistos.
-
-Mejora en la Calidad y Disponibilidad de Datos
+\begin{itemize}
+\item Mejora en la Calidad y Disponibilidad de Datos
 
 Una de las principales limitaciones de la solución actual es la dependencia de datos que tienen que estructurarse por medio de la aplicación y tienen que resultar en datos de calidad. Para mitigar este desafío, se pueden incorporar técnicas avanzadas de preprocesamiento y validación, tales como:
-
-Imputación de valores faltantes: Métodos como la interpolación lineal o la imputación mediante redes neuronales pueden mejorar la consistencia de los datos \parencite{Chawla2002}.
-
-Ampliación de fuentes de datos: Integrar múltiples APIs financieras y repositorios de datos abiertos para enriquecer la base de información. O también agregar repositorios internos que cada compañía pueda aportar, por ejemplo acceso a toma de datos de APIs de ERPs o CRMs.
-
-Uso de modelos de detección de anomalías: Algoritmos como Isolation Forest \parencite{Liu2008} o DBSCAN \parencite{Jain2021} pueden identificar y corregir valores atípicos automáticamente.
-
-Optimización de la Interpretación de Resultados
+\begin{itemize}
+\item Imputación de valores faltantes: Métodos como la interpolación lineal o la imputación mediante redes neuronales pueden mejorar la consistencia de los datos \parencite{Chawla2002}.
+\item Ampliación de fuentes de datos: Integrar múltiples APIs financieras y repositorios de datos abiertos para enriquecer la base de información. O también agregar repositorios internos que cada compañía pueda aportar, por ejemplo acceso a toma de datos de APIs de ERPs o CRMs.
+\item Uso de modelos de detección de anomalías: Algoritmos como Isolation Forest \parencite{Liu2008} o DBSCAN \parencite{Jain2021} pueden identificar y corregir valores atípicos automáticamente.
+\end{itemize}
+\item Optimización de la Interpretación de Resultados
 
 Dado que los usuarios pueden tener dificultades para interpretar los gráficos generados por CFO Copilot, es clave mejorar la accesibilidad y comprensión de los resultados mediante:
+\begin{itemize}
+\item Explicaciones automatizadas con IA: Implementar modelos de lenguaje natural (LLMs) para generar explicaciones detalladas sobre las predicciones. Esto implica que el usuario pueda consultar mediante el uso de NLP información sobre los gráficos expuestos.
+\item Tableros informativos personalizables: Permitir que los usuarios configuren los indicadores clave de rendimiento según sus necesidades \parencite{Agarwal2024}.
+\item Capacitación y documentación: Desarrollar módulos de formación interactivos para que los usuarios comprendan cómo utilizar la herramienta y analizar los resultados.
+\end{itemize}
 
-Explicaciones automatizadas con IA: Implementar modelos de lenguaje natural (LLMs) para generar explicaciones detalladas sobre las predicciones. Esto implica que el usuario pueda consultar mediante el uso de NLP información sobre los gráficos expuestos.
-
-Tableros informativos personalizables: Permitir que los usuarios configuren los indicadores clave de rendimiento según sus necesidades \parencite{Agarwal2024}.
-
-Capacitación y documentación: Desarrollar módulos de formación interactivos para que los usuarios comprendan cómo utilizar la herramienta y analizar los resultados.
-
-Escalabilidad del Sistema y Reducción de Costos Computacionales
+\item Escalabilidad del Sistema y Reducción de Costos Computacionales
 
 El uso de modelos avanzados como LSTM vs ARIMA \parencite{SiamiNamini2018} puede ser costoso computacionalmente, lo que limita la adopción de la herramienta en pequeñas empresas. Algunas estrategias para optimizar su implementación incluyen:
+\begin{itemize}
+\item Uso de modelos más eficientes: Implementar técnicas de quantization y pruning en modelos de redes neuronales para reducir el consumo de recursos \parencite{Liang2021,Bibi2024}.
+\item Computación en la nube híbrida: Permitir la ejecución de procesos de inferencia en entornos locales y en la nube según las necesidades del usuario.
+\item Desarrollo de versiones ligeras: Implementar versiones simplificadas de los modelos para usuarios con menos requerimientos computacionales.
+\end{itemize}
 
-Uso de modelos más eficientes: Implementar técnicas de quantization y pruning en modelos de redes neuronales para reducir el consumo de recursos \parencite{Liang2021,Bibi2024}.
-
-Computación en la nube híbrida: Permitir la ejecución de procesos de inferencia en entornos locales y en la nube según las necesidades del usuario.
-
-Desarrollo de versiones ligeras: Implementar versiones simplificadas de los modelos para usuarios con menos requerimientos computacionales.
-
-Seguridad, Privacidad de los Datos y Cumplimiento Normativo
+\item Seguridad, Privacidad de los Datos y Cumplimiento Normativo
 
 Dado que CFO Copilot maneja información financiera sensible, la privacidad y seguridad de los datos son elementos críticos. Algunas mejoras en este aspecto incluyen:
+\begin{itemize}
+\item Implementación de técnicas de anonimización: Aplicar data masking para proteger información confidencial.
+\item Autenticación avanzada: Uso de autenticación multifactor (MFA) para garantizar el acceso seguro a la plataforma.
+\item Cumplimiento normativo: Asegurar que la herramienta cumpla con regulaciones internacionales como el GDPR \parencite{Ponchietti2021} y la norma ISO 27001 \parencite{Kitsios2023}. También hay que mencionar que se aplica el cumplimento de la ley N.\textsuperscript{o} 25.326/2000 conocida como la Ley de Protección de los Datos Personales \parencite{HonorableCongresoD2000}.
+\item Cumplimiento con Normativas Globales: Adaptar la herramienta a regulaciones como IFRS \parencite{Lopez2009}, SOX \parencite{Barbafina2022} y Basilea IV \parencite{Thomas2022}.
+\item Monitoreo de Anomalías en Seguridad: Implementar detección de fraudes y monitoreo de actividad sospechosa en tiempo real. En este caso podemos utilizar modelos que ayuden a esta detección, por ejemplo, Isolation Forest para detectar transacciones inusuales, LTSM para analizar patrones temporales, LLM basado en GPT-4 para analizar reportes de auditoría y encontrar inconsistencias textuales. En términos de infraestructura podría implementarse Apache Kafka (https://kafka.apache.org/) + Apache Flink (https://flink.apache.org/) para monitoreo continuo desde un punto de vista open source \parencite{TorresAltez2023}, también podría usarse un enfoque más propietario usando soluciones comerciales integrando con AWS Lambda o Google Cloud Functions para automatizar alertas.
+\end{itemize}
 
-Implementación de técnicas de anonimización: Aplicar data masking para proteger información confidencial.
-
-Autenticación avanzada: Uso de autenticación multifactor (MFA) para garantizar el acceso seguro a la plataforma.
-
-Cumplimiento normativo: Asegurar que la herramienta cumpla con regulaciones internacionales como el GDPR \parencite{Ponchietti2021} y la norma ISO 27001 \parencite{Kitsios2023}. También hay que mencionar que se aplica el cumplimento de la ley N.\textsuperscript{o} 25.326/2000 conocida como la Ley de Protección de los Datos Personales \parencite{HonorableCongresoD2000}.
-
-Cumplimiento con Normativas Globales: Adaptar la herramienta a regulaciones como IFRS \parencite{Lopez2009}, SOX \parencite{Barbafina2022} y Basilea IV \parencite{Thomas2022}.
-
-Monitoreo de Anomalías en Seguridad: Implementar detección de fraudes y monitoreo de actividad sospechosa en tiempo real. En este caso podemos utilizar modelos que ayuden a esta detección, por ejemplo, Isolation Forest para detectar transacciones inusuales, LTSM para analizar patrones temporales, LLM basado en GPT-4 para analizar reportes de auditoría y encontrar inconsistencias textuales. En términos de infraestructura podría implementarse Apache Kafka (https://kafka.apache.org/) + Apache Flink (https://flink.apache.org/) para monitoreo continuo desde un punto de vista open source \parencite{TorresAltez2023}, también podría usarse un enfoque más propietario usando soluciones comerciales integrando con AWS Lambda o Google Cloud Functions para automatizar alertas.
-
-Incorporación de Técnicas de Aprendizaje Automático más Avanzadas
+\item Incorporación de Técnicas de Aprendizaje Automático más Avanzadas
 
 Una posible ampliación del trabajo es el uso de modelos más sofisticados y robustos que permitan mejorar la precisión de las predicciones financieras:
+\begin{itemize}
+\item Transformadores para Series Temporales: Modelos como Temporal Fusion Transformer (TFT) \parencite{Lim2020} pueden ser una alternativa a LSTM y ARIMA, mejorando la interpretación y robustez en la predicción.
+\item Redes Neuronales Bayesianas: Permiten modelar la incertidumbre en los pronósticos financieros, mejorando la confiabilidad de las predicciones en entornos de alta volatilidad. \parencite{Goan2020}
+\end{itemize}
 
-Transformers para Series Temporales: Modelos como Temporal Fusion Transformer (TFT) \parencite{Lim2020} pueden ser una alternativa a LSTM y ARIMA, mejorando la interpretación y robustez en la predicción.
-
-Redes Neuronales Bayesianas: Permiten modelar la incertidumbre en los pronósticos financieros, mejorando la confiabilidad de las predicciones en entornos de alta volatilidad. \parencite{Goan2020}
-
-Modularización y Personalización del CFO Copilot
+\item Modularización y Personalización del CFO Copilot
 
 Para mejorar la adaptabilidad de la herramienta, se podrían incluir:
 
-Módulos Específicos por Industria: Crear versiones especializadas para sectores como manufactura, tecnología, retail y banca.
+\begin{itemize}
+\item Módulos Específicos por Industria: Crear versiones especializadas para sectores como manufactura, tecnología, retail y banca.
+\item Configuración Personalizada de Dashboards: Permitir a los usuarios personalizar los indicadores y reportes según sus necesidades.
+\item Recomendaciones Basadas en IA: Implementar sistemas de recomendación que sugieran estrategias financieras basadas en patrones identificados en los datos \parencite{Lamas2015}.
+\end{itemize}
 
-Configuración Personalizada de Dashboards: Permitir a los usuarios personalizar los indicadores y reportes según sus necesidades.
-
-Recomendaciones Basadas en IA: Implementar sistemas de recomendación que sugieran estrategias financieras basadas en patrones identificados en los datos \parencite{Lamas2015}.
-
-Expansión de la Cobertura de Datos
+\item Expansión de la Cobertura de Datos
 
 El modelo actual depende de fuentes de datos estructuradas. Para enriquecer el análisis, se podrían agregar:
 
-Integración con Datos No Estructurados: Incorporar análisis de sentimiento de noticias financieras, reportes de prensa y redes sociales para evaluar el impacto de eventos externos en las predicciones.
+\begin{itemize}
+\item Integración con Datos No Estructurados: Incorporar análisis de sentimiento de noticias financieras, reportes de prensa y redes sociales para evaluar el impacto de eventos externos en las predicciones.
+\item Datos Alternativos para Finanzas: Incluir fuentes de datos como tendencias de búsqueda en Google, actividad en redes sociales o análisis de sentimiento de informes de analistas financieros.
+\item Historial de Transacciones y Datos de ERP: Integrar sistemas ERP de empresas para generar análisis en tiempo real de la situación financiera.
+\end{itemize}
 
-Datos Alternativos para Finanzas: Incluir fuentes de datos como tendencias de búsqueda en Google, actividad en redes sociales o análisis de sentimiento de informes de analistas financieros.
-
-Historial de Transacciones y Datos de ERP: Integrar sistemas ERP de empresas para generar análisis en tiempo real de la situación financiera.
-
-Implementación de Simulaciones y Análisis de Escenarios
+\item Implementación de Simulaciones y Análisis de Escenarios
 
 Para mejorar la planificación estratégica, se podría incluir:
-
-Modelado de Escenarios Económicos: Simular situaciones de crisis financieras y evaluar cómo afectaría a la empresa.
-
-Análisis de Sensibilidad: Permitir a los CFOs ajustar diferentes variables y observar su impacto en la estabilidad financiera.
-
-Generación de Estrategias de Mitigación: Basado en la predicción de eventos adversos, ofrecer recomendaciones para minimizar riesgos.
+\begin{itemize}
+\item Modelado de Escenarios Económicos: Simular situaciones de crisis financieras y evaluar cómo afectaría a la empresa.
+\item Análisis de Sensibilidad: Permitir a los CFOs ajustar diferentes variables y observar su impacto en la estabilidad financiera.
+\item Generación de Estrategias de Mitigación: Basado en la predicción de eventos adversos, ofrecer recomendaciones para minimizar riesgos.
+\end{itemize}
 
 Más allá del ámbito financiero, los avances y técnicas desarrolladas en el CFO Copilot pueden ser extrapolados a diversos sectores donde la automatización y el análisis de datos desempeñan un papel crucial.
 
 En este sentido, si bien la investigación sobre CFO Copilot se centra en la automatización y optimización del análisis financiero, sus hallazgos y metodologías pueden aplicarse en múltiples. La combinación de inteligencia artificial generativa (GenAI), modelos de machine learning para series temporales y análisis de datos estructurados y no estructurados tiene un gran potencial en diversas industrias. A continuación, se presentan algunas de las principales aplicaciones prácticas fuera del ámbito original de la solución.
 
-Análisis de Riesgos en el Sector Asegurador \parencite{Cai2024} \parencite{RamosPerez2021}
+\item Análisis de Riesgos en el Sector Asegurador \parencite{Cai2024} \parencite{RamosPerez2021}
 
 Los modelos predictivos desarrollados para CFO Copilot pueden adaptarse para evaluar riesgos en el sector asegurador.
+\begin{itemize}
+\item Predicción de reclamos: Utilizando modelos de series temporales como ARIMA o LSTM, se pueden anticipar siniestros en base a datos históricos.
+\item Detección de fraudes en seguros: Isolation Forest y DBSCAN pueden identificar reclamaciones fraudulentas mediante patrones de comportamiento anómalos.
+\item Optimización de primas de seguros: Ajustando las tarifas en función del análisis predictivo de eventos futuros.
+\end{itemize}
 
-Predicción de reclamos: Utilizando modelos de series temporales como ARIMA o LSTM, se pueden anticipar siniestros en base a datos históricos.
-
-Detección de fraudes en seguros: Isolation Forest y DBSCAN pueden identificar reclamaciones fraudulentas mediante patrones de comportamiento anómalos.
-
-Optimización de primas de seguros: Ajustando las tarifas en función del análisis predictivo de eventos futuros.
-
-Gestión de la Cadena de Suministro y Logística \parencite{Ahn2024} \parencite{Chang2024}
+\item Gestión de la Cadena de Suministro y Logística \parencite{Ahn2024} \parencite{Chang2024}
 
 El análisis de series temporales y la IA generativa pueden mejorar la eficiencia operativa en la gestión de la cadena de suministro.
+\begin{itemize}
+\item Predicción de demanda: Empresas de retail pueden usar estos modelos para anticipar necesidades de inventario y evitar desabastecimientos.
+\item Optimización de rutas y tiempos de entrega: LSTM y modelos de pronóstico pueden mejorar la logística en transporte.
+\item Evaluación de proveedores: Análisis de datos no estructurados de reportes de proveedores permite tomar decisiones más informadas.
+\end{itemize}
 
-Predicción de demanda: Empresas de retail pueden usar estos modelos para anticipar necesidades de inventario y evitar desabastecimientos.
-
-Optimización de rutas y tiempos de entrega: LSTM y modelos de pronóstico pueden mejorar la logística en transporte.
-
-Evaluación de proveedores: Análisis de datos no estructurados de reportes de proveedores permite tomar decisiones más informadas.
-
-Aplicaciones en el Sector de la Salud \parencite{Hu2024,Vollmer2021}
+\item Aplicaciones en el Sector de la Salud \parencite{Hu2024,Vollmer2021}
 
 El uso de machine learning en la predicción de tendencias en el sector financiero puede trasladarse al ámbito médico para mejorar el diagnóstico y la planificación de recursos.
+\begin{itemize}
+\item Predicción de brotes de enfermedades: Los modelos de series temporales pueden anticipar aumentos en hospitalizaciones basadas en datos epidemiológicos.
+\item Optimización de asignación de recursos: Uso de análisis predictivo para gestionar camas en hospitales o stock de medicamentos.
+\item Análisis de costos en hospitales: Aplicación de modelos de proyección financiera para optimizar la administración de presupuestos hospitalarios.
+\end{itemize}
 
-Predicción de brotes de enfermedades: Los modelos de series temporales pueden anticipar aumentos en hospitalizaciones basadas en datos epidemiológicos.
-
-Optimización de asignación de recursos: Uso de análisis predictivo para gestionar camas en hospitales o stock de medicamentos.
-
-Análisis de costos en hospitales: Aplicación de modelos de proyección financiera para optimizar la administración de presupuestos hospitalarios.
-
-Análisis del Mercado Laboral y Recursos Humanos \parencite{Gan2024,Nelson2024}
+\item Análisis del Mercado Laboral y Recursos Humanos \parencite{Gan2024,Nelson2024}
 
 El análisis financiero de CFO Copilot puede adaptarse al estudio del comportamiento del mercado laboral.
+\begin{itemize}
+\item Predicción de tasas de desempleo: Utilizando modelos de pronóstico para evaluar tendencias en la contratación y despidos.
+\item Automatización del reclutamiento: Aplicación de GenAI en la evaluación de CVs para encontrar el mejor talento disponible.
+\item Optimización de sueldos y beneficios: Uso de modelos financieros para predecir el impacto de ajustes salariales en empresas.
+\end{itemize}
 
-Predicción de tasas de desempleo: Utilizando modelos de pronóstico para evaluar tendencias en la contratación y despidos.
-
-Automatización del reclutamiento: Aplicación de GenAI en la evaluación de CVs para encontrar el mejor talento disponible.
-
-Optimización de sueldos y beneficios: Uso de modelos financieros para predecir el impacto de ajustes salariales en empresas.
-
-Planificación Urbana y Desarrollo Económico \parencite{Anapolsky2023,Novoa2021}
+\item Planificación Urbana y Desarrollo Económico \parencite{Anapolsky2023,Novoa2021}
 
 Los modelos económicos de CFO Copilot pueden aplicarse en la gestión y planificación de ciudades.
+\begin{itemize}
+\item Análisis de ingresos municipales: Uso de series temporales para predecir recaudación fiscal y planificación presupuestaria.
+\item Gestión del tráfico y movilidad urbana: Modelos predictivos para optimizar el transporte público.
+\item Evaluación de impacto económico de políticas públicas: Aplicación de análisis financiero en la planificación de subsidios o inversiones gubernamentales.
+\end{itemize}
 
-Análisis de ingresos municipales: Uso de series temporales para predecir recaudación fiscal y planificación presupuestaria.
-
-Gestión del tráfico y movilidad urbana: Modelos predictivos para optimizar el transporte público.
-
-Evaluación de impacto económico de políticas públicas: Aplicación de análisis financiero en la planificación de subsidios o inversiones gubernamentales.
-
-Optimización de Estrategias de Marketing \parencite{Patil2024,Haque2023}
+\item Optimización de Estrategias de Marketing \parencite{Patil2024,Haque2023}
 
 El análisis de tendencias financieras también puede aplicarse en el marketing digital y comercial.
-
-Segmentación de clientes basada en patrones de consumo: Uso de análisis de datos no estructurados para identificar audiencias clave.
-
-Predicción de ventas y preferencias del consumidor: Modelos de series temporales para estimar la demanda de productos.
-
-Optimización de campañas publicitarias: Aplicación de GenAI en la generación de estrategias personalizadas para clientes.
+\begin{itemize}
+\item Segmentación de clientes basada en patrones de consumo: Uso de análisis de datos no estructurados para identificar audiencias clave.
+\item Predicción de ventas y preferencias del consumidor: Modelos de series temporales para estimar la demanda de productos.
+\item Optimización de campañas publicitarias: Aplicación de GenAI en la generación de estrategias personalizadas para clientes.
+\end{itemize}
 
 Teniendo en cuenta lo antes mencionado, la propuesta del CFO Copilot, que originalmente fue diseñada para la automatización del análisis financiero y la optimización de la gestión económica en empresas desde chicas a grandes, tiene un gran potencial de expandirse a diversos ámbitos y sectores. La combinación de Inteligencia Artificial Generativa (GenAI), modelos de series temporales y machine learning permite que la herramienta pueda adaptarse a múltiples industrias que requieren procesamiento de datos, predicción de tendencias y automatización en la toma de decisiones. A continuación, se presentan estrategias para su transferencia a un ámbito más amplio:
 
-Expansión a Sectores Regulados y de Alto Impacto \parencite{Cerda2019}
+\item Expansión a Sectores Regulados y de Alto Impacto \parencite{Cerda2019}
 
 Si bien CFO Copilot ha sido concebido para el análisis financiero empresarial, su funcionalidad puede adaptarse para mejorar la gestión en sectores regulados como:
-
-Gobiernos y Administraciones Públicas: Predicción de ingresos fiscales, análisis presupuestario y optimización del gasto público basado en datos históricos.
-
-Gestión de la Demanda y Oferta Energética: Utilizando modelos de series temporales y análisis predictivo, es posible anticipar patrones de consumo energético, optimizando la producción y distribución de energía. Esto facilita una mejor planificación de recursos y una reducción de costos operativos.
-
-Gestión Financiera de Proyectos de Movilidad: La aplicación de modelos financieros permite evaluar el impacto económico de proyectos de movilidad urbana y rural, facilitando decisiones más acertadas en cuanto a inversiones y políticas públicas.
-
-Aplicación en la Cadena de Suministro y Logística \parencite{Hernandez2024}
+\begin{itemize}
+\item Gobiernos y Administraciones Públicas: Predicción de ingresos fiscales, análisis presupuestario y optimización del gasto público basado en datos históricos.
+\item Gestión de la Demanda y Oferta Energética: Utilizando modelos de series temporales y análisis predictivo, es posible anticipar patrones de consumo energético, optimizando la producción y distribución de energía. Esto facilita una mejor planificación de recursos y una reducción de costos operativos.
+\item Gestión Financiera de Proyectos de Movilidad: La aplicación de modelos financieros permite evaluar el impacto económico de proyectos de movilidad urbana y rural, facilitando decisiones más acertadas en cuanto a inversiones y políticas públicas.
+\end{itemize}
+\item Aplicación en la Cadena de Suministro y Logística \parencite{Hernandez2024}
 
 Las técnicas utilizadas en CFO Copilot pueden aplicarse en la optimización de la cadena de suministro y la logística:
+\begin{itemize}
+\item Gestión de Inventarios: Predicción de demanda de productos con modelos de series temporales.
+\item Optimización de Rutas: Uso de machine learning para reducir costos operativos y mejorar la distribución.
+\item Evaluación de Proveedores: Integración de análisis financiero para determinar la estabilidad económica de los proveedores y mitigar riesgos.
+\end{itemize}
 
-Gestión de Inventarios: Predicción de demanda de productos con modelos de series temporales.
-
-Optimización de Rutas: Uso de machine learning para reducir costos operativos y mejorar la distribución.
-
-Evaluación de Proveedores: Integración de análisis financiero para determinar la estabilidad económica de los proveedores y mitigar riesgos.
-
-Expansión a la Banca y Seguros \parencite{Addo2018}
+\item Expansión a la Banca y Seguros \parencite{Addo2018}
 
 Los algoritmos de CFO Copilot pueden trasladarse al análisis de riesgos financieros y gestión de clientes en instituciones bancarias y aseguradoras:
+\begin{itemize}
+\item Modelos de Riesgo Crediticio: Predicción de impagos y gestión del portafolio de clientes mediante machine learning.
+\item Detección de Fraudes: Implementación de algoritmos como Isolation Forest para identificar anomalías en transacciones bancarias y de seguros.
+\item Optimización de Primas de Seguros: Uso de modelos de series temporales para ajustar tarifas en función del comportamiento del mercado.
+\end{itemize}
 
-Modelos de Riesgo Crediticio: Predicción de impagos y gestión del portafolio de clientes mediante machine learning.
-
-Detección de Fraudes: Implementación de algoritmos como Isolation Forest para identificar anomalías en transacciones bancarias y de seguros.
-
-Optimización de Primas de Seguros: Uso de modelos de series temporales para ajustar tarifas en función del comportamiento del mercado.
-
-Adaptabilidad a Empresas de Diferentes Escalas \parencite{Nadler2024}
+\item Adaptabilidad a Empresas de Diferentes Escalas \parencite{Nadler2024}
 
 Para ampliar su adopción, CFO Copilot puede adaptarse tanto a grandes corporaciones como a pequeñas y medianas empresas (PyMEs). Algunas estrategias incluyen:
+\begin{itemize}
+\item Versiones Modulares: Permitir que las empresas personalicen los módulos de la herramienta según sus necesidades.
+\item Plataforma SaaS (Software as a Service): Transformar CFO Copilot en un servicio en la nube accesible por suscripción.
+\item Integración con Herramientas Existentes: Conectividad con plataformas ERP, CRM y sistemas de contabilidad para facilitar su adopción.
+\end{itemize}
 
-Versiones Modulares: Permitir que las empresas personalicen los módulos de la herramienta según sus necesidades.
-
-Plataforma SaaS (Software as a Service): Transformar CFO Copilot en un servicio en la nube accesible por suscripción.
-
-Integración con Herramientas Existentes: Conectividad con plataformas ERP, CRM y sistemas de contabilidad para facilitar su adopción.
-
-Transferencia a un Contexto Global \parencite{CastroAguilar2017}
+\item Transferencia a un Contexto Global \parencite{CastroAguilar2017}
 
 Para expandir su uso a nivel internacional, se pueden implementar:
+\begin{itemize}
+\item Localización e Idiomas: Adaptación de la interfaz y modelos de análisis financiero a distintos mercados y regulaciones.
+\item Incorporación de Datos Externos: Uso de APIs de datos económicos globales para mejorar la precisión de predicciones.
+\end{itemize}
 
-Localización e Idiomas: Adaptación de la interfaz y modelos de análisis financiero a distintos mercados y regulaciones.
-
-Incorporación de Datos Externos: Uso de APIs de datos económicos globales para mejorar la precisión de predicciones.
-
+\end{itemize}
 Cumplimiento Normativo Internacional: Asegurar que la solución cumpla con regulaciones como IFRS, GDPR y normativas específicas de cada país.\textbackslash{}\textbackslash{}
 
 \section{Contribuciones principales}
@@ -536,9 +516,514 @@ A partir del plan de trabajo, las contribuciones previstas se concentran en la i
 % Completar únicamente si existen publicaciones, ponencias o trabajos presentados vinculados con esta tesis.
 
 \section{Estructura general del trabajo final}
-El trabajo se organiza en una introducción que presenta el problema, los objetivos y la solución propuesta; capítulos de desarrollo dedicados a la metodología y a las consideraciones éticas y sociales; un capítulo de trabajos relacionados; y, finalmente, los capítulos de conclusión y trabajos futuros.
+El trabajo se organiza en una introducción que presenta el problema, los objetivos y la solución propuesta; capítulos de desarrollo dedicados a la metodología, a los experimentos y sus resultados, y a las consideraciones éticas y sociales; un capítulo de trabajos relacionados; y, finalmente, los capítulos de conclusión y trabajos futuros.
 
 \chapter{Metodología}
+\label{cap:metodologia}
+
+\section{Diseño experimental}
+\label{sec:diseno-experimental}
+
+El trabajo experimental se organiza como una secuencia de ocho Jupyter notebooks, en la que cada uno consume los artefactos del anterior:
+
+\begin{table}[H]
+\centering
+\caption{Secuencia de Jupyter notebooks del proyecto.}
+\label{tab:notebooks}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{8.6cm}@{}}
+\toprule
+Notebook & Contenido \\
+\midrule
+NB00 & Ingesta y consolidación del panel \\
+NB01 & Análisis exploratorio y Feature Engineering \\
+NB02 & Modelos estadísticos (ARIMA/SARIMA) \\
+NB03 & Modelos de aprendizaje automático y AutoML (regresión lineal, PyCaret, StatsForecast) \\
+NB04 & Modelo LSTM \\
+NB05 & Validación, \textit{backtest} e intervalos de predicción (MAPIE) \\
+NB06 & Registro de modelos y pipeline de predicción (ensamble, intervalos por \textit{bootstrap}) \\
+NB07 & Preguntas y respuestas con IA generativa sobre los pronósticos \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+NB00 y NB01 tienen un criterio de salida explícito, verificado con aserciones dentro del propio notebook; no se avanza a la etapa siguiente mientras no se cumpla.
+
+Este capítulo describe los métodos de las etapas ya ejecutadas, NB00 y NB01; sus resultados se presentan en el Capítulo~\ref{cap:resultados}. Las etapas siguientes se incorporarán con la misma estructura: método en este capítulo y resultados en el siguiente.
+
+La lógica de cada etapa no está escrita en los notebooks, sino en servicios de la aplicación (\texttt{src/app/data} y \texttt{src/app/services}) que se inyectan mediante un contenedor de dependencias. Los notebooks solo orquestan: cargan los datos, invocan los servicios y registran los resultados. Así, cada regla queda cubierta por pruebas automatizadas, y todos los artefactos (tablas, figuras, datasets y reportes) se registran en Weights~\&~Biases para que cada corrida sea trazable.
+
+\section{Obtención de datos: el scraper financiero}
+\label{sec:scraper}
+
+\subsection{Funcionamiento}
+
+El scraper construye, para cada empresa, un panel trimestral de 81 trimestres (2006-T2 a 2026-T2) combinando cuatro fuentes públicas:
+
+\begin{table}[H]
+\centering
+\caption{Fuentes de datos y su función en el panel.}
+\label{tab:fuentes}
+\begin{tabular}{@{}>{\raggedright}p{3.2cm}>{\raggedright}p{6.3cm}>{\raggedright\arraybackslash}p{4.2cm}@{}}
+\toprule
+Fuente & Aporta & Restricción \\
+\midrule
+SEC EDGAR (XBRL) & Estados financieros: ingresos, costos, resultados, flujo de caja, EPS, acciones en circulación & Fuente primaria; sin límite práctico \\
+Yahoo Finance (yfinance) & Precio de la acción, dividendos, \textit{splits} y rendimiento del S\&P~500 & Sin clave \\
+FRED (Reserva Federal de St.~Louis) & Nueve series macroeconómicas & 120 consultas por minuto \\
+Alpha Vantage & Solo completa los huecos que deja la SEC & $\approx 25$ consultas por día \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El proceso, para cada empresa, es el siguiente:
+
+\begin{enumerate}
+  \item \textbf{Esqueleto.} Se genera una grilla fija de cierres de trimestre calendario. Todas las fuentes se unen a esa grilla por fecha, de modo que un trimestre que ninguna fuente reporta queda vacío; el pipeline nunca extrapola.
+  \item \textbf{Estados financieros (SEC).} Cada concepto contable (por ejemplo, ingresos) se busca en una cadena ordenada de etiquetas us-gaap, porque no todas las empresas usan la misma etiqueta y una misma empresa la cambia con el tiempo. Un trimestre se obtiene de un hecho trimestral nativo o, cuando la empresa solo reporta acumulados, se deriva por diferencia: acumulado del año menos acumulado anterior, o total anual menos tres trimestres. Los valores se ajustan por \textit{splits}.
+  \item \textbf{Respaldo (Alpha Vantage).} Solo si quedan celdas vacías, se completan con Alpha Vantage, sin pisar ningún valor de la SEC.
+  \item \textbf{Mercado y macro.} Se agregan el precio de cierre trimestral, el rendimiento por dividendo de los últimos doce meses, el rendimiento del S\&P~500 del trimestre anterior y las series de FRED, alineadas al cierre de cada trimestre.
+  \item \textbf{Variables derivadas.} Capitalización de mercado (precio $\times$ acciones en circulación) y relación precio/beneficio (indefinida cuando el EPS no es positivo).
+  \item \textbf{Procedencia.} Cada fila registra la fecha real de cierre de su período, la fecha de presentación ante la SEC y el origen de los datos (nativo, derivado o Alpha Vantage). Esto permite auditar cada valor y verificar que no se use información posterior a la fecha de pronóstico.
+\end{enumerate}
+
+El universo de empresas se define en un archivo de configuración (\path{config/companies.yaml}): incorporar una empresa consiste en agregar una entrada, sin escribir código. Las respuestas de las API se guardan en una caché local antes de interpretarlas, y el fallo de una empresa se registra sin detener al resto.
+
+\subsection{Problemas encontrados y cómo se resolvieron}
+\label{sec:problemas-scraper}
+
+Los datos XBRL de la SEC son públicos y estandarizados solo en apariencia. Cada problema que se describe a continuación se detectó con una medición sobre el panel, se documentó en una especificación del repositorio y se corrigió con una regla verificable.
+
+\begin{enumerate}
+  \item \textbf{Etiquetas parciales que ganaban sobre el total.} Cuando una empresa migraba de etiqueta y seguía reportando la anterior con un valor parcial, la cadena tomaba la primera disponible. En Oracle, la etiqueta \texttt{SalesRevenueNet} reportaba un subtotal de segmento: durante ocho trimestres los ingresos quedaron unas cinco veces por debajo de los reales, y todos los márgenes heredaron el error. \emph{Solución:} para conceptos que son totales (ingresos, costo de ventas, inversiones de capital, depreciación) gana el valor mayor, y un cero nunca gana sobre un valor reportado. La regla no se aplica al EPS: el EPS básico es siempre mayor o igual que el diluido, de modo que ``el mayor gana'' elegiría sistemáticamente la métrica equivocada.
+  \item \textbf{Respuestas vacías de la API de la SEC.} El endpoint por concepto (\texttt{companyconcept}) devolvía, para ABT, F y KO, respuestas exitosas pero vacías, mientras el documento completo (\texttt{companyfacts}) tenía los datos. El scraper interpretaba el vacío como ``la empresa no usa esa etiqueta''. \emph{Solución:} leer \texttt{companyfacts}, lo que recuperó 77 trimestres de ingresos.
+  \item \textbf{Etiquetas de ingresos no contempladas.} Las empresas de servicios públicos (NEE, DUK) reportan sus ingresos con \texttt{RegulatedAndUnregulatedOperatingRevenue}. Agregar esa etiqueta a la cadena recuperó 85 trimestres.
+  \item \textbf{Acciones en circulación congeladas o mal calculadas.} Cuando una empresa dejaba de reportar la cantidad de acciones, el último valor se repetía indefinidamente: el 12,3\,\% de los trimestres repetía exactamente el valor anterior, y Boeing quedó congelada desde 2008. Además, el promedio ponderado de acciones se restaba como si fuera un flujo acumulado, lo que en el cuarto trimestre fiscal producía cantidades nulas o negativas (357 trimestres en 31 empresas). Ambos errores se trasladaban a la capitalización de mercado. \emph{Solución:} un dato puntual solo representa a trimestres cercanos a su fecha, y los promedios se ponderan por los días que cubren en lugar de restarse.
+  \item \textbf{Calendarios fiscales.} 22 empresas cierran su año fiscal fuera del calendario (por ejemplo, Apple en septiembre o Walmart en enero). El scraper asigna cada período al cierre de trimestre calendario más cercano, con una tolerancia de 46 días, y registra el desfase en días. Para esas empresas, las variables financieras y macroeconómicas de una misma fila pueden describir períodos desplazados hasta un mes y medio. Es una limitación conocida y documentada; no se corrige en esta etapa.
+  \item \textbf{Trimestres derivados con bases contables distintas.} Al restar un total anual reexpresado de trimestres sin reexpresar se obtienen valores imposibles: ConocoPhillips (COP) registra ingresos de $-81\,500$ millones de USD en el cuarto trimestre de 2010, por la reexpresión tras la escisión de Phillips~66, y General Electric (GE) presenta 12 trimestres de gastos operativos negativos. Lockheed Martin, en cambio, tiene gastos operativos negativos que son correctos: cumple la identidad contable en el 98\,\% de los trimestres. Este contraejemplo descarta una regla simple de ``signo positivo''. \emph{Estado:} pendiente; hasta su corrección, COP se excluye del análisis y los gastos operativos no pueden elegirse como variable objetivo.
+  \item \textbf{Calidad del respaldo.} Las filas de Alpha Vantage no tienen fecha de presentación, por lo que no puede verificarse cuándo esa información estuvo disponible, y su EPS suele ser una cifra ajustada que no sigue los principios contables (non-GAAP). Por eso la SEC es siempre la fuente preferida y Alpha Vantage solo completa huecos.
+\end{enumerate}
+
+\subsection{Resultado final}
+
+El scraper produce 60 paneles de 81 trimestres cada uno: 4\,860 filas por empresa y trimestre, con 15 variables propias de cada empresa y 10 macroeconómicas. Sin contar COP, el 77\,\% de las filas proviene de hechos trimestrales nativos de la SEC, el 12\,\% de trimestres derivados por diferencia de acumulados de la SEC, y el 11\,\% de Alpha Vantage. Antes de las correcciones de los puntos 2 y 3, Alpha Vantage aportaba el 16\,\%; el resto de su aporte corresponde mayormente a 2006--2008, antes de que existiera XBRL. El universo de empresas y el significado de cada columna se detallan en el Apéndice~\ref{ap:datos}.
+
+\section{Consolidación del panel (NB00)}
+\label{sec:metodo-nb00}
+
+NB00 no descarga datos: lee los 60 paneles ya generados, valida su forma y los consolida en dos tablas. La primera es un panel largo con una fila por empresa y trimestre. La segunda es una tabla macroeconómica con una fila por trimestre: las series macro son idénticas para todas las empresas, así que se guardan una sola vez en lugar de 60 copias. Sobre el panel se calculan cinco banderas (Tabla~\ref{tab:banderas-def}) que anotan las filas sin modificar ni eliminar ningún valor.
+
+\begin{table}[H]
+\centering
+\caption{Banderas calculadas en NB00.}
+\label{tab:banderas-def}
+\begin{tabular}{@{}>{\raggedright}p{3cm}>{\raggedright\arraybackslash}p{11cm}@{}}
+\toprule
+Bandera & Definición y propósito \\
+\midrule
+\texttt{covid} & Trimestres 2020-T2 a 2020-T4. La pandemia es una intervención externa conocida: se modela como variable indicadora y no como ruido. \\
+\texttt{structural\_break} & Trimestre de un quiebre estructural y los tres siguientes (Sección~\ref{sec:quiebres}). \\
+\texttt{outlier\_flag} & Trimestres atípicos según un Isolation Forest por empresa (Sección~\ref{sec:tecnicas}). Se usa solo para análisis y evaluación, nunca como variable del modelo: se ajusta con toda la historia de la empresa y, por lo tanto, conoce trimestres posteriores. \\
+\texttt{is\_projected} & Trimestres posteriores al último trimestre reportado. Es un control contra la fuga de información: si una fuente entregara un trimestre proyectado en lugar de reportado, el modelo se entrenaría y evaluaría contra una estimación. Esas filas se excluyen automáticamente del entrenamiento y la evaluación. \\
+\texttt{pre\_listing} & Trimestres anteriores a la cotización de la empresa (TSLA, 2006--2010). Esos huecos nunca se imputan. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Además, NB00 construye un registro de valores faltantes que asigna un motivo a cada celda vacía (por ejemplo, ``empresa aún no cotizaba'' o ``trimestre anterior a XBRL sin respaldo''), y verifica si el último trimestre del panel fue reportado o proyectado.
+
+\subsection{Quiebres estructurales}
+\label{sec:quiebres}
+
+Un \textbf{quiebre estructural} es un cambio permanente en el proceso que genera una serie, después del cual el pasado deja de ser comparable con el presente \parencite{Bai1998,hamilton1989regime}. En datos empresariales, la causa típica es una escisión, una fusión o una reorganización contable. Cuando Pfizer separó su división Upjohn en 2020, por ejemplo, sus ingresos cayeron sin que el negocio que permaneció empeorara: la empresa simplemente pasó a ser otra.
+
+El problema para un modelo es que el crecimiento interanual compara cada trimestre con el mismo trimestre del año anterior. Durante los cuatro trimestres que siguen al quiebre, esa comparación cruza dos empresas distintas y produce un crecimiento ficticio. Por eso la bandera \texttt{structural\_break} marca el trimestre del quiebre y los tres siguientes. Así, el modelo puede atribuir el salto al evento en lugar de aprenderlo como un patrón \parencite{hyndman2021fpp}.
+
+Los quiebres se registran a mano en \path{config/structural_breaks.yaml}, porque provienen de hechos corporativos documentados y no de una detección estadística: Abbott 2013-T1 (escisión de AbbVie), Bristol-Myers Squibb 2019-T4 (adquisición de Celgene), Pfizer 2020-T4 (Upjohn/Viatris), Merck 2021-T2 (escisión de Organon), AT\&T 2022-T2 (escisión de WarnerMedia) y General Electric 2023-T1 y 2024-T2 (escisiones de GE HealthCare y GE Vernova). En total son siete quiebres $\times$ cuatro trimestres $=$ 28 filas marcadas.
+
+\section{Técnicas de EDA y Feature Engineering (NB01)}
+\label{sec:tecnicas}
+
+El análisis exploratorio sigue un marco de ocho pasos: perfil automático, auditoría, variable objetivo, distribuciones, variables categóricas, correlaciones, segmentos y comportamiento temporal. Cada paso parte de una pregunta y termina con una respuesta que alimenta una tabla de decisiones. Sobre esa base se construyen y auditan los atributos del modelo (Feature Engineering). Esta sección explica qué técnica se usó en cada paso y, sobre todo, por qué.
+
+\subsection{Una propiedad de los datos que condiciona todas las técnicas}
+
+Los cambios trimestrales de las variables financieras tienen \textbf{colas muy pesadas}: unos pocos trimestres extremos, como adquisiciones, cargos extraordinarios o la pandemia, concentran gran parte de la variación. La curtosis del crecimiento interanual de los ingresos es 119, cuando la de una distribución normal es 3. Con datos así, la media y la desviación estándar dejan de describir el caso típico, porque un solo valor extremo las desplaza. Por eso se eligieron, siempre que fue posible, \textbf{técnicas robustas o basadas en rangos}.
+
+\subsection{Detección de valores atípicos}
+
+\paragraph{$z$ robusto (mediana y MAD).} El $z$ clásico, $(x - \bar{x})/s$, mide la distancia a la media en desviaciones estándar. El problema es que la media y la desviación estándar se calculan con los mismos valores atípicos que se quieren detectar: un valor extremo infla $s$ y queda ``escondido'' detrás de su propio efecto, lo que se conoce como enmascaramiento. El $z$ robusto reemplaza la media por la mediana y la desviación estándar por la desviación absoluta mediana (MAD):
+\[
+z_{\text{robusto}} = \frac{x - \operatorname{mediana}(x)}{1{,}4826 \cdot \operatorname{MAD}(x)},
+\qquad
+\operatorname{MAD}(x) = \operatorname{mediana}\bigl(|x - \operatorname{mediana}(x)|\bigr).
+\]
+La mediana y la MAD no se mueven aunque hasta la mitad de los datos sean extremos; la constante 1,4826 hace que el resultado sea comparable con un $z$ clásico cuando los datos son normales \parencite{leys2013detecting}. Se aplica al cambio de cada trimestre expresado en relación con el tamaño de la empresa, para comparar empresas de escalas distintas. Se registran los casos con $|z| > 10$, un umbral deliberadamente alto que, con colas pesadas, aísla solo lo verdaderamente anómalo.
+
+\paragraph{Filtro de Hampel.} Es el mismo $z$ robusto, pero calculado en una ventana móvil de ocho trimestres \parencite{hampel1974influence}. Comparar ambos permite distinguir dos situaciones: un valor extremo para toda la historia de la empresa que es normal en su entorno inmediato indica un cambio de nivel, mientras que un valor extremo en ambos indica un evento puntual o un error de datos.
+
+\paragraph{Isolation Forest.} Para la bandera \texttt{outlier\_flag} de NB00 se usa un Isolation Forest (scikit-learn) por empresa sobre cuatro variables a la vez: los tres márgenes y el crecimiento interanual de los ingresos \parencite{Liu2008}. El algoritmo aísla cada observación con particiones aleatorias, y las atípicas se aíslan en menos pasos. Se eligió porque es multivariado, porque no supone ninguna distribución y porque detecta combinaciones inusuales que ninguna variable muestra por separado, como un margen neto que se duplica mientras los ingresos crecen poco. La bandera marca la fila completa (empresa y trimestre), sin indicar qué variable la originó. Los primeros cuatro trimestres de cada empresa no pueden marcarse, porque todavía no tienen crecimiento interanual.
+
+\paragraph{Elección de la contaminación.} El Isolation Forest asigna a cada trimestre un puntaje de anomalía, pero no decide por sí mismo cuántos trimestres son atípicos. Eso lo fija el parámetro de \emph{contaminación}: la proporción de observaciones que se espera que sean atípicas. No es una medida que surja de los datos, sino un supuesto del analista que ubica el umbral de modo que se marque exactamente esa proporción de trimestres con mayor puntaje. Se fijó en 3\,\%, es decir, tres trimestres por empresa y 180 filas en total. Hay cuatro razones para esta elección:
+
+\begin{enumerate}
+  \item \textbf{La alternativa automática no detecta anomalías, sino colas.} scikit-learn ofrece \texttt{contamination="auto"}, que reemplaza la cuota por el umbral genérico del trabajo original \parencite{Liu2008}. Aplicado a este panel, marca 768 filas (16,7\,\%): entre 7 y 23 trimestres por empresa, con una mediana de 12, y ninguna empresa queda sin marcas. Con series de colas pesadas y unos 77 trimestres por empresa, ese umbral confunde la variabilidad normal con anomalías: uno de cada seis trimestres no puede ser atípico.
+  \item \textbf{El uso de la bandera favorece una cuota fija.} \texttt{outlier\_flag} no es un atributo del modelo, sino una máscara para la evaluación (NB05): permite comparar el error de pronóstico con y sin los trimestres más inusuales de cada empresa. Con una cuota fija, todas las empresas aportan la misma proporción de trimestres enmascarados y ninguna domina la comparación. Enmascarar un 17\,\% de las filas, en cambio, eliminaría una parte importante del conjunto de prueba.
+  \item \textbf{El resultado es estable frente al valor elegido.} Se evaluaron contaminaciones de 2\,\%, 3\,\% y 5\,\% (120, 180 y 240 filas). El caso de referencia, Amazon en 2026-T2, cuyo margen neto pasó de 9,9\,\% a 31,2\,\% en dos trimestres, se marca con los tres valores; 3\,\% es el valor intermedio.
+  \item \textbf{La detección por columna ya tiene un umbral basado en los datos.} El registro de atípicos de NB01 ($z$ robusto mayor que 10, por columna) determina cuántas anomalías reales hay y en qué variable. La bandera no necesita cumplir esa función.
+\end{enumerate}
+
+La limitación de esta elección es que, con una cuota fija, la bandera \emph{ordena} los trimestres de cada empresa en lugar de \emph{contrastar} si son anómalos. Una empresa sin anomalías reales recibe igualmente tres marcas, y una con más de tres solo recibe tres. Por eso la bandera se interpreta como ``los trimestres más inusuales de cada empresa'' y no como ``los trimestres anómalos''.
+
+\subsection{Diagnóstico de series temporales}
+
+\paragraph{ADF y KPSS (statsmodels).} Determinan cuántas diferencias necesita una serie para ser estacionaria. Las dos pruebas tienen hipótesis nulas opuestas: ADF supone que hay raíz unitaria \parencite{dickey1979distribution} y KPSS supone que la serie es estacionaria \parencite{kwiatkowski1992testing}. Usar una sola prueba sesga la conclusión hacia su hipótesis nula, así que se exige que \emph{ambas} coincidan antes de aceptar un orden de diferenciación. Se evalúa tanto la serie en niveles como en logaritmos.
+
+\paragraph{STL (statsmodels).} Descompone cada serie en tendencia, estacionalidad y residuo mediante regresiones locales \parencite{cleveland1990stl}, y es robusta a valores atípicos. A partir de la descomposición se calcula la \emph{fuerza estacional} y la \emph{fuerza de la tendencia}, entre 0 y 1 \parencite{wang2006characteristic}.
+
+\paragraph{K-means (scikit-learn).} Agrupa las empresas en tres \emph{regímenes de estacionalidad} según su fuerza estacional y de tendencia \parencite{lloyd1982least}. El régimen se usa luego como atributo del modelo y como segmento de análisis.
+
+\paragraph{Ljung--Box (statsmodels).} Contrasta si una serie tiene autocorrelación \parencite{ljung1978measure}. Una serie sin autocorrelación es ruido y su pasado no ayuda a pronosticarla. La variable se considera \emph{pronosticable} si al menos la mitad de las empresas rechaza la hipótesis de ruido blanco ($p < 0{,}05$).
+
+\subsection{Relaciones entre variables}
+
+\paragraph{Correlación de Spearman (pandas).} Mide la asociación entre los \emph{rangos} de dos variables, no entre sus valores \parencite{spearman1904proof}. Se prefirió a la de Pearson por dos razones: un valor extremo no puede dominar el resultado, porque solo ocupa el último puesto del ranking, y captura cualquier relación monótona, no solo la lineal. Se aplica a los cambios interanuales y no a los niveles, porque en 20 años casi todas las variables crecen y sus niveles aparecerían correlacionados sin estarlo realmente.
+
+Dos variables con $|\rho| > 0{,}85$ se consideran redundantes: ordenan las observaciones casi de la misma manera y, por lo tanto, aportan prácticamente la misma información. Esto importa sobre todo en los modelos lineales. Con dos variables casi idénticas, el modelo no puede distinguir a cuál atribuir el efecto, y los coeficientes se vuelven inestables y difíciles de interpretar (multicolinealidad); los modelos basados en árboles, en cambio, apenas se ven afectados. El umbral de 0,85 es una convención, no un valor estimado a partir de los datos. Es más permisivo que el de 0,7 que sugiere la revisión de Dormann \parencite{dormann2013collinearity}. En este panel, separa las variables que miden la misma magnitud dos veces, como el precio de la acción y la capitalización, de las que están relacionadas pero son distintas, como los ingresos y el resultado bruto (0,78). El corte no es nítido: el par más cercano por debajo del umbral, el margen neto y el EPS (0,83), también son dos expresiones de la rentabilidad.
+
+\paragraph{Información mutua (scikit-learn).} Mide cuánto se reduce la incertidumbre sobre la variable objetivo al conocer un atributo, sin suponer ninguna forma de relación \parencite{kraskov2004estimating}. Complementa a Spearman: detecta relaciones no lineales y no monótonas, y admite atributos categóricos como el sector.
+
+\paragraph{Kruskal--Wallis (scipy).} Contrasta si la variable objetivo tiene la misma distribución en varios grupos, por ejemplo entre los regímenes de estacionalidad \parencite{kruskal1952use}. Es la versión no paramétrica del ANOVA: no supone normalidad, un supuesto que estas distribuciones no cumplen. Su resultado decide si conviene un modelo único para todas las empresas o uno por segmento.
+
+\subsection{Herramientas de soporte}
+
+El perfil automático del panel y la comparación entre los períodos anteriores y posteriores a 2020 se generan con \textit{ydata-profiling}. Los gráficos se producen con matplotlib y seaborn, y todos los resultados se registran en Weights~\&~Biases.
+
+\subsection{Feature Engineering}
+\label{sec:fe}
+
+Feature Engineering forma parte de una etapa posterior al análisis exploratorio (EDA), junto con el entorno de evaluación. Durante el desarrollo se trasladó a NB01, sección~8, porque el análisis exploratorio ya calculaba la mayoría de sus insumos, como los regímenes de estacionalidad y las transformaciones del objetivo. Se implementa en el servicio de atributos de la aplicación (\texttt{src/app/services/features}).
+
+\paragraph{Unidad de observación.} Cada fila es un par (empresa, trimestre de origen). El origen es el último trimestre conocido y el objetivo es el valor $h$ trimestres después, con $h = 1, \dots, 4$.
+
+\paragraph{Variable objetivo.} El modelo no aprende el nivel de ingresos, sino un cambio transformado que luego se invierte de forma exacta. Se evalúan tres variantes: la diferencia logarítmica trimestral, la diferencia logarítmica interanual y el residuo frente al pronóstico estacional ingenuo (el mismo trimestre del año anterior). Esta última es la variante por defecto para los ingresos, porque obliga al modelo a aprender solo lo que la estacionalidad no explica.
+
+\paragraph{Grupos de atributos.} Los 30 atributos se organizan en ocho grupos, de modo que luego pueda medirse el aporte de cada grupo retirándolo del modelo (ablación):
+
+\begin{table}[H]
+\centering
+\caption{Grupos de atributos.}
+\label{tab:grupos-fe}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{11.5cm}@{}}
+\toprule
+Grupo & Contenido \\
+\midrule
+L  & Crecimiento interanual de la variable objetivo con rezagos de 1, 2, 3, 4, 5 y 8 trimestres \\
+R  & Media y desvío móviles de ese crecimiento en 4 y 8 trimestres; momento (rezago 1 menos rezago 2) \\
+M  & Los tres márgenes (bruto, operativo y neto) en el origen \\
+X  & Las diez variables macroeconómicas en el origen \\
+XD & Tasa real: tasa de fondos federales menos inflación \\
+C  & Trimestre calendario del período a pronosticar, que se conoce de antemano \\
+S  & Sector y régimen de estacionalidad \\
+F  & Banderas \texttt{covid} y \texttt{structural\_break} en el origen \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Controles.} Hay dos controles automáticos. El primero verifica que ningún atributo use información posterior al origen: se modifica todo lo que ocurre después de un origen y se comprueba que los atributos de esa fila no cambian. El segundo verifica que cada transformación del objetivo se invierte exactamente. Cuando no hay historia suficiente para calcular un atributo, el valor queda vacío y no se imputa. \texttt{outlier\_flag} no forma parte de ningún grupo, por la fuga de información descrita en la Tabla~\ref{tab:banderas-def}.
+
+% =============================================================
+\chapter{Experimentos y resultados}
+\label{cap:resultados}
+
+Este capítulo presenta los resultados de cada Jupyter notebook en el orden de ejecución. Por ahora cubre NB00 y NB01, ejecutados el 2 de octubre de 2026; los notebooks siguientes se agregarán como nuevas secciones. La variable objetivo analizada es \texttt{revenue\_usd\_m}: los ingresos trimestrales en millones de USD.
+
+\section{NB00: consolidación del panel}
+\label{sec:res-nb00}
+
+\begin{itemize}
+  \item \textbf{Cobertura:} 60 empresas $\times$ 81 trimestres (2006-T2 a 2026-T2), es decir, 4\,860 filas. La tabla macroeconómica tiene exactamente 81 filas.
+  \item \textbf{Origen del pronóstico:} 2026-T2 (30/06/2026) es el último trimestre reportado y 2026-T3 es el horizonte 1. Las 60 empresas reportan ingresos en 2026-T2 y ninguna repite el valor del trimestre anterior.
+  \item \textbf{Valores faltantes:} todas las celdas vacías tienen un motivo asignado excepto una, el EBITDA de Costco en 2026-T2, que queda pendiente de resolución.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Filas marcadas por cada bandera.}
+\label{tab:banderas-res}
+\begin{tabular}{@{}lr>{\raggedright\arraybackslash}p{8.5cm}@{}}
+\toprule
+Bandera & Filas & Lectura \\
+\midrule
+\texttt{covid}            & 180 & 3 trimestres $\times$ 60 empresas \\
+\texttt{structural\_break} & 28 & 7 quiebres $\times$ 4 trimestres \\
+\texttt{outlier\_flag}    & 180 & 3\,\% por empresa; incluye Amazon 2026-T2, cuyo margen neto pasó de 9,9\,\% a 31,2\,\% en dos trimestres \\
+\texttt{pre\_listing}     & 16  & Tesla, 2006-T2 a 2010-T1 \\
+\texttt{is\_projected}    & 0   & Resultado esperado: confirma que no hay trimestres proyectados en el panel \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Que \texttt{is\_projected} valga cero no es una bandera vacía, sino un control superado: en 59 de las 60 empresas, el último trimestre se respalda en un formulario 10-Q o 10-K presentado ante la SEC. La excepción es Costco, cuyo calendario fiscal hace que dos trimestres caigan en el mismo trimestre calendario.
+
+\section{NB01: análisis exploratorio y Feature Engineering}
+\label{sec:res-nb01}
+
+Se analizan 59 empresas: COP queda excluida por el defecto de ingesta descrito en la Sección~\ref{sec:problemas-scraper}. Tesla tiene 75 trimestres de ingresos, y Adobe y Oracle 80 cada una; el resto tiene los 81.
+
+\subsection{Auditoría: valores atípicos}
+
+Las variables contables tienen un 0,2\,\% de valores faltantes y la relación precio/beneficio un 6,2\,\%. Ninguna columna presenta signos imposibles; en particular, no hay ingresos nulos ni negativos.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.85\linewidth]{registro_atipicos_conteo.png}
+\caption{Entradas del registro de atípicos ($|z_{\text{robusto}}| > 10$) por columna y dirección.}
+\label{fig:registro-conteo}
+\end{figure}
+
+\textbf{Resultado.} Los gastos operativos, los márgenes y el EPS concentran la mayoría de los atípicos. Son variables que pueden acercarse a cero o cambiar de signo, de modo que pequeñas variaciones absolutas se vuelven grandes en términos relativos. Los ingresos, en cambio, registran solo 30 entradas, 24 de ellas al alza. El flujo de caja libre y el precio casi no tienen entradas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\linewidth]{registro_atipicos_series.png}
+\caption{Las cuatro series más extremas del registro: nivel (izquierda) y distancia a lo normal en escala logarítmica (derecha). La línea roja es el umbral $z = 10$.}
+\label{fig:registro-series}
+\end{figure}
+
+\textbf{Resultado.} Las cuatro series más extremas tienen la forma de errores de datos, no de eventos económicos. El margen bruto de UnitedHealth salta de $\approx 0{,}25$ a $\approx 0{,}98$ en 2008. Los gastos operativos de Union Pacific toman valores de $-5\,000$ intercalados en 2007--2008. Los de SLB forman una meseta de $\approx 4\,500$ entre 2016 y 2018, contra un nivel habitual de $\approx 400$. Y los ingresos de Pfizer caen casi a cero en 2019-T1. En los cuatro casos, el $z$ robusto y el de Hampel superan juntos el umbral, lo que indica un salto puntual y no un cambio de nivel. Estos casos quedan como candidatos a revisar en el scraper.
+
+\subsection{Variable objetivo}
+
+\begin{table}[H]
+\centering
+\caption{Resumen de la variable objetivo por variante, en los horizontes 1 y 4.}
+\label{tab:objetivo}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Variante & $h$ & Mediana & Asimetría & Curtosis & Disponible \\
+\midrule
+Diferencia log. trimestral & 1 & 0,018  & $-0{,}38$ & 39,2  & 98,5\,\% \\
+                           & 4 & 0,046  & 4,70      & 119,1 & 94,9\,\% \\
+Diferencia log. interanual & 1--4 & 0,046 & 4,70   & 119,1 & 94,9\,\% \\
+Residuo estacional ingenuo & 1 & $-0{,}001$ & 0,83  & 65,8  & 93,6\,\% \\
+                           & 4 & 0,000  & 0,44      & 33,9  & 89,9\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{objetivo_distribucion.png}
+\caption{Distribución de la variable objetivo por variante (filas) y horizonte (columnas), entre los percentiles 1 y 99.}
+\label{fig:objetivo}
+\end{figure}
+
+\textbf{Resultado.} Las tres variantes están centradas cerca de cero, pero el residuo estacional ingenuo es el más concentrado en $h = 1$: restar el mismo trimestre del año anterior elimina la mayor parte de la variación predecible. A medida que crece el horizonte, todas las distribuciones se ensanchan, como es esperable al pronosticar más lejos. La curtosis, de entre 33 y 119, confirma que hacen falta funciones de pérdida robustas. Los valores más extremos del objetivo corresponden a IBM entre 2019 y 2021, alrededor de la escisión de Kyndryl, a Oracle (2018 y 2023) y a Kimberly-Clark (2022--2023).
+
+\subsection{Distribuciones de los cambios interanuales}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.55\linewidth}\centering
+  \includegraphics[width=\linewidth]{cambios_interanuales_hist.png}
+  \par\small (a) Histogramas
+\end{minipage}\hfill
+\begin{minipage}{.43\linewidth}\centering
+  \includegraphics[width=\linewidth]{cambios_interanuales_box.png}
+  \par\small (b) Diagramas de caja
+\end{minipage}
+\caption{Cambio interanual de cada columna, entre los percentiles 1 y 99.}
+\label{fig:cambios}
+\end{figure}
+
+\textbf{Resultado.} Casi todas las columnas muestran un pico muy angosto en cero y colas largas: la mayoría de los trimestres cambia poco y unos pocos cambian muchísimo. La curtosis es de 119 en los ingresos, 164 en el margen bruto y alrededor de 4\,500 en los márgenes operativo y neto, donde unos pocos trimestres con resultados cercanos a cero producen oscilaciones enormes. Solo el precio de la acción y la capitalización (curtosis $\approx 6$) se aproximan a una distribución normal. Esto justifica el uso de técnicas robustas en todo el análisis.
+
+\subsection{Variables categóricas}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{sectores_regimenes.png}
+\caption{Empresas por sector (izquierda) y por régimen de estacionalidad (derecha; 0 = menos estacional).}
+\label{fig:categorias}
+\end{figure}
+
+\textbf{Resultado.} El universo está razonablemente equilibrado: Technology, Healthcare y Consumer Cyclical tienen nueve empresas cada uno. Materials y Utilities tienen solo tres, el mínimo admitido, así que las conclusiones sobre esos sectores descansan en poca evidencia. Los regímenes de estacionalidad agrupan 31, 4 y 24 empresas. El régimen intermedio, con solo cuatro, es demasiado chico para modelarlo por separado.
+
+\subsection{Correlaciones y redundancia}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.95\linewidth]{correlacion_spearman.png}
+\caption{Correlación de Spearman entre los cambios interanuales de las variables de empresa y macroeconómicas.}
+\label{fig:spearman}
+\end{figure}
+
+\textbf{Resultado.} La matriz tiene dos bloques. Las variables de resultado (resultado operativo, EBITDA, resultado neto, márgenes y EPS) se mueven juntas, con correlaciones de 0,6 a 0,9; las de mercado (precio, capitalización y rendimiento por dividendo) forman otro bloque. Entre las macroeconómicas, la inflación y el petróleo están muy correlacionados (0,71) y el dólar se mueve en sentido opuesto a ambos. Las variables de empresa tienen correlaciones bajas con las macroeconómicas, de 0,3 como máximo con los ingresos.
+
+\begin{table}[H]
+\centering
+\caption{Pares de variables redundantes ($|\rho| > 0{,}85$).}
+\label{tab:redundantes}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Variable & Variable & $\rho$ \\
+\midrule
+Precio de la acción & Capitalización    & 0,959 \\
+Resultado neto      & Margen neto       & 0,913 \\
+Resultado operativo & Margen operativo  & 0,882 \\
+Resultado neto      & EPS               & 0,879 \\
+Resultado operativo & EBITDA            & 0,875 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En cada par se mide la misma magnitud dos veces, por lo que los modelos lineales conservarán solo una variable de cada uno.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\linewidth]{sensibilidad_macro_sector.png}
+\caption{Correlación media entre el crecimiento interanual de los ingresos y cada variable macroeconómica, por sector.}
+\label{fig:macro-sector}
+\end{figure}
+
+\textbf{Resultado.} La sensibilidad a la macroeconomía depende del sector, lo que justifica incluir el bloque macro en el modelo. Energy sigue a la inflación ($\rho = 0{,}63$) y al petróleo (0,46), como corresponde a empresas cuyos ingresos dependen del precio del crudo. Materials, Technology y Consumer Cyclical responden a la confianza manufacturera (0,27 a 0,39). Communication Services se mueve en sentido opuesto al dólar ($-0{,}31$). Healthcare es prácticamente insensible al ciclo, como se espera de un sector defensivo.
+
+\subsection{Segmentos frente al objetivo}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{objetivo_por_segmento.png}
+\caption{Variable objetivo (residuo estacional ingenuo, $h = 1$) por sector, régimen y período.}
+\label{fig:segmentos}
+\end{figure}
+
+\textbf{Resultado.} Por sector y por régimen, las medianas están en cero y las cajas tienen un ancho similar. Energy y Utilities muestran más dispersión, pero no un desplazamiento. El único segmento claramente distinto es el período covid: su mediana es de 0,044, contra $-0{,}002$ antes y después, porque los ingresos se apartaron de su patrón estacional habitual. Esto justifica conservar la bandera \texttt{covid}.
+
+\subsection{Comportamiento temporal}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{fuerza_estacional.png}
+  \par\small (a) Fuerza estacional (STL, período 4)
+\end{minipage}\hfill
+\begin{minipage}{.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{perfil_estacional.png}
+  \par\small (b) Objetivo medio por trimestre, por régimen
+\end{minipage}
+\caption{Estacionalidad de los ingresos.}
+\label{fig:estacionalidad}
+\end{figure}
+
+\textbf{Resultado.} La fuerza estacional es bimodal. Un grupo de empresas casi no tiene estacionalidad (fuerza menor que 0,35), mientras que otro es muy estacional (mayor que 0,85), como PepsiCo, Apple o Amazon (0,96, 0,93 y 0,91). Esta separación motiva los regímenes. Una vez restado el pronóstico estacional ingenuo, el perfil por trimestre queda plano para los regímenes 0 y 2, lo que indica que esa transformación ya elimina la estacionalidad. Solo el régimen 1, con cuatro empresas, conserva oscilaciones.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{mediana_temporal.png}
+\caption{Mediana de la variable objetivo en el panel a lo largo del tiempo. El período covid está sombreado y los quiebres estructurales están marcados con líneas punteadas.}
+\label{fig:mediana-temporal}
+\end{figure}
+
+\textbf{Resultado.} La serie oscila cerca de cero, salvo en los dos shocks que afectaron a todas las empresas a la vez: la crisis financiera de 2008--2009, con una caída a $-0{,}11$ seguida de un rebote a $+0{,}10$, y la pandemia, con una caída en 2020-T2 y rebotes en 2020-T3 y a comienzos de 2021. Estos shocks comunes explican por qué las variables macroeconómicas obtienen información mutua alta aunque su correlación sea baja (Sección~\ref{sec:res-fe}).
+
+\paragraph{Validación contra el plan maestro.} La fuerza estacional coincide con tres decimales con los valores del plan maestro para las seis empresas de referencia (AAPL, AMZN, GOOGL, MSFT, PEP y PG). El orden de diferenciación coincide en las seis en niveles y en cinco en logaritmos. La excepción es Apple: ADF rechaza la raíz unitaria ($p = 0{,}034$), pero KPSS rechaza la estacionariedad ($p = 0{,}01$). Como la regla exige que ambas pruebas coincidan, asigna una diferencia en lugar de ninguna. La discrepancia se explica por la regla de decisión, no por los datos.
+
+\subsection{Feature Engineering}
+\label{sec:res-fe}
+
+Los dos controles de la Sección~\ref{sec:fe} se superaron. Ningún atributo usa información posterior al origen, según la verificación en los horizontes 1 a 4 y los orígenes 8, 20, 40 y 60. Además, las tres transformaciones del objetivo se invierten con un error relativo menor que $10^{-9}$. Se exportó un dataset por horizonte:
+
+\begin{table}[H]
+\centering
+\caption{Datasets de atributos exportados para los ingresos.}
+\label{tab:export}
+\begin{tabular}{@{}crrr@{}}
+\toprule
+Horizonte & Filas & Con objetivo & Sin objetivo \\
+\midrule
+1 & 4\,763 & 4\,468 & 295 \\
+2 & 4\,763 & 4\,409 & 354 \\
+3 & 4\,763 & 4\,351 & 412 \\
+4 & 4\,763 & 4\,292 & 471 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Las filas sin objetivo son los últimos $h$ trimestres de cada empresa, cuyo valor futuro todavía no se conoce, más los huecos de historia. Se conservan porque son precisamente los orígenes desde los que se pronosticará.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{ranking_features_h1.png}
+  \par\small (a) Horizonte 1
+\end{minipage}\hfill
+\begin{minipage}{.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{ranking_features_h4.png}
+  \par\small (b) Horizonte 4
+\end{minipage}
+\caption{Información mutua de cada atributo con la variable objetivo, coloreada por grupo.}
+\label{fig:ranking-fe}
+\end{figure}
+
+\textbf{Resultado.} La historia propia de cada empresa (grupos L y R) es la señal más fuerte, y su peso aumenta con el horizonte. El crecimiento interanual del último trimestre encabeza el ranking, con una información mutua de 0,122 en $h = 1$ y 0,387 en $h = 4$. Su correlación de Spearman con el objetivo es negativa ($-0{,}315$ y $-0{,}599$): cuando una empresa crece por encima de lo habitual, tiende a volver a su media. Las variables macroeconómicas ocupan la zona media del ranking (0,05 a 0,09), pero ese valor está sobrestimado: cada una toma un único valor por trimestre, común a todas las empresas, así que funciona como una etiqueta de fecha que capta los shocks comunes de la Figura~\ref{fig:mediana-temporal}. Su aporte real se medirá con el error fuera de muestra en la validación (NB05). Los márgenes, las banderas, el calendario y el régimen quedan cerca de cero.
+
+\begin{table}[H]
+\centering
+\caption{Información mutua por grupo de atributos ($h = 1$).}
+\label{tab:grupos-res}
+\begin{tabular}{@{}lcrrr@{}}
+\toprule
+Grupo & Atributos & IM media & IM máxima & Faltantes \\
+\midrule
+L --- Rezagos              & 6  & 0,067 & 0,122 & 3,7\,\% \\
+R --- Estadísticas móviles & 5  & 0,094 & 0,122 & 5,5\,\% \\
+X --- Macro                & 10 & 0,070 & 0,088 & 0 \\
+XD --- Tasa real           & 1  & 0,085 & 0,085 & 0 \\
+S --- Sector y régimen     & 2  & 0,036 & 0,071 & 0 \\
+M --- Márgenes             & 3  & 0,007 & 0,019 & 0 \\
+F --- Banderas             & 2  & 0,006 & 0,010 & 0 \\
+C --- Calendario           & 1  & 0,009 & 0,009 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Entre los atributos hay cuatro pares redundantes ($|\rho| > 0{,}85$): margen operativo y margen neto; desempleo y pendiente de la curva de tasas; y los rezagos 2 y 3 con la media móvil de cuatro trimestres.
+
+\section{Decisiones para la etapa de modelado}
+\label{sec:decisiones}
+
+\begin{table}[H]
+\centering
+\caption{Tabla de decisiones de NB01 para los ingresos, que se trasladan a la etapa de modelado (NB02 a NB05).}
+\label{tab:decisiones}
+\begin{tabular}{@{}>{\raggedright}p{3.2cm}>{\raggedright}p{5.8cm}>{\raggedright\arraybackslash}p{4.8cm}@{}}
+\toprule
+Decisión & Evidencia & Acción \\
+\midrule
+Transformación del objetivo & Los ingresos nunca son nulos ni negativos: las tres variantes son válidas
+  & Usar el residuo estacional ingenuo y comparar las variantes en la validación (NB05) \\
+Exclusiones & Defecto de ingesta en COP
+  & Excluir COP \\
+Grupos de atributos & Ningún grupo queda por debajo del umbral de información mutua (0,005)
+  & Mantener los ocho grupos hasta la ablación \\
+Modelo único o por segmento & Kruskal--Wallis $p = 0{,}822$ entre los tres regímenes
+  & Un único modelo para todas las empresas \\
+Pronosticabilidad & Ljung--Box $p < 0{,}05$ en 53 de 59 empresas (90\,\%; umbral 50\,\%)
+  & Pronosticable: se continúa con el modelado \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pendientes.} Quedan cuatro cuestiones por resolver:
+\begin{enumerate}
+  \item confirmar si los cuatro candidatos de la Figura~\ref{fig:registro-series} son errores de ingesta;
+  \item incorporar como quiebres estructurales la escisión de Kyndryl (IBM, 2021) y la de Phillips~66 (COP, 2012);
+  \item resolver el EBITDA faltante de Costco en 2026-T2;
+  \item corregir los defectos de COP y GE, lo que habilitará a COP y a los gastos operativos como variable objetivo.
+\end{enumerate}
+
+\paragraph{Hipótesis para el modelado (NB02 a NB05).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles (márgenes, banderas y calendario); resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo con una validación temporal fuera de muestra.
+
 \chapter{Valor ético y social}
 Los siguientes párrafos tienen la función de evaluar el valor ético y social del proyecto CFO Copilot, el cual es una solución basada en Inteligencia Artificial Generativa (GenAI) y Machine Learning para la automatización y optimización del análisis financiero. Se procederá a analizar la compatibilidad del proyecto con principios éticos y sociales actuales, destacando su contribución al bien común, sobre todo la transparencia financiera, la sostenibilidad económica y el impacto social positivo en el entorno empresarial, el uso responsable de los datos y más allá.
 
@@ -715,7 +1200,7 @@ El siguiente estudio presenta una arquitectura de transformer jerárquico pre-en
 
 En este trabajo de desarrollo de modelos de predicción de series temporales con GenAI, los autores utilizan redes generativas adversariales (GANs) con el fin de generar datos sintéticos de temperatura en un invernadero ubicado en Murcia, España \parencite{MoralesGarcia2023}. Los resultados revelan que el uso de datos sintéticos mejora significativamente la precisión de los modelos de IA/ML dirigidos en comparación con el uso exclusivo de datos reales.
 
-Este artículo proporciona una introducción a los modelos de IA generativa aplicados a la predicción de series temporales \parencite{Yoshimatsu2024}. Se discuten enfoques que combinan técnicas de aprendizaje profundo con modelos generativos para mejorar la precisión de las proyecciones en diversos dominios, incluyendo finanzas y demanda de productos. El artículo también ofrece ejemplos prácticos y recursos para implementar estos modelos.
+Este artículo proporciona una introducción a los modelos de IA generativa aplicados a la predicción de series temporales \parencite{Yoshimatsu2024}. Se discuten enfoques que combinan técnicas de Deep Learning con modelos generativos para mejorar la precisión de las proyecciones en diversos dominios, incluyendo finanzas y demanda de productos. El artículo también ofrece ejemplos prácticos y recursos para implementar estos modelos.
 
 El siguiente estudio explora la aplicación de modelos generativos profundos, como Redes Generativas Adversariales Condicionales (CGAN), Wasserstein GAN Condicional (CWGAN) y modelos de Difusión, para la generación de datos sintéticos de series temporales financieras. \parencite{Ericson2024}
 
@@ -780,7 +1265,151 @@ Estas líneas responden directamente a las limitaciones identificadas: mejorar l
 
 \appendix
 \chapter{Material complementario}
-% Incorporar aquí anexos, diagramas, resultados detallados, tablas de experimentos o material adicional.
+\label{ap:datos}
+
+\section{Universo de empresas}
+
+El universo está formado por 60 empresas estadounidenses de gran capitalización que cotizan en bolsa, de nueve sectores. Se eligieron para cubrir modelos de negocio con distinta estacionalidad y distinta sensibilidad al ciclo económico. Los sectores siguen la clasificación de Yahoo Finance y se mantienen en inglés. ConocoPhillips (COP) está excluida de NB01 por un defecto de ingesta pendiente (Sección~\ref{sec:problemas-scraper}).
+
+{\small
+\begin{longtable}{@{}lll@{}}
+\caption{Empresas analizadas, con su ticker y sector.}\label{tab:empresas}\\
+\toprule
+Ticker & Empresa & Sector \\
+\midrule
+\endfirsthead
+\toprule
+Ticker & Empresa & Sector \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+GOOGL & Alphabet & Communication Services \\
+T & AT\&T & Communication Services \\
+CMCSA & Comcast & Communication Services \\
+DIS & Disney & Communication Services \\
+NFLX & Netflix & Communication Services \\
+VZ & Verizon & Communication Services \\
+AMZN & Amazon & Consumer Cyclical \\
+BBY & Best Buy & Consumer Cyclical \\
+F & Ford & Consumer Cyclical \\
+HD & Home Depot & Consumer Cyclical \\
+M & Macy's & Consumer Cyclical \\
+MCD & McDonald's & Consumer Cyclical \\
+NKE & Nike & Consumer Cyclical \\
+SBUX & Starbucks & Consumer Cyclical \\
+TSLA & Tesla & Consumer Cyclical \\
+KO & Coca-Cola & Consumer Defensive \\
+CL & Colgate-Palmolive & Consumer Defensive \\
+COST & Costco & Consumer Defensive \\
+GIS & General Mills & Consumer Defensive \\
+KMB & Kimberly-Clark & Consumer Defensive \\
+PEP & PepsiCo & Consumer Defensive \\
+PG & Procter \& Gamble & Consumer Defensive \\
+WMT & Walmart & Consumer Defensive \\
+CVX & Chevron & Energy \\
+COP & ConocoPhillips (excluida) & Energy \\
+XOM & ExxonMobil & Energy \\
+OXY & Occidental Petroleum & Energy \\
+SLB & SLB & Energy \\
+ABT & Abbott & Healthcare \\
+AMGN & Amgen & Healthcare \\
+BMY & Bristol-Myers Squibb & Healthcare \\
+LLY & Eli Lilly & Healthcare \\
+JNJ & Johnson \& Johnson & Healthcare \\
+MDT & Medtronic & Healthcare \\
+MRK & Merck & Healthcare \\
+PFE & Pfizer & Healthcare \\
+UNH & UnitedHealth & Healthcare \\
+BA & Boeing & Industrials \\
+CAT & Caterpillar & Industrials \\
+DE & Deere & Industrials \\
+GE & General Electric & Industrials \\
+HON & Honeywell & Industrials \\
+LMT & Lockheed Martin & Industrials \\
+UNP & Union Pacific & Industrials \\
+UPS & United Parcel Service & Industrials \\
+APD & Air Products & Materials \\
+ECL & Ecolab & Materials \\
+SHW & Sherwin-Williams & Materials \\
+ADBE & Adobe & Technology \\
+AAPL & Apple & Technology \\
+CSCO & Cisco & Technology \\
+IBM & IBM & Technology \\
+INTC & Intel & Technology \\
+MSFT & Microsoft & Technology \\
+ORCL & Oracle & Technology \\
+QCOM & Qualcomm & Technology \\
+TXN & Texas Instruments & Technology \\
+DUK & Duke Energy & Utilities \\
+NEE & NextEra Energy & Utilities \\
+SO & Southern Company & Utilities \\
+\end{longtable}
+}
+
+\section{Diccionario de datos}
+
+Cada fila del panel describe una empresa en un trimestre. Los importes están en millones de USD, salvo que se indique otra unidad.
+
+{\small
+\begin{longtable}{@{}>{\raggedright}p{3.9cm}>{\raggedright}p{8.1cm}>{\raggedright\arraybackslash}p{2.3cm}@{}}
+\caption{Columnas del panel: significado y fuente.}\label{tab:diccionario}\\
+\toprule
+Columna & Significado & Fuente \\
+\midrule
+\endfirsthead
+\toprule
+Columna & Significado & Fuente \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\textit{Identificación}} \\
+\texttt{date} & Cierre del trimestre calendario al que se asigna la fila & Pipeline \\
+\texttt{company}, \texttt{ticker} & Nombre de la empresa y su símbolo bursátil & Configuración \\
+\texttt{sector} & Sector económico & Configuración \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Estados financieros}} \\
+\texttt{revenue\_usd\_m} & Ingresos totales del trimestre. Variable objetivo principal & SEC \\
+\texttt{gross\_profit\_usd\_m} & Resultado bruto: ingresos menos costo de ventas & SEC \\
+\texttt{opex\_usd\_m} & Gastos operativos: costos y gastos totales menos costo de ventas (o, si no se reportan, ingresos menos resultado operativo menos costo de ventas) & SEC \\
+\texttt{operating\_income\_usd\_m} & Resultado operativo & SEC \\
+\texttt{ebitda\_usd\_m} & Resultado operativo más depreciación y amortización & SEC \\
+\texttt{net\_income\_usd\_m} & Resultado neto & SEC \\
+\texttt{free\_cash\_flow\_usd\_m} & Flujo de caja libre: flujo de caja operativo menos inversiones de capital & SEC \\
+\texttt{gross\_margin} & Margen bruto: resultado bruto / ingresos (proporción) & Derivada \\
+\texttt{operating\_margin} & Margen operativo: resultado operativo / ingresos & Derivada \\
+\texttt{net\_margin} & Margen neto: resultado neto / ingresos & Derivada \\
+\texttt{eps} & Beneficio por acción diluido, en USD (básico si no hay diluido) & SEC \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Mercado}} \\
+\texttt{stock\_price\_usd} & Precio de cierre de la acción al final del trimestre, ajustado por \textit{splits} & yfinance \\
+\texttt{dividend\_yield} & Dividendos de los últimos doce meses / precio (proporción) & yfinance \\
+\texttt{market\_cap\_usd\_m} & Capitalización de mercado: precio $\times$ acciones en circulación & Derivada \\
+\texttt{pe\_ratio} & Relación precio/beneficio; indefinida si el EPS no es positivo & Derivada \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Macroeconómicas (iguales para todas las empresas; código de serie FRED entre paréntesis)}} \\
+\texttt{gdp\_yoy} & Crecimiento del PBI real de EE.\,UU., en \%, anualizado (A191RL1Q225SBEA) & FRED \\
+\texttt{fed\_funds} & Tasa de fondos federales, en \% (FEDFUNDS) & FRED \\
+\texttt{unemployment\_rate} & Tasa de desempleo, en \% (UNRATE) & FRED \\
+\texttt{cpi\_yoy} & Inflación interanual del índice de precios al consumidor, en \% (CPIAUCSL) & FRED \\
+\texttt{dxy} & Índice amplio del dólar estadounidense (DTWEXBGS) & FRED \\
+\texttt{vix} & Índice de volatilidad implícita del S\&P~500 (VIXCLS) & FRED \\
+\texttt{wti\_oil} & Precio del petróleo WTI, en USD por barril (DCOILWTICO) & FRED \\
+\texttt{yield\_spread\_10y2y} & Diferencia entre los bonos del Tesoro a 10 y 2 años, en puntos porcentuales (T10Y2Y) & FRED \\
+\texttt{mfg\_confidence} & Confianza empresarial del sector manufacturero, OCDE (BSCICP02USM460S) & FRED \\
+\texttt{sp500\_return\_lag1} & Rendimiento del S\&P~500 en el trimestre anterior & yfinance \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Procedencia}} \\
+\texttt{period\_end} & Fecha real de cierre del período fiscal reportado & SEC \\
+\texttt{period\_end\_offset\_days} & Días entre \texttt{period\_end} y \texttt{date}; distinto de cero para años fiscales no calendario & Derivada \\
+\texttt{financials\_filed} & Fecha de presentación del formulario ante la SEC & SEC \\
+\texttt{financials\_provenance} & Origen de los datos financieros: hecho nativo, derivado por diferencia de acumulados, o Alpha Vantage & Pipeline \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Banderas (NB00; ver Tabla~\ref{tab:banderas-def})}} \\
+\texttt{covid}, \texttt{structural\_break}, \texttt{outlier\_flag}, \texttt{is\_projected}, \texttt{pre\_listing} & Indicadores booleanos que anotan la fila sin modificarla & NB00 \\
+\end{longtable}
+}
 
 \chapter{Material complementario II}
 % Segundo anexo opcional.

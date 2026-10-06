@@ -15,7 +15,7 @@ La bibliografía usa:
 
 ```latex
 \usepackage[backend=biber,style=apa,sorting=nyt]{biblatex}
-\addbibresource{mendeley.bib}
+\addbibresource{references.bib}
 ```
 
 Las citas fueron convertidas a comandos como:
@@ -26,7 +26,7 @@ Las citas fueron convertidas a comandos como:
 
 ## Mendeley
 
-`mendeley.bib` se generó a partir de los metadatos Mendeley embebidos en el Word original. Puede importarlo a Mendeley Desktop/Reference Manager.
+`references.bib` es la única fuente bibliográfica. Reúne las referencias generadas a partir de los metadatos Mendeley embebidos en el Word original, más las agregadas durante la redacción. Puede importarlo a Mendeley Desktop/Reference Manager.
 
 Si en el futuro vuelve a exportar la biblioteca desde Mendeley, procure conservar las mismas **citation keys** usadas en `main.tex`; de lo contrario, deberá actualizar las claves de las citas en LaTeX.
 
