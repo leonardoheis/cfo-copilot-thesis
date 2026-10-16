@@ -170,3 +170,13 @@ Las cifras de NB01 de la tesis provienen de una ejecución del notebook con el m
 1. Ejecutar **NB01** con el kernel reiniciado (*Restart Kernel* → *Run All*). Va a generar una corrida de W&B por variable y los archivos `features_*` de las cuatro variables.
 2. Revisar que los números coincidan con los de la tesis; de lo contrario, avisar para corregirlos.
 3. Revisar los cambios en ambos repositorios y decidir cuándo commitearlos.
+
+## 11. NB01b: comparación de transformaciones del objetivo
+
+NB01b (ejecutado el 16 de octubre de 2026) resuelve la cuestión O1 del plan maestro: compara, para las cuatro variables, la transformación actual con sus alternativas según la dependencia del nivel y la normalidad del residuo STL.
+
+- **Cada variable conserva su transformación:** logaritmo para los ingresos y escalado por ingresos para las otras tres. Ninguna candidata supera a la base en más de la mitad de las empresas; la que más se acerca es Box-Cox con el λ del sector en los ingresos (38 %, 42 % con Anderson-Darling).
+- **Ninguna transformación vuelve normal el residuo** en ninguna empresa: las colas pesadas vienen de eventos, no de la escala, así que se mantienen las pérdidas robustas.
+- **Excepciones por sector** para verificar en NB05: Box-Cox en los ingresos de Utilities, Energy y Technology; el escalado por ingresos es muy superior en el flujo de caja libre de Communication Services.
+
+Cambios en la tesis: una subsección de metodología (*Comparación de transformaciones del objetivo (NB01b)*), una sección de resultados con una tabla y una figura de cuatro paneles (`figuras/eda/transformaciones_*.png`, tomadas de las corridas de W&B), y cuatro referencias nuevas (Yeo-Johnson, seno hiperbólico inverso, Jarque-Bera, Anderson-Darling).

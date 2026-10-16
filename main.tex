@@ -710,6 +710,17 @@ Dos variables con $|\rho| > 0{,}85$ se consideran redundantes: ordenan las obser
 
 \paragraph{Kruskal--Wallis (scipy).} Contrasta si la variable objetivo tiene la misma distribución en varios grupos, por ejemplo entre los regímenes de estacionalidad \parencite{kruskal1952use}. Es la versión no paramétrica del ANOVA: no supone normalidad, un supuesto que estas distribuciones no cumplen. Su resultado decide si conviene un modelo único para todas las empresas o uno por segmento.
 
+\subsection{Comparación de transformaciones del objetivo (NB01b)}
+\label{sec:met-transformaciones}
+
+La transformación de cada variable objetivo (Sección~\ref{sec:fe}) se pone a prueba en un notebook propio, NB01b. Las candidatas dependen del signo de la variable. Para los ingresos, positivos en todos los trimestres, se comparan la serie sin transformar, el logaritmo, la raíz cuadrada y la transformación de Box--Cox \parencite{box1964transformations}, con el $\lambda$ de máxima verosimilitud de cada empresa y con el de su sector, que es la mediana de los $\lambda$ de sus empresas. Para el resultado operativo, el EBITDA y el flujo de caja libre, que pueden ser nulos o negativos, el logaritmo, la raíz y Box--Cox no están definidos. Por eso se comparan la serie sin transformar, la variable escalada por los ingresos de los últimos cuatro trimestres, el seno hiperbólico inverso \parencite{burbidge1988alternative} y la transformación de Yeo--Johnson \parencite{yeo2000new}, también con el $\lambda$ de cada empresa y con el de su sector. Las dos últimas se aplican a la variable dividida por la mediana de su valor absoluto, para que no dependan de la unidad monetaria. La base de la comparación es la transformación que ya usan los modelos: el logaritmo para los ingresos y el escalado por ingresos para las otras tres. Cada serie se prepara igual que en los diagnósticos de NB01, con un mínimo de 16 trimestres. Cada candidata se evalúa con dos criterios.
+
+\paragraph{Dependencia del nivel.} Una buena transformación hace que el tamaño de los cambios no dependa del tamaño de la empresa. Se toma la diferencia estacional de la serie transformada (rezago 4, el cambio que aprenden los modelos) y, en ventanas móviles de ocho trimestres, se calcula la correlación de Spearman \parencite{spearman1904proof} entre los ingresos medios de la empresa y el desvío estándar de esa diferencia. Su valor absoluto es la \emph{dependencia del nivel}: cerca de 0, los cambios tienen el mismo tamaño sea cual sea el de la empresa. El tamaño se mide siempre con los ingresos, porque una variable que pasa por cero no tiene un tamaño propio.
+
+\paragraph{Normalidad del residuo.} Se ajusta una STL robusta de período 4 \parencite{cleveland1990stl} a cada serie transformada y se evalúa su residuo con el estadístico de Jarque--Bera \parencite{jarque1987test}, que resume la asimetría y la curtosis. Como segunda opinión se usa el de Anderson--Darling \parencite{anderson1954test}, que pondera toda la distribución, colas incluidas. En ambos, un valor menor indica un residuo más cercano a la normal.
+
+\paragraph{Regla de decisión.} Se fijó antes de ejecutar el notebook. Una candidata \emph{supera a la base} en una empresa si tiene a la vez menor dependencia del nivel y menor estadístico de Jarque--Bera. Cada variable conserva su transformación salvo que alguna candidata supere a la base en más de la mitad de las empresas. Exigir los dos criterios evita llamar mejora a lo que es un compromiso: una transformación mejor en un criterio y peor en el otro. La decisión se repite con Anderson--Darling, y un desacuerdo entre ambas se registra en lugar de resolverse ajustando la regla.
+
 \subsection{Herramientas de soporte}
 
 El perfil automático del dataset y la comparación entre los períodos anteriores y posteriores a 2020 se generan con \textit{ydata-profiling}. Los gráficos se producen con matplotlib y seaborn, y todos los resultados se registran en Weights~\&~Biases.
@@ -1104,6 +1115,72 @@ C --- Calendar             & 1  & 0,006 & \textbf{0,000} & \textbf{0,003} & \tex
 \end{table}
 
 Los márgenes (grupo M) aportan señal al resultado operativo y al EBITDA (0,10), pero poca a los ingresos (0,03). En las cuatro variables hay dos pares de atributos redundantes ($|\rho| > 0{,}85$): margen operativo y margen neto, y desempleo y pendiente de la curva de tasas. Además, en los ingresos los rezagos 2 y 3 son redundantes con la media móvil de cuatro trimestres, y en el resultado operativo y el EBITDA lo son los desvíos móviles de cuatro y ocho trimestres. Los atributos de ocho trimestres faltan en alrededor del 10\,\% de las filas (los dos primeros años de cada empresa); el resto, como máximo en un 6,4\,\%.
+
+\section{NB01b: comparación de transformaciones del objetivo}
+\label{sec:res-nb01b}
+
+NB01b se ejecutó el 16 de octubre de 2026 sobre el mismo dataset que NB01, con el método de la Sección~\ref{sec:met-transformaciones}. Las 60 empresas tienen historia suficiente para todas las candidatas en las cuatro variables.
+
+\begin{table}[H]
+\centering
+\caption{Comparación de transformaciones por variable objetivo: medianas sobre las 60 empresas. En la dependencia del nivel, Jarque--Bera (JB) y Anderson--Darling (AD), menor es mejor; la curtosis es la curtosis en exceso del residuo. La última columna es el porcentaje de empresas en que la candidata supera a la base en ambos criterios, con JB y con AD.}
+\label{tab:transformaciones}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright}p{1.9cm}lrrrr>{\raggedleft\arraybackslash}p{2cm}@{}}
+\toprule
+Variable & Transformación & Dep. nivel & JB & AD & Curtosis & Supera, \% (JB / AD) \\
+\midrule
+Ingresos & Logaritmo (base)        & 0,31 & 191 & 8,14 & 7,2 & --- \\
+         & Box--Cox (empresa)      & 0,25 & 168 & 7,96 & 6,9 & 33 / 35\\
+         & Box--Cox (sector)       & 0,30 & 181 & 8,00 & 7,1 & 38 / 42\\
+         & Raíz cuadrada           & 0,37 & 161 & 8,25 & 6,8 & 37 / 38\\
+         & Sin transformar         & 0,43 & 163 & 8,38 & 6,7 & 30 / 35\\
+\midrule
+Resultado operativo & Escalado (base) & 0,26 & 493 & 9,94 & 11,6 & --- \\
+         & asinh & 0,28 & 483 & 10,16 & 11,5 & 28 / 23\\
+         & Yeo--Johnson (empresa)  & 0,32 & 423 & 9,45 & 10,6 & 27 / 30\\
+         & Yeo--Johnson (sector)   & 0,39 & 533 & 10,24 & 11,7 & 20 / 23\\
+         & Sin transformar         & 0,39 & 512 & 10,62 & 11,4 & 17 / 15\\
+\midrule
+EBITDA   & Escalado (base) & 0,31 & 380 & 9,67 & 10,0 & --- \\
+         & asinh & 0,28 & 498 & 9,97 & 11,2 & 27 / 23\\
+         & Yeo--Johnson (empresa)  & 0,35 & 412 & 9,66 & 10,2 & 22 / 30\\
+         & Yeo--Johnson (sector)   & 0,34 & 531 & 10,27 & 12,0 & 20 / 27\\
+         & Sin transformar         & 0,39 & 530 & 9,91 & 11,5 & 25 / 28\\
+\midrule
+Flujo de caja libre & Escalado (base) & 0,35 & 157 & 7,05 & 6,5 & --- \\
+         & asinh & 0,42 & 203 & 7,19 & 7,3 & 32 / 32\\
+         & Yeo--Johnson (empresa)  & 0,47 & 168 & 7,01 & 6,9 & 33 / 30\\
+         & Yeo--Johnson (sector)   & 0,47 & 242 & 7,76 & 7,8 & 28 / 23\\
+         & Sin transformar         & 0,53 & 233 & 7,80 & 7,6 & 22 / 23\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.85\linewidth]{transformaciones_ingresos.png}\par
+{\footnotesize (a) Ingresos}\par\smallskip
+\includegraphics[width=.85\linewidth]{transformaciones_operating_income.png}\par
+{\footnotesize (b) Resultado operativo}\par\smallskip
+\includegraphics[width=.85\linewidth]{transformaciones_ebitda.png}\par
+{\footnotesize (c) EBITDA}\par\smallskip
+\includegraphics[width=.85\linewidth]{transformaciones_fcf.png}\par
+{\footnotesize (d) Flujo de caja libre}
+\caption{Distribución entre empresas de los dos criterios, por transformación. Izquierda: dependencia del nivel. Derecha: estadístico de Jarque--Bera del residuo STL, en escala logarítmica. En ambos, menor es mejor.}
+\label{fig:transformaciones}
+\end{figure}
+
+\textbf{Resultado.} Ninguna candidata supera a la base en más de la mitad de las empresas, en ninguna variable y con ninguno de los dos estadísticos (Tabla~\ref{tab:transformaciones}): las cuatro variables conservan su transformación. La que más se acerca es Box--Cox con el $\lambda$ del sector en los ingresos, que supera al logaritmo en el 38\,\% de las empresas (42\,\% con Anderson--Darling).
+
+En los ingresos (Figura~\ref{fig:transformaciones}a), Box--Cox con el $\lambda$ de cada empresa tiene la menor dependencia del nivel (0,25), seguida por Box--Cox con el del sector (0,30), el logaritmo (0,31), la raíz cuadrada (0,37) y la serie sin transformar (0,43). En normalidad las candidatas están cerca: el logaritmo es levemente el peor con Jarque--Bera (191, frente a 161--181) y queda en el medio con Anderson--Darling (8,14, frente a 7,96--8,38). Ninguna alternativa es mejor en ambos criterios para la mayoría de las empresas, y el logaritmo es la única que se invierte exactamente en las tasas de crecimiento sobre las que se construyen las tres variantes del objetivo. Por eso se mantiene como opción práctica por defecto, no porque gane la comparación.
+
+En el resultado operativo (Figura~\ref{fig:transformaciones}b), el escalado por ingresos tiene la menor dependencia del nivel (0,26, frente a 0,28 del seno hiperbólico inverso, 0,32 de Yeo--Johnson y 0,39 de la serie sin transformar). Yeo--Johnson deja un residuo más cercano a la normal (Jarque--Bera 423 frente a 493), pero sus cambios dependen más del tamaño: es un compromiso, no una mejora. En el EBITDA (Figura~\ref{fig:transformaciones}c), el escalado por ingresos tiene el residuo más cercano a la normal según Jarque--Bera (380), y con Anderson--Darling queda prácticamente igual que Yeo--Johnson (9,67 y 9,66); el seno hiperbólico inverso es apenas menos dependiente del tamaño (0,28 frente a 0,31). En el flujo de caja libre (Figura~\ref{fig:transformaciones}d), el escalado por ingresos es el mejor en ambos criterios (0,35 y 157).
+
+Ninguna transformación vuelve normal el residuo: la prueba de Jarque--Bera rechaza la normalidad al 5\,\% en todas las empresas, en las cuatro variables. La curtosis en exceso mediana es de alrededor de 7 en los ingresos y el flujo de caja libre, y de 10 a 12 en el resultado operativo y el EBITDA. Las colas pesadas sobreviven a todas las transformaciones, de modo que provienen de eventos (fusiones, la pandemia, deterioros) y no de la escala de las empresas. Esto confirma la necesidad de pérdidas robustas que ya mostraba la variable objetivo (Tabla~\ref{tab:objetivo}).
+
+Por sector aparecen excepciones. En los ingresos, Box--Cox con el $\lambda$ de cada empresa es mucho menos dependiente del tamaño en Utilities (0,16 frente a 0,52 del logaritmo), Energy (0,12 frente a 0,28) y Technology (0,14 frente a 0,25). En el flujo de caja libre, el escalado por ingresos es muy superior en Communication Services (0,17 frente a 0,66--0,77 de las demás candidatas). Utilities sigue dependiendo del tamaño en el resultado operativo y el EBITDA con cualquier transformación (0,51--0,65); en el flujo de caja libre, solo el escalado por ingresos reduce esa dependencia (0,33, frente a 0,47--0,67). Estos sectores son candidatos a una verificación por sector de las variantes del objetivo en la validación (NB05), pero no justifican cambiar la transformación por defecto.
 
 \section{Decisiones para la etapa de modelado}
 \label{sec:decisiones}
