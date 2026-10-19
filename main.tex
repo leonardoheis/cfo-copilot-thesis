@@ -713,6 +713,8 @@ Dos variables con $|\rho| > 0{,}85$ se consideran redundantes: ordenan las obser
 \subsection{Comparación de transformaciones del objetivo (NB01b)}
 \label{sec:met-transformaciones}
 
+Los modelos de pronóstico de esta tesis (ARIMA/SARIMA, regresión lineal, PyCaret, StatsForecast, LSTM y el ensamble final) no predicen directamente el valor de una variable financiera. Predicen un cambio transformado y después invierten la transformación para recuperar el valor. Para los ingresos usan una diferencia logarítmica. Para el resultado operativo, el EBITDA y el flujo de caja libre usan el cambio interanual dividido por los ingresos de los últimos cuatro trimestres, $y_{t,h} = \dfrac{x_{t+h} - x_{t+h-4}}{\sum_{k=0}^{3} \mathit{ingresos}_{t-k}}$, donde $t$ es el último trimestre conocido, $h$ el horizonte del pronóstico y $x$ la variable de interés. Esta decisión condiciona todo lo que sigue, porque define qué datos reciben los modelos.
+
 La transformación de cada variable objetivo (Sección~\ref{sec:fe}) se pone a prueba en un notebook propio, NB01b. Las candidatas dependen del signo de la variable. Para los ingresos, positivos en todos los trimestres, se comparan la serie sin transformar, el logaritmo, la raíz cuadrada y la transformación de Box--Cox \parencite{box1964transformations}, con el $\lambda$ de máxima verosimilitud de cada empresa y con el de su sector, que es la mediana de los $\lambda$ de sus empresas. Para el resultado operativo, el EBITDA y el flujo de caja libre, que pueden ser nulos o negativos, el logaritmo, la raíz y Box--Cox no están definidos. Por eso se comparan la serie sin transformar, la variable escalada por los ingresos de los últimos cuatro trimestres, el seno hiperbólico inverso \parencite{burbidge1988alternative} y la transformación de Yeo--Johnson \parencite{yeo2000new}, también con el $\lambda$ de cada empresa y con el de su sector. Las dos últimas se aplican a la variable dividida por la mediana de su valor absoluto, para que no dependan de la unidad monetaria. La base de la comparación es la transformación que ya usan los modelos: el logaritmo para los ingresos y el escalado por ingresos para las otras tres. Cada serie se prepara igual que en los diagnósticos de NB01, con un mínimo de 16 trimestres. Cada candidata se evalúa con dos criterios.
 
 \paragraph{Dependencia del nivel.} Una buena transformación hace que el tamaño de los cambios no dependa del tamaño de la empresa. Se toma la diferencia estacional de la serie transformada (rezago 4, el cambio que aprenden los modelos) y, en ventanas móviles de ocho trimestres, se calcula la correlación de Spearman \parencite{spearman1904proof} entre los ingresos medios de la empresa y el desvío estándar de esa diferencia. Su valor absoluto es la \emph{dependencia del nivel}: cerca de 0, los cambios tienen el mismo tamaño sea cual sea el de la empresa. El tamaño se mide siempre con los ingresos, porque una variable que pasa por cero no tiene un tamaño propio.
@@ -1119,7 +1121,18 @@ Los márgenes (grupo M) aportan señal al resultado operativo y al EBITDA (0,10)
 \section{NB01b: comparación de transformaciones del objetivo}
 \label{sec:res-nb01b}
 
-NB01b se ejecutó el 16 de octubre de 2026 sobre el mismo dataset que NB01, con el método de la Sección~\ref{sec:met-transformaciones}. Las 60 empresas tienen historia suficiente para todas las candidatas en las cuatro variables.
+La notebook NB01b se ejecutó sobre el mismo dataset que NB01, con el método de la Sección~\ref{sec:met-transformaciones}. Las 60 empresas tienen historia suficiente para todas las candidatas en las cuatro variables.
+Los modelos elegidos (ARIMA/SARIMA, regresión lineal, PyCaret, StatsForecast, LSTM y el ensamble final) no predicen directamente el valor de una variable financiera, sino que predicen un cambio transformado y después invierten la transformación para recuperar el valor.
+Para los ingresos se usa la diferencia logarítmica. Para el resultado operativo, el EBITDA y el flujo de caja libre usan el cambio interanual dividido por los ingresos de los últimos cuatro trimestres. Esta decisión condiciona todo lo que sigue, porque define qué datos reciben los modelos.
+El problema que se busca evitar es que las empresas del dataset, que tienen tamaños muy distintos, sin una buena transformación, dichos cambios de una empresa grande son mucho mayores en términos absolutos que los de una pequeña.
+Por otro lado, los errores se concentran en valores extremos que se alejan de una distribución normal. Eso dificulta el aprendizaje de los modelos y deteriora los intervalos de predicción. Esta notebook prueba varias alternativas, como la raíz cuadrada, Box–Cox, asinh y Yeo–Johnson, sobre las 60 empresas.
+Las evalúa con dos criterios: 
+\begin{enumerate}
+\item si el tamaño de los cambios depende del tamaño de la empresa.
+\item si el residuo, una vez quitadas la tendencia y la estacionalidad, se parece a una distribución normal.
+\end{enumerate}
+El resultado a analizar es que ninguna alternativa supera a la transformación actual en la mayoría de las empresas.
+Los porcentajes de mejora van de 15\% a 42\%, siempre por debajo del 50\%. Por eso se mantiene la elección original.
 
 \begin{table}[H]
 \centering
