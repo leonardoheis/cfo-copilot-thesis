@@ -617,6 +617,8 @@ Los datos XBRL de la SEC son públicos y estandarizados solo en apariencia. Cada
     \item \emph{Concepto débil.} Para empresas de servicios, medios y servicios públicos el margen bruto no es una cifra que la empresa informe, sino una construcción del proveedor.
   \end{itemize}
   \emph{Decisión:} se asume el riesgo. Dejar esas celdas vacías eliminaría por completo la ganancia y el margen bruto de cinco empresas y dejaría huecos en otras diecisiete, y el margen bruto alimenta la flag de atípicos y varias variables del modelo. Se excluyen del riesgo los dos casos en que el número es claramente engañoso: UnitedHealth (UNH), una aseguradora cuyo único costo informado es el de su farmacia y cuyo margen bruto resultaba de 0,98, y Union Pacific (UNP), un ferrocarril sin costo de ventas cuyo margen variaba entre 0,35 y 0,96. Para ambas, la ganancia bruta, el margen bruto y los gastos operativos quedan vacíos en todos los trimestres. El mismo relleno alcanza al resultado operativo cuando la empresa no lo informa a la SEC (201 trimestres de BMY, GE, Ford, Chevron y COP); en Bristol-Myers, Ford y Chevron los gastos operativos resultantes son estables y nunca negativos, por lo que también se asume ese riesgo. General Electric (GE) es la excepción: fue un conglomerado con un banco propio (GE Capital), cuyos costos financieros se informan junto con los operativos, y luego se dividió en tres empresas (GE HealthCare en 2023, GE Vernova en 2024). Sus gastos operativos sobre ingresos son negativos durante todo 2008--2009 y oscilan entre $-1{,}25$ y $3{,}06$ en otros años, y ninguna regla de etiquetas los reconstruye sin inventar cifras. Por eso solo sus gastos operativos quedan vacíos en todos los trimestres; GE conserva el resto de sus variables, y los gastos operativos pueden volver a usarse como variable objetivo para las demás empresas. El riesgo se retiraría comparando, en los trimestres en que existen ambas cifras, la ganancia bruta de Alpha Vantage con la calculada a partir de la SEC: si coinciden, el relleno es inocuo; si no, Alpha Vantage debería dejar de completarla.
+  \item \textbf{Rendimiento por dividendo sin el día de cierre.} Yahoo Finance fecha cada sesión a la medianoche de Nueva York, y la conversión a UTC la desplazaba unas horas, de modo que la ventana de doce meses dejaba fuera el precio de cierre y los dividendos del último día del trimestre. En 2006-Q2, el primer trimestre del dataset, no quedaba ningún precio y el rendimiento se escribía como cero: 49 de las 60 empresas mostraban un rendimiento nulo seguido de uno positivo, y los 16 trimestres de Tesla anteriores a su salida a bolsa figuraban como cero en lugar de vacíos. \emph{Solución:} la ventana incluye el día de cierre del trimestre, y un rendimiento sin precio queda vacío.
+  \item \textbf{Escisión y agrupamiento de acciones de Honeywell (2026).} En 2026-Q2 Honeywell separó un negocio (ganancia por desconsolidación de 6\,629 millones de USD) y agrupó sus acciones en proporción 1 a 2. Desde entonces cada presentación reexpresa los trimestres anteriores sobre la nueva base, y el panel toma cada trimestre de la última presentación que lo informa. En los flujos, el 10-Q del tercer trimestre de 2026 reexpresa 2025-Q3 a operaciones continuas: los ingresos de ese trimestre pasaban a 4\,929 millones, entre trimestres de la empresa completa de unos 9\,300. \emph{Solución:} 2025-Q3 se retiene como los demás trimestres que mezclan dos bases (todas sus variables financieras quedan vacías). En las cifras por acción, la SEC informa el agrupamiento (proporción 0,5) y Yahoo Finance no: registra un único factor de 0,9535 que combina el agrupamiento con el ajuste por la escisión. Por eso las acciones de 2025-Q2, 2025-Q3 y 2026-Q2 y el EPS de 2025-Q2 y 2026-Q2 quedan en la base posterior al agrupamiento (la mitad de acciones y el doble de EPS), y los demás trimestres en la anterior; la capitalización de esos tres trimestres resulta de unos 70\,000 millones, frente a unos 125\,000 en sus vecinos. El EPS y la capitalización no son variables del modelo, de modo que el defecto no llega a los pronósticos; la regla que usaría la proporción informada a la SEC queda pendiente. Cuando la ventana de datos incluya 2026-Q3, la escisión se registrará como quiebre estructural.
 \end{enumerate}
 
 \subsection{Resultado final}
@@ -645,8 +647,7 @@ Bandera & Definición y propósito \\
 \end{tabular}
 \end{table}
 
-Además, NB00 construye un registro de valores faltantes que asigna un motivo a cada celda vacía (por ejemplo, ``empresa aún no cotizaba'', ``trimestre anterior a XBRL sin respaldo'' o ``trimestre retenido'', Sección~
-ef{sec:problemas-scraper}), y verifica si el último trimestre del dataset fue reportado o proyectado.
+Además, NB00 construye un registro de valores faltantes que asigna un motivo a cada celda vacía (por ejemplo, ``empresa aún no cotizaba'', ``trimestre anterior a XBRL sin respaldo'' o ``trimestre retenido'', Sección~\ref{sec:problemas-scraper}), y verifica si el último trimestre del dataset fue reportado o proyectado.
 
 \subsection{Quiebres estructurales}
 \label{sec:quiebres}
@@ -655,7 +656,26 @@ Un \textbf{quiebre estructural} es un cambio permanente en el proceso que genera
 
 El problema para un modelo es que el crecimiento interanual compara cada trimestre con el mismo trimestre del año anterior. Durante los cuatro trimestres que siguen al quiebre, esa comparación cruza dos empresas distintas y produce un crecimiento ficticio. Por eso la bandera \texttt{structural\_break} marca el trimestre del quiebre y los tres siguientes. Así, el modelo puede atribuir el salto al evento en lugar de aprenderlo como un patrón \parencite{hyndman2021fpp}.
 
-Los quiebres se registran a mano en el archivo de configuración \path{config/structural_breaks.yaml}, porque provienen de hechos corporativos documentados y no de una detección estadística. Son 16: AT\&T 2007-Q1 (fusión con BellSouth) y 2022-Q2 (escisión de WarnerMedia), ConocoPhillips 2011-Q2 (escisión de Phillips~66, que las reexpresiones trasladan a ese trimestre), Abbott 2012-Q1 (escisión de AbbVie, que las reexpresiones trasladan de 2013-Q1 a ese trimestre), Pfizer 2009-Q4 (compra de Wyeth) y 2020-Q4 (Upjohn/Viatris), Merck 2009-Q4 (compra de Schering-Plough) y 2021-Q2 (escisión de Organon), Comcast 2011-Q1 (NBCUniversal), Ecolab 2012-Q1 (Nalco), Duke Energy 2012-Q3 (Progress Energy), Medtronic 2015-Q1 (Covidien), Bristol-Myers Squibb 2019-Q4 (adquisición de Celgene), General Electric 2023-Q1 y 2024-Q2 (escisiones de GE HealthCare y GE Vernova) y Occidental 2025-Q1 (venta de OxyChem, que las reexpresiones de 2026 trasladan a ese trimestre). En total son 16 quiebres $	imes$ cuatro trimestres $=$ 64 filas marcadas. Las adquisiciones se agregaron porque, en el trimestre en que la empresa adquirida aparece por primera vez, los ingresos saltan entre un 25\,\% y un 88\,\% respecto del trimestre anterior (Wyeth +36\,\%, Schering-Plough +67\,\%, NBCUniversal +25\,\%, Nalco +52\,\%, Progress Energy +88\,\% y Covidien +69\,\%), un quiebre del mismo tipo que el de AT\&T con BellSouth (+82\,\%). El de Ecolab es 2012-Q1 y no 2011-Q4, porque el único mes de Nalco en 2011-Q4 movió los ingresos solo un 6\,\% y una ventana que empezara ahí dejaría sin marcar el cambio interanual de 2012-Q4.
+Los quiebres se registran a mano en el archivo de configuración \path{config/structural_breaks.yaml}, porque provienen de hechos corporativos documentados y no de una detección estadística. Son 16:
+\begin{itemize}
+  \item AT\&T 2007-Q1: fusión con BellSouth.
+  \item AT\&T 2022-Q2: escisión de WarnerMedia.
+  \item ConocoPhillips 2011-Q2: escisión de Phillips~66, que las reexpresiones trasladan a ese trimestre.
+  \item Abbott 2012-Q1: escisión de AbbVie, que las reexpresiones trasladan de 2013-Q1 a ese trimestre.
+  \item Pfizer 2009-Q4: compra de Wyeth.
+  \item Pfizer 2020-Q4: Upjohn/Viatris.
+  \item Merck 2009-Q4: compra de Schering-Plough.
+  \item Merck 2021-Q2: escisión de Organon.
+  \item Comcast 2011-Q1: NBCUniversal.
+  \item Ecolab 2012-Q1: Nalco.
+  \item Duke Energy 2012-Q3: Progress Energy.
+  \item Medtronic 2015-Q1: Covidien.
+  \item Bristol-Myers Squibb 2019-Q4: adquisición de Celgene.
+  \item General Electric 2023-Q1: escisión de GE HealthCare.
+  \item General Electric 2024-Q2: escisión de GE Vernova.
+  \item Occidental 2025-Q1: venta de OxyChem, que las reexpresiones de 2026 trasladan a ese trimestre.
+\end{itemize}
+En total son 16 quiebres $\times$ cuatro trimestres $=$ 64 filas marcadas. Las adquisiciones se agregaron porque, en el trimestre en que la empresa adquirida aparece por primera vez, los ingresos saltan entre un 25\,\% y un 88\,\% respecto del trimestre anterior (Wyeth +36\,\%, Schering-Plough +67\,\%, NBCUniversal +25\,\%, Nalco +52\,\%, Progress Energy +88\,\% y Covidien +69\,\%), un quiebre del mismo tipo que el de AT\&T con BellSouth (+82\,\%). El de Ecolab es 2012-Q1 y no 2011-Q4, porque el único mes de Nalco en 2011-Q4 movió los ingresos solo un 6\,\% y una ventana que empezara ahí dejaría sin marcar el cambio interanual de 2012-Q4.
 
 \section{Técnicas de EDA y Feature Engineering (NB01)}
 \label{sec:tecnicas}
@@ -769,7 +789,7 @@ F - flags & Banderas \texttt{covid} y \texttt{structural\_break} en el origen \\
 \chapter{Experimentos y resultados}
 \label{cap:resultados}
 
-Este capítulo presenta los resultados de cada Jupyter notebook en el orden de ejecución. Por ahora cubre NB00 y NB01, ejecutados el 12 de octubre de 2026 sobre el dataset corregido (Sección~\ref{sec:problemas-scraper}); los notebooks siguientes se agregarán como nuevas secciones. Se analizan las cuatro variables bien identificada en el plan de trabajo: ingresos (\texttt{revenue\_usd\_m}), resultado operativo (\texttt{operating\_income\_usd\_m}), EBITDA (\texttt{ebitda\_usd\_m}) y flujo de caja libre (\texttt{free\_cash\_flow\_usd\_m}), todas en millones de USD por trimestre. Las figuras muestran los ingresos, que son la variable principal; las tablas comparan las cuatro.
+Este capítulo presenta los resultados de cada Jupyter notebook en el orden de ejecución. Por ahora cubre NB00 y NB01, ejecutados el 30 de octubre de 2026 sobre el dataset corregido (Sección~\ref{sec:problemas-scraper}); los notebooks siguientes se agregarán como nuevas secciones. Se analizan las cuatro variables bien identificada en el plan de trabajo: ingresos (\texttt{revenue\_usd\_m}), resultado operativo (\texttt{operating\_income\_usd\_m}), EBITDA (\texttt{ebitda\_usd\_m}) y flujo de caja libre (\texttt{free\_cash\_flow\_usd\_m}), todas en millones de USD por trimestre. Las figuras muestran los ingresos, que son la variable principal; las tablas comparan las cuatro.
 
 \section{NB00: consolidación del dataset}
 \label{sec:res-nb00}
@@ -777,7 +797,7 @@ Este capítulo presenta los resultados de cada Jupyter notebook en el orden de e
 \begin{itemize}
   \item \textbf{Cobertura:} 60 empresas $\times$ 81 trimestres (2006-Q2 a 2026-Q2), es decir, 4\,860 filas. La tabla macroeconómica tiene exactamente 81 filas.
   \item \textbf{Origen del pronóstico:} 2026-Q2 (30/06/2026) es el último trimestre reportado y 2026-Q3 es el horizonte 1. Las 60 empresas reportan ingresos en 2026-Q2.
-  \item \textbf{Valores faltantes:} todas las celdas vacías tienen un motivo asignado excepto siete: el EBITDA de Ford entre 2006-Q2 y 2008-Q1 y el de 2009-Q1. Los seis primeros son trimestres anteriores a los datos XBRL de la SEC en los que Alpha Vantage no informa depreciación y amortización, de modo que el EBITDA no puede calcularse; quedan vacíos de forma deliberada. Los vacíos declarados (la ganancia bruta, el margen bruto y los gastos operativos de UnitedHealth y Union Pacific, y los gastos operativos de General Electric) tienen su propio motivo, igual que tres trimestres retenidos (Abbott 2012-Q4, Bristol-Myers Squibb 2008-Q4 y Occidental 2025-Q4), cuyas cifras mezclan dos bases contables tras una desinversión y no pueden reducirse a una sola; en ellos todas las variables financieras quedan vacías, incluso las que Alpha Vantage informa.
+  \item \textbf{Valores faltantes:} todas las celdas vacías tienen un motivo asignado excepto siete: el EBITDA de Ford entre 2006-Q2 y 2008-Q1 y el de 2009-Q1. Los seis primeros son trimestres anteriores a los datos XBRL de la SEC en los que Alpha Vantage no informa depreciación y amortización, de modo que el EBITDA no puede calcularse; quedan vacíos de forma deliberada. Los vacíos declarados (la ganancia bruta, el margen bruto y los gastos operativos de UnitedHealth y Union Pacific, y los gastos operativos de General Electric) tienen su propio motivo, igual que cuatro trimestres retenidos (Abbott 2012-Q4, Bristol-Myers Squibb 2008-Q4, Honeywell 2025-Q3 y Occidental 2025-Q4), cuyas cifras mezclan dos bases contables tras una desinversión y no pueden reducirse a una sola; en ellos todas las variables financieras quedan vacías, incluso las que Alpha Vantage informa.
 \end{itemize}
 
 \begin{table}[H]
@@ -802,11 +822,11 @@ Que \texttt{is\_projected} valga cero no es una bandera vacía, sino un control 
 \section{NB01: análisis exploratorio y Feature Engineering}
 \label{sec:res-nb01}
 
-Se analizan las 60 empresas: con las correcciones de ingesta verificadas, ninguna queda excluida. Tesla tiene 75 trimestres de ingresos; Abbott, Adobe, Best Buy, Bristol-Myers Squibb, Oracle y Occidental, 80 cada una (Abbott, Bristol-Myers Squibb y Occidental por un trimestre retenido); el resto tiene los 81. Cada paso del análisis se repite para las cuatro variables objetivo.
+Se analizan las 60 empresas: con las correcciones de ingesta verificadas, ninguna queda excluida. Tesla tiene 75 trimestres de ingresos; Abbott, Adobe, Best Buy, Bristol-Myers Squibb, Honeywell, Oracle y Occidental, 80 cada una (Abbott, Bristol-Myers Squibb, Honeywell y Occidental por un trimestre retenido); el resto tiene los 81. Cada paso del análisis se repite para las cuatro variables objetivo.
 
 \subsection{Auditoría: valores atípicos}
 
-Los ingresos, el resultado operativo, el resultado neto y el flujo de caja libre tienen un 0,2\,\% de valores faltantes y el EBITDA un 0,4\,\%. El margen bruto (3,6\,\%) y los gastos operativos (5,2\,\%) faltan más porque se dejaron vacíos a propósito para UnitedHealth, Union Pacific y General Electric, y la relación precio/beneficio falta en un 6,4\,\%, porque es indefinida cuando el EPS no es positivo. Ninguna columna presenta signos imposibles; en particular, no hay ingresos nulos ni negativos.
+Los ingresos, el resultado operativo, el resultado neto y el flujo de caja libre tienen un 0,3\,\% de valores faltantes y el EBITDA un 0,4\,\%. El margen bruto (3,6\,\%) y los gastos operativos (5,3\,\%) faltan más porque se dejaron vacíos a propósito para UnitedHealth, Union Pacific y General Electric, y la relación precio/beneficio falta en un 6,4\,\%, porque es indefinida cuando el EPS no es positivo. Ninguna columna presenta signos imposibles; en particular, no hay ingresos nulos ni negativos.
 
 \begin{figure}[H]
 \centering
@@ -815,7 +835,7 @@ Los ingresos, el resultado operativo, el resultado neto y el flujo de caja libre
 \label{fig:registro-conteo}
 \end{figure}
 
-\textbf{Resultado.} El registro tiene 817 entradas. Los gastos operativos (157), el EPS (131), los márgenes y el resultado neto concentran la mayoría: son variables que pueden acercarse a cero o cambiar de signo, de modo que pequeñas variaciones absolutas se vuelven grandes en términos relativos. Los ingresos registran solo 4 entradas y el flujo de caja libre 3. En casi todas las variables hay tantas subas como caídas: cuando un valor salta y al trimestre siguiente vuelve a su nivel, deja una entrada en cada dirección. Las excepciones son el rendimiento por dividendo, con casi el doble de subas, porque se dispara cuando cae el precio de la acción o hay un dividendo extraordinario; los ingresos, solo con subas, por adquisiciones y fusiones; y la capitalización, solo con subas. Las cuatro son eventos reales: la fusión de AT\&T con BellSouth (2007-Q1), el inicio de las ventas del Model S de Tesla (2012-Q4), el acuerdo de Qualcomm con Apple (2019-Q2) y la compra de Covidien por Medtronic (2015-Q1). La versión anterior del registro tenía otras cuatro entradas de ingresos que eran candidatas a defectos de ingesta (Abbott 2012-Q4, Bristol-Myers Squibb 2008-Q4 y 2009-Q1, y Occidental 2026-Q1, que rebotaba tras un 2025-Q4 anómalo): desaparecieron al retener los trimestres de Abbott, Bristol-Myers Squibb y Occidental que mezclaban dos bases contables.
+\textbf{Resultado.} El registro tiene 796 entradas. Los gastos operativos (155), el EPS (131), los márgenes y el resultado neto concentran la mayoría: son variables que pueden acercarse a cero o cambiar de signo, de modo que pequeñas variaciones absolutas se vuelven grandes en términos relativos. Los ingresos registran solo 4 entradas y el flujo de caja libre 3. En casi todas las variables hay tantas subas como caídas: cuando un valor salta y al trimestre siguiente vuelve a su nivel, deja una entrada en cada dirección; también el rendimiento por dividendo (15 subas y 14 caídas), que en la versión anterior tenía casi el doble de subas porque la ventana de doce meses excluía el día de cierre del trimestre: en 2006-Q2 no encontraba precio y el rendimiento valía cero en 49 empresas, de modo que el trimestre siguiente parecía un salto. Las excepciones son los ingresos, solo con subas, por adquisiciones y fusiones, y la capitalización, también solo con subas. Las cuatro entradas de ingresos son eventos reales: la fusión de AT\&T con BellSouth (2007-Q1), el inicio de las ventas del Model S de Tesla (2012-Q4), el acuerdo de Qualcomm con Apple (2019-Q2) y la compra de Covidien por Medtronic (2015-Q1). La versión anterior del registro tenía otras cuatro entradas de ingresos que eran candidatas a defectos de ingesta (Abbott 2012-Q4, Bristol-Myers Squibb 2008-Q4 y 2009-Q1, y Occidental 2026-Q1, que rebotaba tras un 2025-Q4 anómalo): desaparecieron al retener los trimestres de Abbott, Bristol-Myers Squibb y Occidental que mezclaban dos bases contables.
 
 \begin{figure}[H]
 \centering
@@ -824,7 +844,7 @@ Los ingresos, el resultado operativo, el resultado neto y el flujo de caja libre
 \label{fig:registro-series}
 \end{figure}
 
-\textbf{Resultado.} Antes de las correcciones, las cuatro series más extremas eran errores de datos (el margen bruto de UnitedHealth, los gastos operativos de Union Pacific y de SLB, y los ingresos de Pfizer). Ahora las cuatro son eventos reales. La primera, el EPS de Alphabet, sube de 2,82 a 9,11 USD en los dos últimos trimestres: Alphabet registra en 2026-Q2 una ganancia de 99\,031 millones de USD por valores de patrimonio, de modo que su resultado neto es de 112\,193 frente a un resultado operativo de 40\,770. Lo mismo ocurre con los saltos del EPS de Amazon (otros ingresos no operativos por 53\,415 millones) y de Honeywell (ganancia de 6\,629 millones por una desconsolidación) en ese trimestre. En las tres empresas el resultado operativo es normal, de modo que el salto no es un defecto de ingesta y se conserva; solo el margen neto, que no es una variable objetivo, se dispara en el origen del pronóstico. El rendimiento por dividendo de Occidental se dispara en 2020-Q1, cuando el precio de la acción se derrumbó con el petróleo y luego la empresa recortó el dividendo. El de Costco muestra mesetas de un año cada vez que paga un dividendo extraordinario, porque el indicador suma los dividendos de los últimos doce meses. El margen neto de SLB cae a $-1{,}33$ en 2019-Q3 por un cargo por deterioro, y vuelve a caer en 2020-Q1 y 2020-Q2 por nuevos deterioros y costos de reestructuración tras el derrumbe del precio del petróleo y la pandemia \parencite{slb2020q1, slb2020q2}. En este caso el $z$ de Hampel no supera el umbral, aunque se trata de eventos puntuales: la ventana de ocho trimestres ya incluye la volatilidad de 2016--2019, que infla su escala local. Es el mismo enmascaramiento que motiva el $z$ robusto, ahora dentro de la ventana, y por eso la comparación entre ambos $z$ se lee como un indicio y no como una clasificación automática.
+\textbf{Resultado.} Antes de las correcciones, las cuatro series más extremas eran errores de datos (el margen bruto de UnitedHealth, los gastos operativos de Union Pacific y de SLB, y los ingresos de Pfizer). Ahora las cuatro reflejan eventos reales, aunque en Honeywell el salto se amplía por un defecto de base conocido. La primera, el EPS de Alphabet, sube de 2,82 a 9,11 USD en los dos últimos trimestres: Alphabet registra en 2026-Q2 una ganancia de 99\,031 millones de USD por valores de patrimonio, de modo que su resultado neto es de 112\,193 frente a un resultado operativo de 40\,770. La segunda, el EPS de Honeywell, llega a 17,83 USD en 2026-Q2 por una ganancia de 6\,629 millones por desconsolidación, y el salto se amplía porque esa cifra ya está en la base posterior al agrupamiento de acciones 1 a 2, mientras que la de 2026-Q1 no (Sección~\ref{sec:problemas-scraper}). Lo mismo ocurre con el salto del EPS de Amazon en ese trimestre (otros ingresos no operativos por 53\,415 millones), la quinta serie del registro. En las tres empresas el resultado operativo es normal, de modo que el salto no es un defecto de ingesta y se conserva; solo el margen neto, que no es una variable objetivo, se dispara en el origen del pronóstico. El rendimiento por dividendo de Costco, la tercera serie, muestra mesetas de un año cada vez que paga un dividendo extraordinario, porque el indicador suma los dividendos de los últimos doce meses; el de Occidental, sexto, se dispara en 2020-Q1, cuando el precio de la acción se derrumbó con el petróleo y luego la empresa recortó el dividendo. La cuarta, el margen neto de SLB, cae a $-1{,}33$ en 2019-Q3 por un cargo por deterioro, y vuelve a caer en 2020-Q1 y 2020-Q2 por nuevos deterioros y costos de reestructuración tras el derrumbe del precio del petróleo y la pandemia \parencite{slb2020q1, slb2020q2}. En este caso el $z$ de Hampel no supera el umbral, aunque se trata de eventos puntuales: la ventana de ocho trimestres ya incluye la volatilidad de 2016--2019, que infla su escala local. Es el mismo enmascaramiento que motiva el $z$ robusto, ahora dentro de la ventana, y por eso la comparación entre ambos $z$ se lee como un indicio y no como una clasificación automática.
 
 \subsection{Variable objetivo}
 
@@ -842,15 +862,15 @@ Variable & Transformación & $h$ & Mediana & Asimetría & Curtosis & Disponible 
 Ingresos & Dif. log. trimestral & 1 & 0,017 & $-0{,}00$ & 11,0 & 98,4\,\% \\
          &                      & 4 & 0,046 & 5,58 & 126,6 & 94,8\,\% \\
          & Dif. log. interanual & 1--4 & 0,046 & 5,58 & 126,6 & 94,8\,\% \\
-         & Residuo estacional   & 1 & $-0{,}001$ & 1,05 & 36,1 & 93,4\,\% \\
+         & Residuo estacional   & 1 & $-0{,}001$ & 1,05 & 36,1 & 93,3\,\% \\
          &                      & 4 & $-0{,}001$ & 0,35 & 31,8 & 89,8\,\% \\
 \midrule
-Resultado operativo & Cambio escalado & 1 & 0,002 & $-0{,}96$ & 24,7 & 94,5\,\% \\
+Resultado operativo & Cambio escalado & 1 & 0,002 & $-0{,}96$ & 24,7 & 94,4\,\% \\
                     &                 & 4 & 0,002 & 1,90 & 59,2 & 90,8\,\% \\
-EBITDA              & Cambio escalado & 1 & 0,003 & $-0{,}76$ & 24,0 & 94,4\,\% \\
-                    &                 & 4 & 0,003 & 3,67 & 92,8 & 90,8\,\% \\
-Flujo de caja libre & Cambio escalado & 1 & 0,002 & $-1{,}87$ & 32,9 & 94,5\,\% \\
-                    &                 & 4 & 0,001 & 5,66 & 203,7 & 90,8\,\% \\
+EBITDA              & Cambio escalado & 1 & 0,003 & $-0{,}76$ & 24,0 & 94,3\,\% \\
+                    &                 & 4 & 0,003 & 3,67 & 92,8 & 90,7\,\% \\
+Flujo de caja libre & Cambio escalado & 1 & 0,002 & $-1{,}87$ & 32,9 & 94,4\,\% \\
+                    &                 & 4 & 0,001 & 5,66 & 203,6 & 90,8\,\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -952,7 +972,7 @@ En cada par se mide casi la misma magnitud dos veces, por lo que los modelos lin
 \label{fig:macro-sector}
 \end{figure}
 
-\textbf{Resultado.} La sensibilidad a la macroeconomía depende del sector, lo que justifica incluir el bloque macro en el modelo. En los ingresos (Figura~\ref{fig:macro-sector}a), Energy sigue a la inflación ($\rho = 0{,}64$) y al petróleo (0,44), como corresponde a empresas cuyos ingresos dependen del precio del crudo, y Consumer Defensive también sigue a la inflación (0,44). Materials, Consumer Cyclical, Industrials y Technology responden a la confianza manufacturera (0,26 a 0,39). Communication Services se mueve en sentido opuesto al dólar ($-0{,}31$). Healthcare es prácticamente insensible al ciclo, como se espera de un sector defensivo. En el resultado operativo y el EBITDA (Figura~\ref{fig:macro-sector}b--c) solo Energy mantiene una sensibilidad clara (inflación 0,56 y 0,57; confianza manufacturera 0,35 y 0,34; petróleo 0,34 y 0,35); en los demás sectores ninguna correlación supera 0,21. En el flujo de caja libre (Figura~\ref{fig:macro-sector}d) la sensibilidad es todavía menor: Energy conserva 0,34 con la inflación y con la confianza manufacturera, y en el resto de los sectores ninguna correlación supera 0,25 en valor absoluto.
+\textbf{Resultado.} La sensibilidad a la macroeconomía depende del sector, lo que justifica incluir el bloque macro en el modelo. En los ingresos (Figura~\ref{fig:macro-sector}a), Energy sigue a la inflación ($\rho = 0{,}64$) y al petróleo (0,44), como corresponde a empresas cuyos ingresos dependen del precio del crudo, y Consumer Defensive también sigue a la inflación (0,44). Materials, Consumer Cyclical, Industrials y Technology responden a la confianza manufacturera (0,26 a 0,39). El crecimiento interanual del PBI es la variable macro de alcance más amplio: Energy (0,51), Materials (0,39), Consumer Cyclical (0,34), Industrials (0,32) y Technology (0,25) lo siguen. Communication Services se mueve en sentido opuesto al dólar ($-0{,}31$). Healthcare es el sector menos sensible al ciclo, como se espera de un sector defensivo: su correlación más alta es la del PBI (0,21). En el resultado operativo y el EBITDA (Figura~\ref{fig:macro-sector}b--c) solo Energy mantiene una sensibilidad clara (inflación 0,56 y 0,57; PBI 0,46 en ambos; confianza manufacturera 0,35 y 0,34; petróleo 0,34 y 0,35); en los demás sectores la correlación más alta es la de Industrials con el PBI (0,28). En el flujo de caja libre (Figura~\ref{fig:macro-sector}d) la sensibilidad es todavía menor: Energy conserva 0,39 con el PBI y 0,34 con la inflación y con la confianza manufacturera, y en el resto de los sectores ninguna correlación supera 0,25 en valor absoluto.
 
 \subsection{Segmentos frente al objetivo}
 
@@ -1019,8 +1039,8 @@ En cada par se mide casi la misma magnitud dos veces, por lo que los modelos lin
 Variable & $d = 0$ & $d = 1$ & $d = 2$ \\
 \midrule
 Ingresos            & 3  & 39 & 18 \\
-Resultado operativo & 8  & 40 & 12 \\
-EBITDA              & 8  & 43 & 9 \\
+Resultado operativo & 8  & 41 & 11 \\
+EBITDA              & 8  & 42 & 10 \\
 Flujo de caja libre & 14 & 38 & 8 \\
 \bottomrule
 \end{tabular}
@@ -1041,10 +1061,10 @@ Los dos controles de la Sección~\ref{sec:fe} se superaron para las cuatro varia
 \toprule
 Horizonte & Ingresos & Resultado operativo & EBITDA & Flujo de caja libre \\
 \midrule
-1 & 4\,534 & 4\,589 & 4\,582 & 4\,589 \\
-2 & 4\,474 & 4\,530 & 4\,524 & 4\,530 \\
-3 & 4\,416 & 4\,471 & 4\,466 & 4\,471 \\
-4 & 4\,358 & 4\,411 & 4\,407 & 4\,411 \\
+1 & 4\,532 & 4\,585 & 4\,578 & 4\,585 \\
+2 & 4\,472 & 4\,527 & 4\,521 & 4\,527 \\
+3 & 4\,414 & 4\,469 & 4\,464 & 4\,469 \\
+4 & 4\,357 & 4\,410 & 4\,406 & 4\,410 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1095,7 +1115,7 @@ Las filas sin objetivo son los últimos $h$ trimestres de cada empresa, cuyo val
 \label{fig:ranking-fe-h4}
 \end{figure}
 
-\textbf{Resultado.} La historia propia de cada empresa (grupos L y R) es la señal más fuerte en las cuatro variables, pero su sentido cambia. En los ingresos, el crecimiento interanual del último trimestre tiene una correlación de Spearman negativa con el objetivo ($-0{,}31$ en $h = 1$ y $-0{,}60$ en $h = 4$, con una información mutua de 0,382 en $h = 4$; Figuras~\ref{fig:ranking-fe}a y~\ref{fig:ranking-fe-h4}a): cuando una empresa crece por encima de lo habitual, tiende a volver a su media. En el resultado operativo y el EBITDA, en cambio, ese mismo atributo encabeza el ranking en $h = 1$ (0,268 y 0,269; Figura~\ref{fig:ranking-fe}b--c) con una correlación positiva ($+0{,}48$ y $+0{,}49$): los cambios persisten un trimestre antes de revertir. En $h = 4$ (Figura~\ref{fig:ranking-fe-h4}b--c) ese atributo pierde peso (0,155 y 0,121) y su correlación pasa a ser levemente negativa ($-0{,}10$ y $-0{,}08$), mientras el margen operativo sube a los primeros lugares (0,131 y 0,122). En el flujo de caja libre (Figura~\ref{fig:ranking-fe}d) dominan en $h = 1$ la volatilidad de los últimos ocho trimestres y el cambio del mismo trimestre del año anterior ($\rho = -0{,}28$); en $h = 4$ pasa al primer lugar el crecimiento del último trimestre, también con correlación negativa ($-0{,}28$), es decir, con reversión a la media. Las variables macroeconómicas ocupan la zona media del ranking de los ingresos (hasta 0,092), pero ese valor está sobrestimado: cada una toma un único valor por trimestre, común a todas las empresas, así que funciona como una etiqueta de fecha que capta los shocks comunes de la Figura~\ref{fig:mediana-temporal}. En el flujo de caja libre su información mutua es casi nula (0,017 como máximo). Su aporte real se medirá con el error fuera de muestra en la validación (NB05).
+\textbf{Resultado.} La historia propia de cada empresa (grupos L y R) es la señal más fuerte en las cuatro variables, pero su sentido cambia. En los ingresos, el crecimiento interanual del último trimestre tiene una correlación de Spearman negativa con el objetivo ($-0{,}31$ en $h = 1$ y $-0{,}60$ en $h = 4$, con una información mutua de 0,382 en $h = 4$; Figuras~\ref{fig:ranking-fe}a y~\ref{fig:ranking-fe-h4}a): cuando una empresa crece por encima de lo habitual, tiende a volver a su media. En el resultado operativo y el EBITDA, en cambio, ese mismo atributo encabeza el ranking en $h = 1$ (0,268 y 0,269; Figura~\ref{fig:ranking-fe}b--c) con una correlación positiva ($+0{,}48$ y $+0{,}49$): los cambios persisten un trimestre antes de revertir. En $h = 4$ (Figura~\ref{fig:ranking-fe-h4}b--c) ese atributo pierde peso (0,155 y 0,121) y su correlación pasa a ser levemente negativa ($-0{,}10$ y $-0{,}08$), mientras el margen operativo sube a los primeros lugares (0,131 y 0,122). En el flujo de caja libre (Figura~\ref{fig:ranking-fe}d) dominan en $h = 1$ la volatilidad de los últimos ocho trimestres y el cambio del mismo trimestre del año anterior ($\rho = -0{,}29$); en $h = 4$ pasa al primer lugar el crecimiento del último trimestre, también con correlación negativa ($-0{,}28$), es decir, con reversión a la media. Las variables macroeconómicas ocupan la zona media del ranking de los ingresos (hasta 0,092), pero ese valor está sobrestimado: cada una toma un único valor por trimestre, común a todas las empresas, así que funciona como una etiqueta de fecha que capta los shocks comunes de la Figura~\ref{fig:mediana-temporal}. En el flujo de caja libre su información mutua es casi nula (0,017 como máximo). Su aporte real se medirá con el error fuera de muestra en la validación (NB05).
 
 \begin{table}[H]
 \centering
@@ -1106,23 +1126,23 @@ Las filas sin objetivo son los últimos $h$ trimestres de cada empresa, cuyo val
 Grupo & Atributos & Ingresos & Res. operativo & EBITDA & Flujo de caja \\
 \midrule
 L --- Lags                 & 6  & 0,110 & 0,268 & 0,269 & 0,109 \\
-R --- Rolling              & 5  & 0,139 & 0,184 & 0,182 & 0,144 \\
-M --- Margins              & 3  & 0,032 & 0,098 & 0,094 & 0,050 \\
-X --- Macro                & 10 & 0,092 & 0,064 & 0,055 & 0,017 \\
-XD --- Macro derived       & 1  & 0,081 & 0,039 & 0,037 & 0,006 \\
-S --- Sector, regime       & 2  & 0,080 & 0,097 & 0,085 & 0,057 \\
-F --- Flags                & 2  & 0,012 & \textbf{0,003} & 0,007 & \textbf{0,003} \\
-C --- Calendar             & 1  & 0,005 & \textbf{0,000} & \textbf{0,004} & \textbf{0,000} \\
+R --- Rolling              & 5  & 0,139 & 0,185 & 0,182 & 0,143 \\
+M --- Margins              & 3  & 0,031 & 0,099 & 0,094 & 0,050 \\
+X --- Macro                & 10 & 0,092 & 0,065 & 0,056 & 0,017 \\
+XD --- Macro derived       & 1  & 0,078 & 0,041 & 0,039 & 0,006 \\
+S --- Sector, regime       & 2  & 0,080 & 0,097 & 0,086 & 0,057 \\
+F --- Flags                & 2  & 0,012 & \textbf{0,004} & 0,007 & \textbf{0,003} \\
+C --- Calendar             & 1  & 0,005 & \textbf{0,000} & 0,005 & \textbf{0,000} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Los márgenes (grupo M) aportan señal al resultado operativo y al EBITDA (0,09 y 0,10), pero poca a los ingresos (0,03). En las cuatro variables hay dos pares de atributos redundantes ($|\rho| > 0{,}85$): margen operativo y margen neto, y desempleo y pendiente de la curva de tasas. Además, en los ingresos los rezagos 2 y 3 son redundantes con la media móvil de cuatro trimestres, y en el resultado operativo y el EBITDA lo son los desvíos móviles de cuatro y ocho trimestres. Los atributos de ocho trimestres faltan en alrededor del 10\,\% de las filas (los dos primeros años de cada empresa); el resto, como máximo en un 6,7\,\%.
+Los márgenes (grupo M) aportan señal al resultado operativo y al EBITDA (0,10 y 0,09), pero poca a los ingresos (0,03). En las cuatro variables hay dos pares de atributos redundantes ($|\rho| > 0{,}85$): margen operativo y margen neto, y desempleo y pendiente de la curva de tasas. Además, en los ingresos los rezagos 2 y 3 son redundantes con la media móvil de cuatro trimestres, y en el resultado operativo y el EBITDA lo son los desvíos móviles de cuatro y ocho trimestres. Los atributos de ocho trimestres faltan en alrededor del 10\,\% de las filas (los dos primeros años de cada empresa); el resto, como máximo en un 6,7\,\%.
 
 \section{NB01b: comparación de transformaciones del objetivo}
 \label{sec:res-nb01b}
 
-La notebook NB01b se ejecutó sobre el mismo dataset que NB01, con el método de la Sección~\ref{sec:met-transformaciones}. Las 60 empresas tienen historia suficiente para todas las candidatas en los ingresos; en las otras tres variables quedan 59, porque el trimestre retenido de Occidental (2025-Q4) interrumpe sus series y, tras ese hueco, no quedan los 16 trimestres mínimos.
+La notebook NB01b se ejecutó sobre el mismo dataset que NB01, con el método de la Sección~\ref{sec:met-transformaciones}. Las 60 empresas tienen historia suficiente para todas las candidatas en los ingresos; en las otras tres variables quedan 58, porque los trimestres retenidos de Honeywell (2025-Q3) y Occidental (2025-Q4) interrumpen sus series y, tras ese hueco, no quedan los 16 trimestres mínimos.
 Los modelos elegidos (ARIMA/SARIMA, regresión lineal, PyCaret, StatsForecast, LSTM y el ensamble final) no predicen directamente el valor de una variable financiera, sino que predicen un cambio transformado y después invierten la transformación para recuperar el valor.
 Para los ingresos se usa la diferencia logarítmica. Para el resultado operativo, el EBITDA y el flujo de caja libre usan el cambio interanual dividido por los ingresos de los últimos cuatro trimestres. Esta decisión condiciona todo lo que sigue, porque define qué datos reciben los modelos.
 El problema que se busca evitar es que las empresas del dataset, que tienen tamaños muy distintos, sin una buena transformación, dichos cambios de una empresa grande son mucho mayores en términos absolutos que los de una pequeña.
@@ -1133,11 +1153,11 @@ Las evalúa con dos criterios:
 \item si el residuo, una vez quitadas la tendencia y la estacionalidad, se parece a una distribución normal.
 \end{enumerate}
 El resultado a analizar es que ninguna alternativa supera a la transformación actual en la mayoría de las empresas.
-Los porcentajes de mejora van de 15\% a 43\%, siempre por debajo del 50\%. Por eso se mantiene la elección original.
+Los porcentajes de mejora van de 16\% a 43\%, siempre por debajo del 50\%. Por eso se mantiene la elección original.
 
 \begin{table}[H]
 \centering
-\caption{Comparación de transformaciones por variable objetivo: medianas sobre las empresas con historia suficiente (60 en los ingresos y 59 en las otras tres variables). En la dependencia del nivel, Jarque--Bera (JB) y Anderson--Darling (AD), menor es mejor; la curtosis es la curtosis en exceso del residuo. La última columna es el porcentaje de empresas en que la candidata supera a la base en ambos criterios, con JB y con AD.}
+\caption{Comparación de transformaciones por variable objetivo: medianas sobre las empresas con historia suficiente (60 en los ingresos y 58 en las otras tres variables). En la dependencia del nivel, Jarque--Bera (JB) y Anderson--Darling (AD), menor es mejor; la curtosis es la curtosis en exceso del residuo. La última columna es el porcentaje de empresas en que la candidata supera a la base en ambos criterios, con JB y con AD.}
 \label{tab:transformaciones}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -1146,28 +1166,28 @@ Los porcentajes de mejora van de 15\% a 43\%, siempre por debajo del 50\%. Por e
 Variable & Transformación & Dep. nivel & JB & AD & Curtosis & Supera, \% (JB / AD) \\
 \midrule
 Ingresos & Logaritmo (base)        & 0,31 & 184 & 8,05 & 6,9 & --- \\
-         & Box--Cox (empresa)      & 0,25 & 145 & 7,88 & 6,4 & 32 / 35\\
-         & Box--Cox (sector)       & 0,29 & 142 & 7,92 & 6,4 & 40 / 43\\
-         & Raíz cuadrada           & 0,37 & 155 & 8,15 & 6,6 & 33 / 37\\
-         & Sin transformar         & 0,43 & 155 & 8,34 & 6,5 & 27 / 33\\
+         & Box--Cox (empresa)      & 0,25 & 145 & 7,96 & 6,4 & 32 / 35\\
+         & Box--Cox (sector)       & 0,29 & 142 & 7,96 & 6,4 & 40 / 43\\
+         & Raíz cuadrada           & 0,37 & 155 & 8,24 & 6,6 & 33 / 37\\
+         & Sin transformar         & 0,43 & 155 & 8,38 & 6,5 & 27 / 33\\
 \midrule
-Resultado operativo & Escalado (base) & 0,29 & 512 & 9,97 & 11,6 & --- \\
-         & asinh & 0,28 & 483 & 10,29 & 11,3 & 29 / 22\\
-         & Yeo--Johnson (empresa)  & 0,34 & 410 & 9,65 & 10,6 & 27 / 29\\
-         & Yeo--Johnson (sector)   & 0,40 & 537 & 10,30 & 11,8 & 20 / 22\\
-         & Sin transformar         & 0,40 & 512 & 10,75 & 11,2 & 17 / 15\\
+Resultado operativo & Escalado (base) & 0,28 & 493 & 9,94 & 11,6 & --- \\
+         & asinh & 0,28 & 491 & 10,16 & 11,2 & 28 / 21\\
+         & Yeo--Johnson (empresa)  & 0,36 & 423 & 9,45 & 10,6 & 26 / 28\\
+         & Yeo--Johnson (sector)   & 0,40 & 533 & 10,24 & 11,7 & 19 / 22\\
+         & Sin transformar         & 0,41 & 508 & 10,62 & 11,2 & 16 / 16\\
 \midrule
-EBITDA   & Escalado (base) & 0,32 & 372 & 9,13 & 10,1 & --- \\
-         & asinh & 0,29 & 471 & 10,06 & 10,8 & 25 / 22\\
-         & Yeo--Johnson (empresa)  & 0,37 & 386 & 9,72 & 9,9 & 25 / 29\\
-         & Yeo--Johnson (sector)   & 0,36 & 522 & 10,35 & 11,4 & 20 / 24\\
-         & Sin transformar         & 0,40 & 529 & 10,34 & 11,5 & 24 / 27\\
+EBITDA   & Escalado (base) & 0,31 & 369 & 9,09 & 10,0 & --- \\
+         & asinh & 0,29 & 458 & 9,95 & 10,8 & 24 / 22\\
+         & Yeo--Johnson (empresa)  & 0,38 & 378 & 9,66 & 9,8 & 24 / 29\\
+         & Yeo--Johnson (sector)   & 0,39 & 500 & 10,32 & 11,4 & 19 / 24\\
+         & Sin transformar         & 0,40 & 523 & 10,05 & 11,5 & 22 / 28\\
 \midrule
-Flujo de caja libre & Escalado (base) & 0,36 & 163 & 7,01 & 6,8 & --- \\
-         & asinh & 0,43 & 203 & 7,19 & 7,3 & 29 / 31\\
-         & Yeo--Johnson (empresa)  & 0,48 & 171 & 7,01 & 7,0 & 31 / 29\\
-         & Yeo--Johnson (sector)   & 0,47 & 244 & 7,85 & 7,9 & 25 / 22\\
-         & Sin transformar         & 0,53 & 228 & 7,98 & 7,5 & 20 / 20\\
+Flujo de caja libre & Escalado (base) & 0,35 & 163 & 6,97 & 6,8 & --- \\
+         & asinh & 0,44 & 205 & 7,19 & 7,4 & 29 / 29\\
+         & Yeo--Johnson (empresa)  & 0,48 & 173 & 7,01 & 7,0 & 29 / 28\\
+         & Yeo--Johnson (sector)   & 0,48 & 247 & 7,76 & 8,0 & 24 / 21\\
+         & Sin transformar         & 0,53 & 233 & 7,80 & 7,6 & 19 / 19\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1188,9 +1208,9 @@ Flujo de caja libre & Escalado (base) & 0,36 & 163 & 7,01 & 6,8 & --- \\
 
 \textbf{Resultado.} Ninguna candidata supera a la base en más de la mitad de las empresas, en ninguna variable y con ninguno de los dos estadísticos (Tabla~\ref{tab:transformaciones}): las cuatro variables conservan su transformación. La que más se acerca es Box--Cox con el $\lambda$ del sector en los ingresos, que supera al logaritmo en el 40\,\% de las empresas (43\,\% con Anderson--Darling).
 
-En los ingresos (Figura~\ref{fig:transformaciones}a), Box--Cox con el $\lambda$ de cada empresa tiene la menor dependencia del nivel (0,25), seguida por Box--Cox con el del sector (0,29), el logaritmo (0,31), la raíz cuadrada (0,37) y la serie sin transformar (0,43). En normalidad las candidatas están cerca: el logaritmo es el peor con Jarque--Bera (184, frente a 142--155) y queda en el medio con Anderson--Darling (8,05, frente a 7,88--8,34). Ninguna alternativa es mejor en ambos criterios para la mayoría de las empresas, y el logaritmo es la única que se invierte exactamente en las tasas de crecimiento sobre las que se construyen las tres variantes del objetivo. Por eso se mantiene como opción práctica por defecto, no porque gane la comparación.
+En los ingresos (Figura~\ref{fig:transformaciones}a), Box--Cox con el $\lambda$ de cada empresa tiene la menor dependencia del nivel (0,25), seguida por Box--Cox con el del sector (0,29), el logaritmo (0,31), la raíz cuadrada (0,37) y la serie sin transformar (0,43). En normalidad las candidatas están cerca: el logaritmo es el peor con Jarque--Bera (184, frente a 142--155) y queda en el medio con Anderson--Darling (8,05, frente a 7,96--8,38). Ninguna alternativa es mejor en ambos criterios para la mayoría de las empresas, y el logaritmo es la única que se invierte exactamente en las tasas de crecimiento sobre las que se construyen las tres variantes del objetivo. Por eso se mantiene como opción práctica por defecto, no porque gane la comparación.
 
-En el resultado operativo (Figura~\ref{fig:transformaciones}b), el seno hiperbólico inverso y el escalado por ingresos tienen la menor dependencia del nivel (0,28 y 0,29, frente a 0,34 de Yeo--Johnson y 0,40 de la serie sin transformar). Yeo--Johnson deja un residuo más cercano a la normal (Jarque--Bera 410 frente a 512), pero sus cambios dependen más del tamaño: es un compromiso, no una mejora. En el EBITDA (Figura~\ref{fig:transformaciones}c), el escalado por ingresos tiene el residuo más cercano a la normal con los dos estadísticos (Jarque--Bera 372 y Anderson--Darling 9,13, frente a 386 y 9,72 de Yeo--Johnson); el seno hiperbólico inverso es algo menos dependiente del tamaño (0,29 frente a 0,32). En el flujo de caja libre (Figura~\ref{fig:transformaciones}d), el escalado por ingresos es el mejor en ambos criterios (0,36 y 163).
+En el resultado operativo (Figura~\ref{fig:transformaciones}b), el seno hiperbólico inverso y el escalado por ingresos tienen la menor dependencia del nivel (0,28 en ambos, frente a 0,36 de Yeo--Johnson y 0,41 de la serie sin transformar). Yeo--Johnson deja un residuo más cercano a la normal (Jarque--Bera 423 frente a 493), pero sus cambios dependen más del tamaño: es un compromiso, no una mejora. En el EBITDA (Figura~\ref{fig:transformaciones}c), el escalado por ingresos tiene el residuo más cercano a la normal con los dos estadísticos (Jarque--Bera 369 y Anderson--Darling 9,09, frente a 378 y 9,66 de Yeo--Johnson); el seno hiperbólico inverso es algo menos dependiente del tamaño (0,29 frente a 0,31). En el flujo de caja libre (Figura~\ref{fig:transformaciones}d), el escalado por ingresos es el mejor en ambos criterios (0,35 y 163).
 
 Ninguna transformación vuelve normal el residuo: la prueba de Jarque--Bera rechaza la normalidad al 5\,\% en todas las empresas, en las cuatro variables. La curtosis en exceso mediana es de alrededor de 7 en los ingresos y el flujo de caja libre, y de 10 a 12 en el resultado operativo y el EBITDA. Las colas pesadas sobreviven a todas las transformaciones, de modo que provienen de eventos (fusiones, la pandemia, deterioros) y no de la escala de las empresas. Esto confirma la necesidad de pérdidas robustas que ya mostraba la variable objetivo (Tabla~\ref{tab:objetivo}).
 
@@ -1208,10 +1228,10 @@ Por sector aparecen excepciones. En los ingresos, Box--Cox con el $\lambda$ de c
 \toprule
 Variable & Transformación & Grupos de atributos a excluir & Modelo único (Kruskal--Wallis) & Pronosticable (Ljung--Box $p < 0{,}05$) \\
 \midrule
-Ingresos & Residuo estacional ingenuo; comparar las variantes en NB05 & Ninguno & Sí ($p = 0{,}727$) & 52 de 60 (87\,\%) \\
-Resultado operativo & Cambio interanual escalado por ingresos & F, C & Sí ($p = 0{,}638$) & 51 de 60 (85\,\%) \\
-EBITDA & Cambio interanual escalado por ingresos & C & Sí ($p = 0{,}294$) & 54 de 60 (90\,\%) \\
-Flujo de caja libre & Cambio interanual escalado por ingresos & F, C & Sí ($p = 0{,}861$) & 57 de 60 (95\,\%) \\
+Ingresos & Residuo estacional ingenuo; comparar las variantes en NB05 & Ninguno & Sí ($p = 0{,}726$) & 52 de 60 (87\,\%) \\
+Resultado operativo & Cambio interanual escalado por ingresos & F, C & Sí ($p = 0{,}636$) & 51 de 60 (85\,\%) \\
+EBITDA & Cambio interanual escalado por ingresos & Ninguno & Sí ($p = 0{,}296$) & 54 de 60 (90\,\%) \\
+Flujo de caja libre & Cambio interanual escalado por ingresos & F, C & Sí ($p = 0{,}849$) & 57 de 60 (95\,\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1221,14 +1241,14 @@ Las cuatro variables son pronosticables: el umbral es que al menos la mitad de l
 \paragraph{Pendientes de la versión anterior.} Los cinco pendientes que dejó el análisis anterior se resolvieron en la ingesta y en la configuración antes de esta ejecución:
 \begin{enumerate}
   \item La depreciación y la amortización de intangibles se suman cuando la empresa no informa un total (Sección~\ref{sec:problemas-scraper}); el EBITDA de Abbott, por ejemplo, ahora incluye la amortización.
-  \item Los tres trimestres candidatos a defecto de ingesta (Abbott 2012-Q4, Bristol-Myers Squibb 2008-Q4 y Occidental 2025-Q4) se retienen, y los saltos del EPS de Alphabet, Honeywell y Amazon en 2026-Q2 se confirmaron como reales y se conservan.
+  \item Los tres trimestres candidatos a defecto de ingesta (Abbott 2012-Q4, Bristol-Myers Squibb 2008-Q4 y Occidental 2025-Q4) se retienen, igual que Honeywell 2025-Q3, que se agregó después por su escisión de 2026 (Sección~\ref{sec:problemas-scraper}), y los saltos del EPS de Alphabet, Honeywell y Amazon en 2026-Q2 se confirmaron como reales y se conservan.
   \item Se registraron como quiebres estructurales las seis adquisiciones grandes y la venta de OxyChem de Occidental, y el de Abbott se adelantó a 2012-Q1 (Sección~\ref{sec:quiebres}).
   \item Los ingresos de Alphabet en 2012-Q4 se aceptan como un límite conocido de la regla de trimestres reexpresados: está lejos del origen del pronóstico.
   \item El EBITDA sigue siendo una variable objetivo, pero se informa junto al resultado operativo y no como un resultado independiente, dada su correlación de 0,95 con él en niveles y en cambios interanuales.
 \end{enumerate}
-Quedan dos límites vigentes. El trimestre retenido de Occidental se recupera cuando su 10-Q del tercer trimestre de 2026 (aproximadamente en noviembre) informe las cifras reexpresadas del acumulado de 2025; entonces se elimina la entrada de la configuración y la siguiente re-ingesta lo deriva con la regla de trimestres derivados. Además, el EBITDA de Ford de 2009-Q1 quedó vacío sin un motivo asignado en el registro de valores faltantes, y está pendiente de revisión.
+Quedan cuatro límites vigentes. El trimestre retenido de Occidental se recupera cuando su 10-Q del tercer trimestre de 2026 (aproximadamente en noviembre) informe las cifras reexpresadas del acumulado de 2025; entonces se elimina la entrada de la configuración y la siguiente re-ingesta lo deriva con la regla de trimestres derivados. El de Honeywell se revisa cuando la ventana de datos supere 2026-Q2: su 10-K de 2026 reexpresará los demás trimestres de 2025 a operaciones continuas, y la escisión pasará a ser un quiebre estructural. El EPS y las acciones de Honeywell en 2025-Q2 y 2026-Q2 siguen en la base posterior al agrupamiento de acciones; no son variables del modelo. Además, el EBITDA de Ford de 2009-Q1 quedó vacío sin un motivo asignado en el registro de valores faltantes, y está pendiente de revisión.
 
-\paragraph{Hipótesis para el modelado (NB02 a NB05).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles de cada variable (banderas y calendario en el resultado operativo y el flujo de caja libre, y solo el calendario en el EBITDA); conservar los márgenes para el resultado operativo y el EBITDA; resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo de los ingresos con una validación temporal fuera de muestra.
+\paragraph{Hipótesis para el modelado (NB02 a NB05).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles de cada variable (banderas y calendario en el resultado operativo y el flujo de caja libre; en el EBITDA ningún grupo queda por debajo del umbral, aunque el calendario lo alcanza justo); conservar los márgenes para el resultado operativo y el EBITDA; resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo de los ingresos con una validación temporal fuera de muestra.
 
 \chapter{Valor ético y social}
 Los siguientes párrafos tienen la función de evaluar el valor ético y social del proyecto CFO Copilot, el cual es una solución basada en Inteligencia Artificial Generativa (GenAI) y Machine Learning para la automatización y optimización del análisis financiero. Se procederá a analizar la compatibilidad del proyecto con principios éticos y sociales actuales, destacando su contribución al bien común, sobre todo la transparencia financiera, la sostenibilidad económica y el impacto social positivo en el entorno empresarial, el uso responsable de los datos y más allá.
@@ -1596,11 +1616,11 @@ Columna & Significado & Fuente \\
 \texttt{pe\_ratio} & Relación precio/beneficio; indefinida si el EPS no es positivo & Derivada \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Macroeconómicas (iguales para todas las empresas; código de serie FRED entre paréntesis)}} \\
-\texttt{gdp\_yoy} & Crecimiento del PBI real de EE.\,UU., en \%, anualizado (A191RL1Q225SBEA) & FRED \\
+\texttt{gdp\_yoy} & Crecimiento interanual del PBI real de EE.\,UU., en \% respecto del mismo trimestre del año anterior (A191RO1Q156NBEA) & FRED \\
 \texttt{fed\_funds} & Tasa de fondos federales, en \% (FEDFUNDS) & FRED \\
 \texttt{unemployment\_rate} & Tasa de desempleo, en \% (UNRATE) & FRED \\
 \texttt{cpi\_yoy} & Inflación interanual del índice de precios al consumidor, en \% (CPIAUCSL) & FRED \\
-\texttt{dxy} & Índice amplio del dólar estadounidense (DTWEXBGS) & FRED \\
+\texttt{usd\_broad\_index} & Índice amplio del dólar estadounidense ponderado por comercio, enero de 2006 = 100 (DTWEXBGS) & FRED \\
 \texttt{vix} & Índice de volatilidad implícita del S\&P~500 (VIXCLS) & FRED \\
 \texttt{wti\_oil} & Precio del petróleo WTI, en USD por barril (DCOILWTICO) & FRED \\
 \texttt{yield\_spread\_10y2y} & Diferencia entre los bonos del Tesoro a 10 y 2 años, en puntos porcentuales (T10Y2Y) & FRED \\
