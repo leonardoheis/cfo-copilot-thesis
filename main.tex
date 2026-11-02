@@ -73,7 +73,7 @@ En el contexto actual, donde los departamentos financieros y, en particular, los
 
 Con el fin de abordar esta necesidad, CFO Copilot automatizará la recopilación, estructuración y análisis de datos financieros provenientes de documentos empresariales (reportes 10K, estados financieros, informes anuales) y APIs de datos económicos globales. Utilizará modelos de series temporales como ARIMA, SARIMA y LSTM para proyectar tendencias económicas y optimizar la planificación financiera. Además, integrará GenAI para permitir consultas avanzadas sobre gráficos y reportes, generando respuestas contextualizadas y explicativas sobre las predicciones generadas.
 
-En términos de arquitectura, CFO Copilot propone combinar la IA Generativa para la extracción de información con modelos de Machine Learning avanzados para la predicción de series temporales. Primero, empleará GenAI (OpenAI, Gemini, Claude 3.5) para interpretar y extraer datos de documentos no estructurados. Luego, utilizará AutoML (PyCaret, StatForecasting) junto con modelos como ARIMA y LSTM permitiendo generar predicciones financieras basada en los datos recolectados. Finalmente, la herramienta permitirá a los CFOs y sus departamentos de finanzas, realizar consultas interactivas, mediante el uso de NLP e IA generativa, sobre los datos obtenidos, facilitando la interpretación de proyecciones y gráficos financieros.
+En términos de arquitectura, CFO Copilot propone combinar la IA Generativa para la extracción de información con modelos de Machine Learning avanzados para la predicción de series temporales. Primero, empleará GenAI (OpenAI, Gemini, Claude 3.5) para interpretar y extraer datos de documentos no estructurados. Luego, utilizará AutoML (AutoGluon-TimeSeries) junto con modelos como ARIMA/SARIMA, regresión lineal, LightGBM y LSTM, y un ensamble que los combina, permitiendo generar predicciones financieras basada en los datos recolectados. Finalmente, la herramienta permitirá a los CFOs y sus departamentos de finanzas, realizar consultas interactivas, mediante el uso de NLP e IA generativa, sobre los datos obtenidos, facilitando la interpretación de proyecciones y gráficos financieros.
 
 Como resultado, la implementación de CFO Copilot ofrecerá múltiples beneficios, los cuales incluyen reducción del tiempo de análisis financiero, mayor precisión en las proyecciones económicas y automatización de procesos manuales. Al eliminar errores humanos y estructurar información no estructurada de manera eficiente, las empresas podrán tomar decisiones estratégicas fundamentadas en datos. Además, la integración con APIs de datos financieros globales y su capacidad de personalización mediante módulos modulares lo convierten en una herramienta escalable para diferentes sectores, desde corporaciones hasta PyMEs y entidades gubernamentales.
 
@@ -170,26 +170,33 @@ Modelo basado en redes neuronales: LSTM (Long Short-Term Memory) \parencite{Stau
 
 Este modelo de redes neuronales recurrentes es adecuado para series temporales complejas, ya que puede capturar dependencias a largo plazo en los datos. Es ideal para proyecciones que involucren múltiples variables financieras o comportamientos no lineales.
 
-Modelo AutoML: StatForecasting (o una alternativa como PyCaret's Time Series module) \parencite{Hutter2013} - \parencite{Baum2024}
+Modelo AutoML: AutoGluon-TimeSeries \parencite{shchur2023autogluon}, con los modelos automáticos de StatsForecast como referencia estadística \parencite{Hutter2013} - \parencite{Baum2024}
 
-Este enfoque automatizado permite seleccionar y optimizar automáticamente el mejor modelo para las series temporales, combinando múltiples métodos (ARIMA, Prophet, ETS, etc.). Es especialmente útil para organizaciones que buscan eficiencia en la implementación sin necesidad de un profundo conocimiento técnico.
+Este enfoque automatizado permite seleccionar y optimizar automáticamente el mejor modelo para las series temporales, combinando múltiples métodos (ARIMA, ETS, modelos de \textit{boosting} y redes neuronales). Es especialmente útil para organizaciones que buscan eficiencia en la implementación sin necesidad de un profundo conocimiento técnico. Se eligió AutoGluon-TimeSeries en lugar del módulo de series temporales de PyCaret, previsto inicialmente, porque PyCaret ajusta un modelo por serie y no puede entrenar un modelo conjunto sobre las 60 empresas del panel.
+
+A estos tres enfoques se suman un modelo de aprendizaje automático sobre atributos (regresión lineal regularizada y LightGBM, \parencite{ke2017lightgbm}), que aprovecha la información de todas las empresas a la vez, y un ensamble final que combina los pronósticos de los modelos anteriores \parencite{monteromanso2020fforma, makridakis2020m4}. Todos se comparan con un pronóstico de referencia ingenuo estacional: un modelo solo aporta valor si lo supera. Como líneas opcionales, si el tiempo lo permite, se evaluarán redes neuronales más recientes (NHITS, TFT) y modelos fundacionales de series temporales (TabPFN-TS, Chronos-2).
 
 Métricas de medición unificada:
 
-Para los 3 casos se seleccionarán métricas estándar que evalúen la precisión, robustez y capacidad de generalización de los modelos. Estas métricas permitirán comparar el desempeño de manera consistente entre los diferentes enfoques.
+Todos los modelos se evalúan con las mismas métricas, sobre los mismos trimestres de prueba y en la misma escala de error, de modo que el desempeño pueda compararse de manera consistente entre los diferentes enfoques.
 \begin{itemize}
 \item RMSE (Root Mean Squared Error)
 \item MAE (Mean Absolute Error)
+\item MASE (Mean Absolute Scaled Error)
 \item MAPE (Mean Absolute Percentage Error)
-\item R$^2$ (Coeficiente de Determinación)
+\item R$^2$ (Coeficiente de Determinación) fuera de muestra
 \end{itemize}
 Estas métricas se seleccionaron por su capacidad de cubrir diferentes aspectos del rendimiento del modelo:
 
-RMSE y MAE: Evalúan la precisión en términos absolutos.
+RMSE y MAE: Evalúan la precisión en términos absolutos; el RMSE penaliza más los errores grandes.
 
-MAPE: Evalúa la precisión relativa al tamaño de los datos.
+MASE: Divide el error absoluto por el del pronóstico ingenuo estacional de la misma empresa, de modo que no depende de su tamaño y permite comparar empresas y sectores \parencite{hyndman2006another}. Un valor menor que 1 indica que el modelo supera a esa referencia.
 
-R$^2$: Valida qué tan bien el modelo se ajusta a los datos globalmente.
+MAPE: Evalúa la precisión relativa al tamaño de los datos. Solo se calcula para los ingresos: el resultado operativo, el EBITDA y el flujo de caja libre pueden ser nulos o negativos, y cerca de cero el error porcentual pierde sentido \parencite{hyndman2006another}.
+
+R$^2$: Valida qué tan bien el modelo se ajusta a los datos. Se calcula fuera de muestra y respecto del pronóstico de referencia, $R^2_{\text{fm}} = 1 - \sum (y - \hat{y})^2 / \sum (y - \hat{y}_{\text{ref}})^2$: es positivo cuando el modelo supera a la referencia \parencite{campbell2008predicting}. Calculado sobre los niveles, el R$^2$ sería cercano a 1 incluso para un modelo trivial, porque reflejaría las diferencias de tamaño entre empresas y no la calidad del pronóstico.
+
+Además, los intervalos de predicción se evalúan con su cobertura empírica, su ancho medio y la puntuación de Winkler, y la diferencia con la referencia se contrasta con la prueba de Diebold--Mariano corregida para muestras pequeñas \parencite{harvey1997testing}.
 
 Este enfoque asegura que el modelo seleccionado no solo sea preciso, sino también confiable y comprensible, optimizando su desempeño en el CFO Copilot.
 
@@ -524,7 +531,7 @@ El trabajo se organiza en una introducción que presenta el problema, los objeti
 \section{Diseño experimental}
 \label{sec:diseno-experimental}
 
-El trabajo experimental se organiza como una secuencia de ocho Jupyter notebooks, en la que cada uno consume los artefactos del anterior:
+El trabajo experimental se organiza como una secuencia de once Jupyter notebooks, uno de ellos opcional, en la que cada uno consume los artefactos del anterior. NB02 es la pieza central de la etapa de modelado: todos los modelos se evalúan con su misma partición temporal, sus mismos pronósticos de referencia y sus mismas métricas, de modo que ningún notebook de modelos define su propia evaluación.
 
 \begin{table}[H]
 \centering
@@ -536,12 +543,15 @@ Notebook & Contenido \\
 \midrule
 NB00 & Ingesta y consolidación del dataset \\
 NB01 & Análisis exploratorio y Feature Engineering \\
-NB02 & Modelos estadísticos (ARIMA/SARIMA) \\
-NB03 & Modelos de aprendizaje automático y AutoML (regresión lineal, PyCaret, StatsForecast) \\
-NB04 & Modelo LSTM \\
-NB05 & Validación, \textit{backtest} e intervalos de predicción (MAPIE) \\
-NB06 & Registro de modelos y pipeline de predicción (ensamble, intervalos por \textit{bootstrap}) \\
-NB07 & Preguntas y respuestas con IA generativa sobre los pronósticos \\
+NB02 & Arnés de evaluación: validación temporal (\textit{backtest}) y de empresa nueva, pronósticos de referencia, métricas e intervalos de predicción conformales (MAPIE, \parencite{taquet2022mapie}) \\
+NB03 & Modelos estadísticos (ARIMA/SARIMA, SARIMAX con variables macroeconómicas, ETS; StatsForecast) \\
+NB04 & Aprendizaje automático sobre atributos (regresión lineal regularizada y LightGBM) \\
+NB05 & Redes neuronales (LSTM; opcionalmente NHITS y TFT) \\
+NB06 & Modelos fundacionales de series temporales (opcional: TabPFN-TS, Chronos-2) \\
+NB07 & AutoML (AutoGluon-TimeSeries) \\
+NB08 & Síntesis: comparación de modelos, pruebas de significancia y ensamble final \\
+NB09 & Registro de modelos y pipeline de predicción \\
+NB10 & Preguntas y respuestas con IA generativa sobre los pronósticos \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -704,7 +714,7 @@ La mediana y la MAD no se mueven aunque hasta la mitad de los datos sean \textit
 
 \begin{enumerate}
   \item \textbf{La alternativa automática no detecta anomalías, sino colas.} scikit-learn ofrece \texttt{contamination=auto}, que reemplaza la cuota por el umbral genérico del trabajo original \parencite{Liu2008}. Aplicado a este dataset, marca 768 filas (16,7\,\%): entre 7 y 23 trimestres por empresa, con una mediana de 12, y ninguna empresa queda sin marcas. Con series de colas pesadas y unos 77 trimestres por empresa, ese umbral confunde la variabilidad normal con anomalías: uno de cada seis trimestres no puede ser atípico.
-  \item \textbf{El uso de la bandera favorece una cuota fija.} \texttt{outlier\_flag} no es un atributo del modelo, sino una máscara para la evaluación (NB05): permite comparar el error de pronóstico con y sin los trimestres más inusuales de cada empresa. Con una cuota fija, todas las empresas aportan la misma proporción de trimestres enmascarados y ninguna domina la comparación. Enmascarar un 17\,\% de las filas, en cambio, eliminaría una parte importante del conjunto de prueba.
+  \item \textbf{El uso de la bandera favorece una cuota fija.} \texttt{outlier\_flag} no es un atributo del modelo, sino una máscara para la evaluación (NB02): permite comparar el error de pronóstico con y sin los trimestres más inusuales de cada empresa. Con una cuota fija, todas las empresas aportan la misma proporción de trimestres enmascarados y ninguna domina la comparación. Enmascarar un 17\,\% de las filas, en cambio, eliminaría una parte importante del conjunto de prueba.
   \item \textbf{El resultado es estable frente al valor elegido.} Se evaluaron contaminaciones de 2\,\%, 3\,\% y 5\,\% (120, 180 y 240 filas). El caso de referencia, Amazon en 2026-Q2, cuyo margen neto pasó de 9,9\,\% a 31,2\,\% en dos trimestres, se marca con los tres valores; 3\,\% es el valor intermedio.
   \item \textbf{La detección por columna ya tiene un umbral basado en los datos.} El registro de atípicos de NB01 ($z$ robusto mayor que 10, por columna) determina cuántas anomalías reales hay y en qué variable. La bandera no necesita cumplir esa función.
 \end{enumerate}
@@ -734,7 +744,7 @@ Dos variables con $|\rho| > 0{,}85$ se consideran redundantes: ordenan las obser
 \subsection{Comparación de transformaciones del objetivo (NB01b)}
 \label{sec:met-transformaciones}
 
-Los modelos de pronóstico de esta tesis (ARIMA/SARIMA, regresión lineal, PyCaret, StatsForecast, LSTM y el ensamble final) no predicen directamente el valor de una variable financiera. Predicen un cambio transformado y después invierten la transformación para recuperar el valor. Para los ingresos usan una diferencia logarítmica. Para el resultado operativo, el EBITDA y el flujo de caja libre usan el cambio interanual dividido por los ingresos de los últimos cuatro trimestres, $y_{t,h} = \dfrac{x_{t+h} - x_{t+h-4}}{\sum_{k=0}^{3} \mathit{ingresos}_{t-k}}$, donde $t$ es el último trimestre conocido, $h$ el horizonte del pronóstico y $x$ la variable de interés. Esta decisión condiciona todo lo que sigue, porque define qué datos reciben los modelos.
+Los modelos de pronóstico de esta tesis (ARIMA/SARIMA, regresión lineal, LightGBM, LSTM, AutoGluon-TimeSeries y el ensamble final) no predicen directamente el valor de una variable financiera. Predicen un cambio transformado y después invierten la transformación para recuperar el valor. Para los ingresos usan una diferencia logarítmica. Para el resultado operativo, el EBITDA y el flujo de caja libre usan el cambio interanual dividido por los ingresos de los últimos cuatro trimestres, $y_{t,h} = \dfrac{x_{t+h} - x_{t+h-4}}{\sum_{k=0}^{3} \mathit{ingresos}_{t-k}}$, donde $t$ es el último trimestre conocido, $h$ el horizonte del pronóstico y $x$ la variable de interés. Esta decisión condiciona todo lo que sigue, porque define qué datos reciben los modelos.
 
 La transformación de cada variable objetivo (Sección~\ref{sec:fe}) se pone a prueba en un notebook propio, NB01b. Las candidatas dependen del signo de la variable. Para los ingresos, positivos en todos los trimestres, se comparan la serie sin transformar, el logaritmo, la raíz cuadrada y la transformación de Box--Cox \parencite{box1964transformations}, con el $\lambda$ de máxima verosimilitud de cada empresa y con el de su sector, que es la mediana de los $\lambda$ de sus empresas. Para el resultado operativo, el EBITDA y el flujo de caja libre, que pueden ser nulos o negativos, el logaritmo, la raíz y Box--Cox no están definidos. Por eso se comparan la serie sin transformar, la variable escalada por los ingresos de los últimos cuatro trimestres, el seno hiperbólico inverso \parencite{burbidge1988alternative} y la transformación de Yeo--Johnson \parencite{yeo2000new}, también con el $\lambda$ de cada empresa y con el de su sector. Las dos últimas se aplican a la variable dividida por la mediana de su valor absoluto, para que no dependan de la unidad monetaria. La base de la comparación es la transformación que ya usan los modelos: el logaritmo para los ingresos y el escalado por ingresos para las otras tres. Cada serie se prepara igual que en los diagnósticos de NB01, con un mínimo de 16 trimestres. Cada candidata se evalúa con dos criterios.
 
@@ -1115,7 +1125,7 @@ Las filas sin objetivo son los últimos $h$ trimestres de cada empresa, cuyo val
 \label{fig:ranking-fe-h4}
 \end{figure}
 
-\textbf{Resultado.} La historia propia de cada empresa (grupos L y R) es la señal más fuerte en las cuatro variables, pero su sentido cambia. En los ingresos, el crecimiento interanual del último trimestre tiene una correlación de Spearman negativa con el objetivo ($-0{,}31$ en $h = 1$ y $-0{,}60$ en $h = 4$, con una información mutua de 0,382 en $h = 4$; Figuras~\ref{fig:ranking-fe}a y~\ref{fig:ranking-fe-h4}a): cuando una empresa crece por encima de lo habitual, tiende a volver a su media. En el resultado operativo y el EBITDA, en cambio, ese mismo atributo encabeza el ranking en $h = 1$ (0,268 y 0,269; Figura~\ref{fig:ranking-fe}b--c) con una correlación positiva ($+0{,}48$ y $+0{,}49$): los cambios persisten un trimestre antes de revertir. En $h = 4$ (Figura~\ref{fig:ranking-fe-h4}b--c) ese atributo pierde peso (0,155 y 0,121) y su correlación pasa a ser levemente negativa ($-0{,}10$ y $-0{,}08$), mientras el margen operativo sube a los primeros lugares (0,131 y 0,122). En el flujo de caja libre (Figura~\ref{fig:ranking-fe}d) dominan en $h = 1$ la volatilidad de los últimos ocho trimestres y el cambio del mismo trimestre del año anterior ($\rho = -0{,}29$); en $h = 4$ pasa al primer lugar el crecimiento del último trimestre, también con correlación negativa ($-0{,}28$), es decir, con reversión a la media. Las variables macroeconómicas ocupan la zona media del ranking de los ingresos (hasta 0,092), pero ese valor está sobrestimado: cada una toma un único valor por trimestre, común a todas las empresas, así que funciona como una etiqueta de fecha que capta los shocks comunes de la Figura~\ref{fig:mediana-temporal}. En el flujo de caja libre su información mutua es casi nula (0,017 como máximo). Su aporte real se medirá con el error fuera de muestra en la validación (NB05).
+\textbf{Resultado.} La historia propia de cada empresa (grupos L y R) es la señal más fuerte en las cuatro variables, pero su sentido cambia. En los ingresos, el crecimiento interanual del último trimestre tiene una correlación de Spearman negativa con el objetivo ($-0{,}31$ en $h = 1$ y $-0{,}60$ en $h = 4$, con una información mutua de 0,382 en $h = 4$; Figuras~\ref{fig:ranking-fe}a y~\ref{fig:ranking-fe-h4}a): cuando una empresa crece por encima de lo habitual, tiende a volver a su media. En el resultado operativo y el EBITDA, en cambio, ese mismo atributo encabeza el ranking en $h = 1$ (0,268 y 0,269; Figura~\ref{fig:ranking-fe}b--c) con una correlación positiva ($+0{,}48$ y $+0{,}49$): los cambios persisten un trimestre antes de revertir. En $h = 4$ (Figura~\ref{fig:ranking-fe-h4}b--c) ese atributo pierde peso (0,155 y 0,121) y su correlación pasa a ser levemente negativa ($-0{,}10$ y $-0{,}08$), mientras el margen operativo sube a los primeros lugares (0,131 y 0,122). En el flujo de caja libre (Figura~\ref{fig:ranking-fe}d) dominan en $h = 1$ la volatilidad de los últimos ocho trimestres y el cambio del mismo trimestre del año anterior ($\rho = -0{,}29$); en $h = 4$ pasa al primer lugar el crecimiento del último trimestre, también con correlación negativa ($-0{,}28$), es decir, con reversión a la media. Las variables macroeconómicas ocupan la zona media del ranking de los ingresos (hasta 0,092), pero ese valor está sobrestimado: cada una toma un único valor por trimestre, común a todas las empresas, así que funciona como una etiqueta de fecha que capta los shocks comunes de la Figura~\ref{fig:mediana-temporal}. En el flujo de caja libre su información mutua es casi nula (0,017 como máximo). Su aporte real se medirá con el error fuera de muestra, en la ablación de grupos de atributos de NB04.
 
 \begin{table}[H]
 \centering
@@ -1143,7 +1153,7 @@ Los márgenes (grupo M) aportan señal al resultado operativo y al EBITDA (0,10 
 \label{sec:res-nb01b}
 
 La notebook NB01b se ejecutó sobre el mismo dataset que NB01, con el método de la Sección~\ref{sec:met-transformaciones}. Las 60 empresas tienen historia suficiente para todas las candidatas en los ingresos; en las otras tres variables quedan 58, porque los trimestres retenidos de Honeywell (2025-Q3) y Occidental (2025-Q4) interrumpen sus series y, tras ese hueco, no quedan los 16 trimestres mínimos.
-Los modelos elegidos (ARIMA/SARIMA, regresión lineal, PyCaret, StatsForecast, LSTM y el ensamble final) no predicen directamente el valor de una variable financiera, sino que predicen un cambio transformado y después invierten la transformación para recuperar el valor.
+Los modelos elegidos (ARIMA/SARIMA, regresión lineal, LightGBM, LSTM, AutoGluon-TimeSeries y el ensamble final) no predicen directamente el valor de una variable financiera, sino que predicen un cambio transformado y después invierten la transformación para recuperar el valor.
 Para los ingresos se usa la diferencia logarítmica. Para el resultado operativo, el EBITDA y el flujo de caja libre usan el cambio interanual dividido por los ingresos de los últimos cuatro trimestres. Esta decisión condiciona todo lo que sigue, porque define qué datos reciben los modelos.
 El problema que se busca evitar es que las empresas del dataset, que tienen tamaños muy distintos, sin una buena transformación, dichos cambios de una empresa grande son mucho mayores en términos absolutos que los de una pequeña.
 Por otro lado, los errores se concentran en valores extremos que se alejan de una distribución normal. Eso dificulta el aprendizaje de los modelos y deteriora los intervalos de predicción. Esta notebook prueba varias alternativas, como la raíz cuadrada, Box–Cox, asinh y Yeo–Johnson, sobre las 60 empresas.
@@ -1214,21 +1224,21 @@ En el resultado operativo (Figura~\ref{fig:transformaciones}b), el seno hiperbó
 
 Ninguna transformación vuelve normal el residuo: la prueba de Jarque--Bera rechaza la normalidad al 5\,\% en todas las empresas, en las cuatro variables. La curtosis en exceso mediana es de alrededor de 7 en los ingresos y el flujo de caja libre, y de 10 a 12 en el resultado operativo y el EBITDA. Las colas pesadas sobreviven a todas las transformaciones, de modo que provienen de eventos (fusiones, la pandemia, deterioros) y no de la escala de las empresas. Esto confirma la necesidad de pérdidas robustas que ya mostraba la variable objetivo (Tabla~\ref{tab:objetivo}).
 
-Por sector aparecen excepciones. En los ingresos, Box--Cox con el $\lambda$ de cada empresa es mucho menos dependiente del tamaño en Utilities (0,16 frente a 0,52 del logaritmo), Energy (0,12 frente a 0,28) y Technology (0,14 frente a 0,25). En el flujo de caja libre, el escalado por ingresos es muy superior en Communication Services (0,17 frente a 0,66--0,77 de las demás candidatas). Utilities sigue dependiendo del tamaño en el resultado operativo y el EBITDA con cualquier transformación (0,51--0,65); en el flujo de caja libre, solo el escalado por ingresos reduce esa dependencia (0,33, frente a 0,47--0,67). Estos sectores son candidatos a una verificación por sector de las variantes del objetivo en la validación (NB05), pero no justifican cambiar la transformación por defecto.
+Por sector aparecen excepciones. En los ingresos, Box--Cox con el $\lambda$ de cada empresa es mucho menos dependiente del tamaño en Utilities (0,16 frente a 0,52 del logaritmo), Energy (0,12 frente a 0,28) y Technology (0,14 frente a 0,25). En el flujo de caja libre, el escalado por ingresos es muy superior en Communication Services (0,17 frente a 0,66--0,77 de las demás candidatas). Utilities sigue dependiendo del tamaño en el resultado operativo y el EBITDA con cualquier transformación (0,51--0,65); en el flujo de caja libre, solo el escalado por ingresos reduce esa dependencia (0,33, frente a 0,47--0,67). Estos sectores son candidatos a una verificación por sector de las variantes del objetivo en la etapa de modelado (NB04 y NB08), pero no justifican cambiar la transformación por defecto.
 
 \section{Decisiones para la etapa de modelado}
 \label{sec:decisiones}
 
 \begin{table}[H]
 \centering
-\caption{Tabla de decisiones de NB01 para las cuatro variables objetivo, que se trasladan a la etapa de modelado (NB02 a NB05).}
+\caption{Tabla de decisiones de NB01 para las cuatro variables objetivo, que se trasladan a la etapa de modelado (NB02 a NB08).}
 \label{tab:decisiones}
 \small
 \begin{tabular}{@{}>{\raggedright}p{2.3cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.2cm}>{\raggedright}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}@{}}
 \toprule
 Variable & Transformación & Grupos de atributos a excluir & Modelo único (Kruskal--Wallis) & Pronosticable (Ljung--Box $p < 0{,}05$) \\
 \midrule
-Ingresos & Residuo estacional ingenuo; comparar las variantes en NB05 & Ninguno & Sí ($p = 0{,}726$) & 52 de 60 (87\,\%) \\
+Ingresos & Residuo estacional ingenuo; comparar las variantes en NB04 & Ninguno & Sí ($p = 0{,}726$) & 52 de 60 (87\,\%) \\
 Resultado operativo & Cambio interanual escalado por ingresos & F, C & Sí ($p = 0{,}636$) & 51 de 60 (85\,\%) \\
 EBITDA & Cambio interanual escalado por ingresos & Ninguno & Sí ($p = 0{,}296$) & 54 de 60 (90\,\%) \\
 Flujo de caja libre & Cambio interanual escalado por ingresos & F, C & Sí ($p = 0{,}849$) & 57 de 60 (95\,\%) \\
@@ -1248,7 +1258,7 @@ Las cuatro variables son pronosticables: el umbral es que al menos la mitad de l
 \end{enumerate}
 Quedan cuatro límites vigentes. El trimestre retenido de Occidental se recupera cuando su 10-Q del tercer trimestre de 2026 (aproximadamente en noviembre) informe las cifras reexpresadas del acumulado de 2025; entonces se elimina la entrada de la configuración y la siguiente re-ingesta lo deriva con la regla de trimestres derivados. El de Honeywell se revisa cuando la ventana de datos supere 2026-Q2: su 10-K de 2026 reexpresará los demás trimestres de 2025 a operaciones continuas, y la escisión pasará a ser un quiebre estructural. El EPS y las acciones de Honeywell en 2025-Q2 y 2026-Q2 siguen en la base posterior al agrupamiento de acciones; no son variables del modelo. Además, el EBITDA de Ford de 2009-Q1 quedó vacío sin un motivo asignado en el registro de valores faltantes, y está pendiente de revisión.
 
-\paragraph{Hipótesis para el modelado (NB02 a NB05).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles de cada variable (banderas y calendario en el resultado operativo y el flujo de caja libre; en el EBITDA ningún grupo queda por debajo del umbral, aunque el calendario lo alcanza justo); conservar los márgenes para el resultado operativo y el EBITDA; resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo de los ingresos con una validación temporal fuera de muestra.
+\paragraph{Hipótesis para el modelado (NB02 a NB08).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles de cada variable (banderas y calendario en el resultado operativo y el flujo de caja libre; en el EBITDA ningún grupo queda por debajo del umbral, aunque el calendario lo alcanza justo); conservar los márgenes para el resultado operativo y el EBITDA; resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo de los ingresos con una validación temporal fuera de muestra.
 
 \chapter{Valor ético y social}
 Los siguientes párrafos tienen la función de evaluar el valor ético y social del proyecto CFO Copilot, el cual es una solución basada en Inteligencia Artificial Generativa (GenAI) y Machine Learning para la automatización y optimización del análisis financiero. Se procederá a analizar la compatibilidad del proyecto con principios éticos y sociales actuales, destacando su contribución al bien común, sobre todo la transparencia financiera, la sostenibilidad económica y el impacto social positivo en el entorno empresarial, el uso responsable de los datos y más allá.
@@ -1471,7 +1481,7 @@ Finalmente, ya probada la aplicación se procederá a liberarse para uso más ma
 El trabajo propone una integración coherente entre extracción de información financiera, modelos de pronóstico y una capa de interacción basada en IA generativa. Entre las limitaciones ya identificadas en el plan se encuentran la dependencia de la calidad y periodicidad de los datos, el costo computacional de algunos enfoques, las restricciones de integración con APIs y sistemas empresariales, la privacidad de la información y la incapacidad de los modelos de anticipar eventos económicos abruptos. La evaluación final deberá determinar en qué medida estas limitaciones se observaron efectivamente durante la implementación.
 
 \section{Evaluación e implicación de los resultados}
-% TODO: incorporar aquí resultados cuantitativos finales (por ejemplo RMSE, MAE, MAPE y R^2),
+% TODO: incorporar aquí resultados cuantitativos finales (RMSE, MAE, MASE, MAPE solo en ingresos y R^2 fuera de muestra),
 % comparación entre modelos y contraste con los trabajos relacionados citados en esta tesis.
 No corresponde afirmar superioridad de un modelo ni mejoras cuantitativas mientras no se incorporen los resultados experimentales finales. Esta sección queda preparada para comparar los hallazgos de CFO Copilot con la literatura revisada y explicar su contribución al análisis financiero automatizado.
 
@@ -1695,7 +1705,11 @@ Columna & Grupo & Significado \\
 \item[GenAI] Generative Artificial Intelligence.
 \item[LLM] Large Language Model.
 \item[LSTM] Long Short-Term Memory.
+\item[MAE] Mean Absolute Error.
+\item[MAPE] Mean Absolute Percentage Error.
+\item[MASE] Mean Absolute Scaled Error.
 \item[ML] Machine Learning.
+\item[RMSE] Root Mean Squared Error.
 \item[SARIMA] Seasonal AutoRegressive Integrated Moving Average.
 \end{description}
 

@@ -65,4 +65,47 @@ Las 42 figuras de `figuras/eda/` se reemplazaron por las imágenes de W&B de est
 
 ## 5. Qué implica para el modelado
 
-Ninguna decisión de NB01 cambia, salvo una: el EBITDA ya no tiene grupos débiles. El calendario queda exactamente en el umbral (0,005), así que conviene incluirlo igualmente en la ablación de NB02. El defecto de base del EPS de Honeywell no llega a los modelos, porque el EPS no es un atributo.
+Ninguna decisión de NB01 cambia, salvo una: el EBITDA ya no tiene grupos débiles. El calendario queda exactamente en el umbral (0,005), así que conviene incluirlo igualmente en la ablación de NB04 (antes NB02; ver la sección 6). El defecto de base del EPS de Honeywell no llega a los modelos, porque el EPS no es un atributo.
+
+## 6. Métricas, modelos y notebooks: una sola versión (31 de octubre)
+
+La tesis y el plan maestro (`CFO_Copilot/docs/CFO_COPILOT_MASTER_PLAN.md`) describían métricas y modelos distintos. Ahora dicen lo mismo; en el plan maestro quedó registrado como las decisiones D25 (métricas) y D26 (modelos).
+
+**Métricas.** Se mantienen las cuatro que prometía la tesis y se agrega MASE:
+
+| Métrica | Dónde se usa | Por qué |
+|---|---|---|
+| RMSE | Las cuatro variables | Penaliza los errores grandes |
+| MAE | Las cuatro variables | Error típico, robusto |
+| MASE | Las cuatro variables | Sin escala; compara empresas de tamaños distintos (menor que 1 = mejor que el ingenuo estacional) |
+| MAPE | Solo los ingresos | En el resultado operativo y el flujo de caja libre, el ingenuo estacional da un MAPE medio de 71 % y 221 %, por trimestres cercanos a cero |
+| R² fuera de muestra | Las cuatro variables, contra la referencia a superar | El R² sobre niveles da 0,98 para el ingenuo estacional en los ingresos (mide el tamaño de las empresas, no la calidad del pronóstico); sobre la variación escalada da cero por construcción. Fórmula: 1 − SSE(modelo) / SSE(referencia), de Campbell y Thompson (2008) |
+
+Los intervalos se evalúan con cobertura, ancho medio y puntaje de Winkler, y la significancia con Diebold–Mariano con la corrección de Harvey–Leybourne–Newbold. Todas las métricas se calculan en NB02, nunca en los notebooks de modelos.
+
+**Modelos.** El núcleo son los compromisos de la tesis, ahora concretos:
+
+- ARIMA/SARIMA(X) y ETS, con StatsForecast (NB03);
+- regresión lineal regularizada (Ridge/ElasticNet) y LightGBM (NB04);
+- LSTM (NB05);
+- AutoML con AutoGluon-TimeSeries (NB07). Reemplaza a PyCaret, cuyo módulo de series de tiempo ajusta un modelo por empresa y no puede entrenar sobre las 60 juntas;
+- el ensamble final (NB08);
+- intervalos conformales con MAPIE, donde su interfaz respeta la regla de calibración sin mirar el futuro.
+
+Son opcionales CatBoost, NHITS, TFT y los modelos fundacionales (TabPFN-TS, Chronos-2, NB06).
+
+**Notebooks.** La numeración sigue la del plan maestro: NB02 arnés de evaluación, NB03 estadísticos, NB04 aprendizaje automático sobre atributos, NB05 redes neuronales, NB06 modelos fundacionales (opcional), NB07 AutoML, NB08 síntesis y ensamble, NB09 registro y predicción, NB10 preguntas con GenAI.
+
+**Cambios en `main.tex`:**
+
+- Introducción: la lista de modelos y AutoGluon-TimeSeries en lugar de PyCaret/StatForecasting.
+- Sección de modelos y métricas: AutoGluon con el motivo del cambio; un párrafo sobre LightGBM, el ensamble final, la referencia ingenua estacional y los modelos opcionales; la lista de cinco métricas con su justificación; los intervalos y la prueba de Diebold–Mariano.
+- `tab:notebooks`: reemplazada por la numeración nueva (once notebooks, uno opcional).
+- Referencias a notebooks corregidas: la validación pasa a NB02, la ablación a NB04, la etapa de modelado a "NB04 y NB08", y "NB02 a NB05" a "NB02 a NB08".
+- Siglas nuevas: MAE, MAPE, MASE y RMSE.
+
+**Cambios en `references.bib`:** se agregan `campbell2008predicting` y `taquet2022mapie`.
+
+**Verificación:** `latexmk` compila sin errores, 95 páginas, sin referencias ni citas indefinidas.
+
+En `CFO_Copilot` se actualizaron en la misma línea el plan maestro y la especificación y el plan de NB02 (`docs/specs/nb02-evaluation-harness.md`, `docs/plans/nb02-evaluation-harness.md`). La copia de `CFO_COPILOT_MASTER_PLAN.md` en este repositorio es una versión anterior y no se tocó.
