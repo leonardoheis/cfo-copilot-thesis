@@ -24,7 +24,7 @@
 \usepackage{csquotes}
 \usepackage[backend=biber,style=apa,sorting=nyt]{biblatex}
 \addbibresource{references.bib}
-\graphicspath{{figuras/eda/}}
+\graphicspath{{figuras/eda/}{figuras/nb02/}}
 % Column names such as revenue\_usd\_m may break after an underscore.
 \let\UnderscoreOriginal\_
 \renewcommand{\_}{\UnderscoreOriginal\allowbreak}
@@ -174,7 +174,7 @@ Modelo AutoML: AutoGluon-TimeSeries \parencite{shchur2023autogluon}, con los mod
 
 Este enfoque automatizado permite seleccionar y optimizar automáticamente el mejor modelo para las series temporales, combinando múltiples métodos (ARIMA, ETS, modelos de \textit{boosting} y redes neuronales). Es especialmente útil para organizaciones que buscan eficiencia en la implementación sin necesidad de un profundo conocimiento técnico. Se eligió AutoGluon-TimeSeries en lugar del módulo de series temporales de PyCaret, previsto inicialmente, porque PyCaret ajusta un modelo por serie y no puede entrenar un modelo conjunto sobre las 60 empresas del panel.
 
-A estos tres enfoques se suman un modelo de aprendizaje automático sobre atributos (regresión lineal regularizada y LightGBM, \parencite{ke2017lightgbm}), que aprovecha la información de todas las empresas a la vez, y un ensamble final que combina los pronósticos de los modelos anteriores \parencite{monteromanso2020fforma, makridakis2020m4}. Todos se comparan con un pronóstico de referencia ingenuo estacional: un modelo solo aporta valor si lo supera. Como líneas opcionales, si el tiempo lo permite, se evaluarán redes neuronales más recientes (NHITS, TFT) y modelos fundacionales de series temporales (TabPFN-TS, Chronos-2).
+A estos tres enfoques se suman un modelo de aprendizaje automático sobre atributos (regresión lineal regularizada y LightGBM, \parencite{ke2017lightgbm}), que aprovecha la información de todas las empresas a la vez, y un ensamble final que combina los pronósticos de los modelos anteriores \parencite{monteromanso2020fforma, makridakis2020m4}. Todos se comparan con cuatro pronósticos de referencia (ingenuo, ingenuo estacional, ingenuo estacional con crecimiento y deriva): un modelo solo aporta valor si supera al mejor de ellos, y el ingenuo estacional se informa siempre. Se evalúan también modelos fundacionales, que pronostican sin entrenarse con estos datos: TabPFN-TS, Chronos-2 y TimesFM, y el modelo tabular TabICLv2 (Sección~\ref{sec:fundacionales}). Como línea opcional, si el tiempo lo permite, se evaluarán redes neuronales más recientes (NHITS, TFT).
 
 Métricas de medición unificada:
 
@@ -531,7 +531,7 @@ El trabajo se organiza en una introducción que presenta el problema, los objeti
 \section{Diseño experimental}
 \label{sec:diseno-experimental}
 
-El trabajo experimental se organiza como una secuencia de once Jupyter notebooks, uno de ellos opcional, en la que cada uno consume los artefactos del anterior. NB02 es la pieza central de la etapa de modelado: todos los modelos se evalúan con su misma partición temporal, sus mismos pronósticos de referencia y sus mismas métricas, de modo que ningún notebook de modelos define su propia evaluación.
+El trabajo experimental se organiza como una secuencia de once Jupyter notebooks, en la que cada uno consume los artefactos del anterior. NB02 es la pieza central de la etapa de modelado: todos los modelos se evalúan con su misma partición temporal, sus mismos pronósticos de referencia y sus mismas métricas, de modo que ningún notebook de modelos define su propia evaluación.
 
 \begin{table}[H]
 \centering
@@ -543,11 +543,11 @@ Notebook & Contenido \\
 \midrule
 NB00 & Ingesta y consolidación del dataset \\
 NB01 & Análisis exploratorio y Feature Engineering \\
-NB02 & Arnés de evaluación: validación temporal (\textit{backtest}) y de empresa nueva, pronósticos de referencia, métricas e intervalos de predicción conformales (MAPIE, \parencite{taquet2022mapie}) \\
+NB02 & Arnés de evaluación: validación temporal (\textit{backtest}) y de empresa nueva, pronósticos de referencia, métricas, intervalos de predicción conformales y prueba de significancia \\
 NB03 & Modelos estadísticos (ARIMA/SARIMA, SARIMAX con variables macroeconómicas, ETS; StatsForecast) \\
 NB04 & Aprendizaje automático sobre atributos (regresión lineal regularizada y LightGBM) \\
 NB05 & Redes neuronales (LSTM; opcionalmente NHITS y TFT) \\
-NB06 & Modelos fundacionales de series temporales (opcional: TabPFN-TS, Chronos-2) \\
+NB06 & Modelos fundacionales, ejecutados localmente (TabPFN-TS, Chronos-2, TimesFM y el modelo tabular TabICLv2) \\
 NB07 & AutoML (AutoGluon-TimeSeries) \\
 NB08 & Síntesis: comparación de modelos, pruebas de significancia y ensamble final \\
 NB09 & Registro de modelos y pipeline de predicción \\
@@ -556,11 +556,16 @@ NB10 & Preguntas y respuestas con IA generativa sobre los pronósticos \\
 \end{tabular}
 \end{table}
 
-NB00 y NB01 tienen un criterio de salida explícito, verificado con aserciones dentro del propio notebook; no se avanza a la etapa siguiente mientras no se cumpla.
+NB00, NB01 y NB02 tienen un criterio de salida explícito, verificado con aserciones dentro del propio notebook; no se avanza a la etapa siguiente mientras no se cumpla.
 
-Este capítulo describe los métodos de las etapas ya ejecutadas, NB00 y NB01; sus resultados se presentan en el Capítulo~\ref{cap:resultados}. Las etapas siguientes se incorporarán con la misma estructura: método en este capítulo y resultados en el siguiente.
+Este capítulo describe los métodos de las etapas ya ejecutadas, NB00 a NB02; sus resultados se presentan en el Capítulo~\ref{cap:resultados}. Las etapas siguientes se incorporarán con la misma estructura: método en este capítulo y resultados en el siguiente.
 
 La lógica de cada etapa no está escrita en los notebooks, sino en servicios de la aplicación (\texttt{src/app/data} y \texttt{src/app/services}) que se inyectan mediante un contenedor de dependencias. Los notebooks solo orquestan: cargan los datos, invocan los servicios y registran los resultados. Así, cada regla queda cubierta por pruebas automatizadas, y todos los artefactos (tablas, figuras, datasets y reportes) se registran en Weights~\&~Biases para que cada corrida sea trazable.
+
+\subsection{Criterios para los modelos fundacionales}
+\label{sec:fundacionales}
+
+Los modelos fundacionales (NB06) se incorporan solo si cumplen cuatro condiciones: pesos abiertos, un corpus de preentrenamiento publicado, una versión fija y ninguna transferencia de datos a terceros. La segunda es la decisiva: los ingresos y flujos de caja trimestrales de las grandes empresas estadounidenses están entre las series numéricas más difundidas, de modo que un modelo entrenado con un corpus no publicado pudo haberlas visto, y un buen resultado sin entrenamiento previo no probaría nada. Por eso se excluyeron TimeGPT \parencite{garza2023timegpt}, que solo se ofrece como servicio y cuyo corpus no es público, y Moirai-2, cuyo corpus incluye datos internos no publicados. El modelo principal es TabPFN-TS \parencite{hoo2025tabpfnts}, preentrenado exclusivamente con datos sintéticos \parencite{hollmann2025tabpfn}, junto con Chronos-2 \parencite{ansari2025chronos2} y TimesFM \parencite{das2024timesfm}. Como TabPFN-TS pronostica cada empresa por separado, se suma un modelo fundacional tabular, TabICLv2 \parencite{qu2026tabiclv2}, también preentrenado con datos sintéticos y evaluado en el banco de pruebas TabArena \parencite{erickson2025tabarena}: recibe los atributos de NB01 de las 60 empresas a la vez y se compara con LightGBM sobre los mismos atributos. Todos se ejecutan localmente, en una GPU de 8~GB y sin conexión a internet: los pesos se descargan una sola vez y ningún dato del panel sale del equipo.
 
 \section{Obtención de datos: el scraper financiero}
 \label{sec:scraper}
@@ -795,11 +800,34 @@ F - flags & Banderas \texttt{covid} y \texttt{structural\_break} en el origen \\
 
 \paragraph{Controles.} Hay dos controles automáticos. El primero verifica que ningún atributo use información posterior al origen: se modifica todo lo que ocurre después de un origen y se comprueba que los atributos de esa fila no cambian. El segundo verifica que cada transformación del objetivo se invierte exactamente. Cuando no hay historia suficiente para calcular un atributo, el valor queda vacío y no se imputa. \texttt{outlier\_flag} no forma parte de ningún grupo, por la fuga de información descrita en la Tabla~\ref{tab:banderas-def}.
 
+\section{Arnés de evaluación (NB02)}
+\label{sec:arnes}
+
+NB02 fija cómo se evalúa todo modelo del trabajo. Un modelo solo aporta sus predicciones; el arnés decide las filas de entrenamiento y de prueba, la escala del error, las métricas, los intervalos y la prueba de significancia, y ningún notebook de modelos filtra filas por su cuenta.
+
+\paragraph{Protocolo A: empresa conocida.} Se evalúa en los últimos 16 orígenes con objetivo conocido; para $h = 1$, de 2022-Q2 a 2026-Q1. Una fila entrena un modelo en el origen $t$ solo si su fecha objetivo es igual o anterior a $t$, de modo que ningún modelo ve un trimestre posterior al pronóstico. Todas las empresas están en el entrenamiento.
+
+\paragraph{Protocolo B: empresa nueva.} Mide cómo se pronostica una empresa que el sistema no conoce. Cada una de las 60 empresas se excluye una vez y el modelo se entrena con las otras 59: es la validación cruzada dejando uno fuera \parencite{muller2016introduction}, con la empresa y no la fila como unidad, porque una fila excluida sola dejaría en el entrenamiento los demás trimestres de su empresa. Se descartaron \textit{KFold} y \textit{StratifiedKFold} sobre filas por esa razón, y \textit{GroupKFold} con 12 grupos de 5 empresas porque, al ignorar el sector, deja en algunos pliegues a un sector pequeño (Materials, Utilities) con una sola empresa de entrenamiento; su versión estratificada no es aplicable, ya que ningún sector reúne las 12 empresas que exigiría. La empresa excluida se pronostica con su historia recortada a $H \in \{8, 12, 20, 40\}$ trimestres o con toda ella. Los atributos que necesitan más historia que $H$ quedan vacíos, sin imputar, y el régimen de estacionalidad no se usa, porque NB01 lo calcula con la historia completa de cada empresa.
+
+\paragraph{Escala del error.} Todos los errores se comparan en una escala por variable, la misma para todo modelo y toda variante del objetivo: el logaritmo del nivel para los ingresos, de modo que un error de 0{,}05 equivale aproximadamente a un 5\,\%, y, para el resultado operativo, el EBITDA y el flujo de caja libre, el error en niveles dividido por los ingresos de los últimos cuatro trimestres al origen. Un modelo entrenado sobre cualquier variante del objetivo se convierte primero a niveles y luego a esta escala.
+
+\paragraph{Pronósticos de referencia.} El arnés ofrece cuatro: el ingenuo (el último trimestre conocido), el ingenuo estacional (el mismo trimestre del año anterior), el ingenuo estacional con crecimiento (ese trimestre multiplicado por el crecimiento interanual más reciente) y la deriva (la tendencia media desde el primer trimestre disponible). La \emph{referencia a superar} en cada variable y horizonte es la de menor MAE en el Protocolo A, y el ingenuo estacional se informa siempre. Elegir entre cuatro referencias sobre las mismas filas de prueba favorece a la referencia: los modelos solo pueden parecer peores, nunca mejores.
+
+\paragraph{Métricas.} El MASE sigue la definición de \textcite{hyndman2006another}: el error de pronóstico se divide por el error absoluto medio, dentro de la muestra, del pronóstico ingenuo estacional con período 4, calculado por empresa sobre los trimestres de entrenamiento de cada origen. Se calcula en el propio arnés y no con bibliotecas como sktime, que operan sobre una única serie: aquí cada una de las 60 empresas tiene su propia escala en cada uno de los 16 orígenes, y para los objetivos con signo la escala depende de los ingresos de los últimos cuatro trimestres en cada origen. El $R^2$ se informa solo fuera de la muestra, frente a la referencia a superar \parencite{campbell2008predicting}: el $R^2$ habitual, que compara con la media, alcanza 0{,}98 en los ingresos para un pronóstico ingenuo estacional, porque mide la diferencia de tamaño entre empresas y no la calidad del pronóstico. Un divisor nulo deja la métrica indefinida, nunca infinita.
+
+\paragraph{Sin conjunto de validación.} Los modelos sin hiperparámetros (los pronósticos de referencia, ARIMA y la regresión lineal) se entrenan con todas las filas disponibles en cada origen, sin conjunto de validación: no tienen nada que seleccionar, y el diseño de origen móvil ya mantiene fuera de la muestra los trimestres de prueba \parencite{hyndman2021fpp,tashman2000outofsample}. En una serie temporal, la validación debe estar formada por los trimestres de entrenamiento más recientes, de modo que reservarla retiraría justamente las observaciones más cercanas al pronóstico: en el primer origen de prueba (2022-Q2), una validación de cuatro trimestres ocultaría al modelo el alza inflacionaria de 2021--22, el régimen que está por pronosticar. Los modelos que sí se ajustan (LightGBM, LSTM) eligen su configuración sobre los últimos trimestres de entrenamiento y luego se reentrenan con todas las filas de entrenamiento, de manera que los datos de validación informan la elección sin perderse para el modelo final.
+
+\paragraph{Intervalos de predicción.} Se calibran por predicción conforme a los niveles de 80, 90 y 95\,\% \parencite{vovk2005algorithmic}. En el Protocolo A, cada error se divide por la escala del MASE de su empresa, de modo que el ancho del intervalo sigue la volatilidad de cada empresa (predicción conforme ponderada localmente, \parencite{lei2018distribution}): sin esa normalización, un único ancho serviría a las 60 empresas, cuyo error de referencia en $h = 1$ difiere entre 4,7 y 6,1 veces entre los percentiles 10 y 90. La calibración usa solo errores cuya fecha objetivo es igual o anterior al origen, de los últimos 12 orígenes, y la cobertura se corrige de forma adaptativa \parencite{gibbs2021aci}, con paso 0{,}2. En el Protocolo B, el intervalo se centra en la predicción del modelo entrenado sin la empresa, y su ancho se calibra con los errores de las demás empresas excluidas, bajo la misma regla temporal: el \textit{jackknife} \parencite{barber2021jackknife}. Se descartó el \textit{jackknife+} porque centra el intervalo en modelos que sí vieron a la empresa evaluada, y un \textit{bootstrap} porque añade ajustes sin aportar garantía de cobertura; el \textit{bootstrap} se reserva para el intervalo de confianza de la media y para el conjunto de confianza de modelos. Como el \textit{jackknife} no garantiza la cobertura en el peor caso, la cobertura se mide por nivel, sector e historia disponible. La escala propia de una empresa nueva descansa en uno a cuatro errores cuando $H = 8$, por lo que se combina con la mediana de sus pares del sector mediante ponderación de credibilidad \parencite{buhlmann2005credibility}: los pares cuentan como ocho errores, un valor fijado antes de medir su efecto. No se usa MAPIE \parencite{taquet2022mapie}: sus regresores reajustan un estimador de scikit-learn sobre sus propias particiones y toman los residuos en el espacio del objetivo, mientras que los errores del arnés provienen de sus propios reajustes en cada origen y existen solo en la escala común; el arnés calcula por sí mismo el cuantil conforme y la corrección adaptativa.
+
+\paragraph{Significancia.} Cada modelo se compara con la referencia a superar mediante la prueba de Diebold--Mariano con la corrección de Harvey, Leybourne y Newbold \parencite{diebold1995comparing,harvey1997testing}, sobre una diferencia de pérdida absoluta por origen, promediada entre las empresas: las empresas de un mismo origen comparten los mismos choques macroeconómicos, de modo que tratar las cerca de 960 filas de prueba como independientes exageraría la significancia. Con 16 orígenes, la prueba tiene 16 observaciones y admite autocorrelación hasta el rezago $h - 1$. El conjunto de confianza de modelos \parencite{hansen2011mcs} la complementa en NB08, al comparar todas las familias a la vez.
+
+\paragraph{Reproducibilidad y controles.} Cada registro de resultado guarda la versión del arnés, el identificador del congelamiento de datos y el \textit{commit} de git, y la evaluación completa se ejecuta dos veces: ambas deben producir exactamente los mismos registros. En cada evaluación, y no solo en las pruebas automatizadas, el arnés verifica que ninguna fila de entrenamiento tenga su objetivo después del origen, que ninguna empresa excluida aparezca en su propio entrenamiento y que ningún error de calibración provenga de un trimestre posterior al origen. La ejecución se detiene, además, si el código cargado en memoria no coincide con el del disco, para que el \textit{commit} registrado sea el que produjo los resultados.
+
 % =============================================================
 \chapter{Experimentos y resultados}
 \label{cap:resultados}
 
-Este capítulo presenta los resultados de cada Jupyter notebook en el orden de ejecución. Por ahora cubre NB00 y NB01, ejecutados el 30 de octubre de 2026 sobre el dataset corregido (Sección~\ref{sec:problemas-scraper}); los notebooks siguientes se agregarán como nuevas secciones. Se analizan las cuatro variables bien identificada en el plan de trabajo: ingresos (\texttt{revenue\_usd\_m}), resultado operativo (\texttt{operating\_income\_usd\_m}), EBITDA (\texttt{ebitda\_usd\_m}) y flujo de caja libre (\texttt{free\_cash\_flow\_usd\_m}), todas en millones de USD por trimestre. Las figuras muestran los ingresos, que son la variable principal; las tablas comparan las cuatro.
+Este capítulo presenta los resultados de cada Jupyter notebook en el orden de ejecución. Por ahora cubre NB00 y NB01, ejecutados el 30 de octubre de 2026 sobre el dataset corregido (Sección~\ref{sec:problemas-scraper}), y NB02, ejecutado el 17 de noviembre de 2026 sobre el mismo congelamiento de datos; los notebooks siguientes se agregarán como nuevas secciones. Se analizan las cuatro variables bien identificada en el plan de trabajo: ingresos (\texttt{revenue\_usd\_m}), resultado operativo (\texttt{operating\_income\_usd\_m}), EBITDA (\texttt{ebitda\_usd\_m}) y flujo de caja libre (\texttt{free\_cash\_flow\_usd\_m}), todas en millones de USD por trimestre. Las figuras muestran los ingresos, que son la variable principal; las tablas comparan las cuatro.
 
 \section{NB00: consolidación del dataset}
 \label{sec:res-nb00}
@@ -1258,7 +1286,124 @@ Las cuatro variables son pronosticables: el umbral es que al menos la mitad de l
 \end{enumerate}
 Quedan cuatro límites vigentes. El trimestre retenido de Occidental se recupera cuando su 10-Q del tercer trimestre de 2026 (aproximadamente en noviembre) informe las cifras reexpresadas del acumulado de 2025; entonces se elimina la entrada de la configuración y la siguiente re-ingesta lo deriva con la regla de trimestres derivados. El de Honeywell se revisa cuando la ventana de datos supere 2026-Q2: su 10-K de 2026 reexpresará los demás trimestres de 2025 a operaciones continuas, y la escisión pasará a ser un quiebre estructural. El EPS y las acciones de Honeywell en 2025-Q2 y 2026-Q2 siguen en la base posterior al agrupamiento de acciones; no son variables del modelo. Además, el EBITDA de Ford de 2009-Q1 quedó vacío sin un motivo asignado en el registro de valores faltantes, y está pendiente de revisión.
 
-\paragraph{Hipótesis para el modelado (NB02 a NB08).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles de cada variable (banderas y calendario en el resultado operativo y el flujo de caja libre; en el EBITDA ningún grupo queda por debajo del umbral, aunque el calendario lo alcanza justo); conservar los márgenes para el resultado operativo y el EBITDA; resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo de los ingresos con una validación temporal fuera de muestra.
+\paragraph{Hipótesis para el modelado (NB03 a NB08).} Las hipótesis que se pondrán a prueba son: usar pérdidas y métricas robustas; conservar una sola variable de cada par redundante en los modelos lineales; hacer una ablación de los grupos débiles de cada variable (banderas y calendario en el resultado operativo y el flujo de caja libre; en el EBITDA ningún grupo queda por debajo del umbral, aunque el calendario lo alcanza justo); conservar los márgenes para el resultado operativo y el EBITDA; resumir las variables macroeconómicas en componentes principales solo si el grupo supera la ablación; y comparar las tres variantes del objetivo de los ingresos con una validación temporal fuera de muestra.
+
+\section{NB02: arnés de evaluación y referencias a superar}
+\label{sec:res-nb02}
+
+NB02 se ejecutó el 17 de noviembre de 2026 sobre el congelamiento de datos del 30 de octubre (\texttt{thesis\_2026-10-30}), con el \textit{commit} \texttt{741affa}. Evalúa los cuatro pronósticos de referencia en las cuatro variables, en los horizontes $h = 1$ a 4 y en los dos protocolos, el B con cinco longitudes de historia: 1\,101\,312 registros. Dos ejecuciones completas, de unos 20 minutos cada una, produjeron registros idénticos valor a valor, y los registros quedaron versionados junto al código, de modo que NB03 a NB08 se comparan con ellos sin volver a ejecutar NB02. Los errores se expresan en la escala común de la Sección~\ref{sec:arnes}, multiplicados por 100: en los ingresos equivalen aproximadamente a un porcentaje del nivel; en las demás variables, a un porcentaje de los ingresos de los últimos cuatro trimestres.
+
+\subsection{Referencia a superar}
+
+\begin{table}[H]
+\centering
+\caption{Referencia a superar por variable y horizonte (Protocolo A). MAE en la escala común $\times 100$. \emph{Dif.}: cuánto mayor es el MAE de la segunda mejor referencia. $p$: prueba de Diebold--Mariano de la segunda frente a la primera. IE: ingenuo estacional; IEC: ingenuo estacional con crecimiento. En $h = 4$ el ingenuo y el IE hacen el mismo pronóstico (ambos repiten el trimestre $t - 4$ del objetivo), por lo que empatan.}
+\label{tab:referencia}
+\small
+\begin{tabular}{@{}lllrrlrr@{}}
+\toprule
+Variable & $h$ & Referencia & MAE & MASE & Segunda & Dif. & $p$ \\
+\midrule
+Ingresos & 1 & IEC & 5,74 & 0,51 & deriva & 41,2\,\% & 0,002 \\
+ & 2 & IEC & 8,06 & 0,72 & IE & 12,0\,\% & 0,143 \\
+ & 3 & IE & 9,06 & 0,84 & IEC & 11,8\,\% & 0,369 \\
+ & 4 & IE & 9,06 & 0,84 & ingenuo & empate & -- \\
+\addlinespace
+Resultado operativo & 1 & ingenuo & 1,50 & 1,26 & deriva & 0,3\,\% & 0,118 \\
+ & 2 & IE & 1,65 & 1,21 & ingenuo & 1,4\,\% & 0,806 \\
+ & 3 & IE & 1,67 & 1,23 & ingenuo & 5,5\,\% & 0,302 \\
+ & 4 & IE & 1,70 & 1,24 & ingenuo & empate & -- \\
+\addlinespace
+EBITDA & 1 & ingenuo & 1,50 & 1,20 & deriva & 0,1\,\% & 0,674 \\
+ & 2 & IE & 1,67 & 1,17 & ingenuo & 1,0\,\% & 0,848 \\
+ & 3 & IE & 1,69 & 1,19 & ingenuo & 5,1\,\% & 0,328 \\
+ & 4 & deriva & 1,71 & 1,19 & IE e ingenuo & 0,7\,\% & 0,666 \\
+\addlinespace
+Flujo de caja libre & 1 & IE & 2,00 & 1,15 & IEC & 18,4\,\% & 0,001 \\
+ & 2 & IE & 2,03 & 1,15 & IEC & 24,6\,\% & $<$0,001 \\
+ & 3 & IE & 2,06 & 1,17 & IEC & 32,2\,\% & $<$0,001 \\
+ & 4 & IE & 2,09 & 1,18 & ingenuo & empate & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Resultado.} No hay una única referencia para todas las variables (Tabla~\ref{tab:referencia}). En los ingresos, el IEC gana en $h = 1$ y 2: el crecimiento del último año persiste uno o dos trimestres, y en $h = 1$ su ventaja es significativa ($p = 0{,}002$). Desde $h = 3$, extrapolar ese crecimiento deja de compensar y gana el IE. El resultado operativo y el EBITDA, escalados por los ingresos, se comportan como márgenes: cambian lentamente y son poco estacionales, por lo que en $h = 1$ el último trimestre supera al mismo trimestre del año anterior; desde $h = 2$ gana el IE, aunque por diferencias de 1 a 5\,\% que la prueba no distingue del azar. En el flujo de caja libre gana el IE en todos los horizontes, y en $h = 1$ a 3 supera con claridad al IEC ($p \le 0{,}001$): el flujo de caja es demasiado volátil para extrapolar su crecimiento.
+
+Solo 4 de las 16 victorias son significativas al 5\,\%. Las demás son empates en la práctica, como el EBITDA en $h = 4$, donde la deriva gana por un 0,7\,\%. Esto fija la exigencia para NB03 a NB08: superar a la referencia por un margen que la prueba de Diebold--Mariano reconozca. En los ingresos, el MASE de la referencia es menor que 1 (0,51 a 0,84), y el del propio IE es 0,83: los errores del IE en 2022--2026 fueron menores que su promedio histórico, que incluye las crisis de 2008 y 2020. En las demás variables el MASE supera 1 (1,15 a 1,26 para la referencia, 1,15 a 1,24 para el IE): los márgenes fueron más difíciles de pronosticar en esos años que en el promedio de la historia. En el Protocolo B la referencia a superar es la misma en las cinco longitudes de historia, salvo el EBITDA en $h = 4$: con 40 trimestres o menos gana el IE, porque la deriva necesita una historia larga (Sección~\ref{sec:res-nb02-historia}).
+
+\subsection{Error por sector}
+
+\begin{table}[H]
+\centering
+\caption{MAE de la referencia a superar por sector, $h = 1$, Protocolo A (escala común $\times 100$). \emph{Filas}: filas de prueba de los ingresos (empresas $\times$ 16 orígenes, menos las sin objetivo conocido).}
+\label{tab:referencia-sector}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Sector & Ingresos & Res. operativo & EBITDA & Flujo de caja libre & Filas \\
+\midrule
+Communication Services & 2,7 & 1,5 & 1,5 & 1,3 & 96 \\
+Consumer Cyclical & 4,7 & 0,8 & 0,8 & 1,2 & 144 \\
+Consumer Defensive & 2,9 & 1,1 & 1,1 & 1,2 & 128 \\
+Energy & 14,0 & 1,0 & 1,1 & 1,9 & 78 \\
+Healthcare & 6,1 & 1,8 & 1,8 & 2,6 & 144 \\
+Industrials & 7,1 & 1,2 & 1,2 & 1,7 & 126 \\
+Materials & 3,0 & 3,2 & 3,2 & 2,3 & 48 \\
+Technology & 4,4 & 1,7 & 1,7 & 2,9 & 144 \\
+Utilities & 11,2 & 2,4 & 2,6 & 4,2 & 48 \\
+\midrule
+Total & 5,7 & 1,5 & 1,5 & 2,0 & 956 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Resultado.} El error de la referencia cambia hasta cinco veces entre sectores (Tabla~\ref{tab:referencia-sector}): en los ingresos va de 2,7 en Communication Services a 14,0 en Energy y 11,2 en Utilities, cuyos ingresos siguen precios de materias primas y de la energía. En las variables con signo, Materials y Utilities tienen los errores mayores y Consumer Cyclical el menor. Por eso un resultado agregado nunca se informa sin su desglose por sector, y los intervalos se escalan por empresa.
+
+\subsection{Cobertura de los intervalos}
+
+\begin{table}[H]
+\centering
+\caption{Cobertura empírica de los intervalos del ingenuo estacional: media de las 16 celdas (cuatro variables $\times$ cuatro horizontes) y, entre paréntesis, la menor y la mayor.}
+\label{tab:cobertura-nb02}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Protocolo e historia & 80\,\% & 90\,\% & 95\,\% \\
+\midrule
+A & 81,0 (79,5--83,5) & 90,3 (89,3--92,3) & 95,1 (94,5--96,6) \\
+B, $H = 8$ & 80,3 (78,8--82,0) & 89,8 (88,8--90,6) & 94,5 (93,8--95,0) \\
+B, $H = 12$ & 79,4 (77,3--80,9) & 89,4 (87,9--90,8) & 94,3 (93,1--94,9) \\
+B, $H = 20$ & 80,0 (78,6--81,9) & 89,7 (88,5--91,6) & 94,8 (93,8--96,1) \\
+B, $H = 40$ & 81,0 (79,5--84,3) & 90,4 (89,2--92,4) & 95,2 (94,4--97,2) \\
+B, toda la historia & 81,0 (79,6--83,8) & 90,2 (88,9--92,5) & 94,9 (94,2--96,6) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Resultado.} Las 288 celdas (seis filas de la Tabla~\ref{tab:cobertura-nb02}, tres niveles, cuatro variables y cuatro horizontes) quedan a menos de 5 puntos de su nivel nominal, que era el criterio de salida de NB02 para ambos protocolos. La celda más baja es la de los ingresos con $H = 12$, 77,3\,\% al 80\,\%: con 12 trimestres los errores propios de la empresa pesan 8 de 16 frente a sus pares, y con 8 trimestres solo 4 de 12, de modo que una escala propia ruidosa cuenta más. Está dentro de la tolerancia, y ajustar el peso de los pares con estos resultados sería ajustarlo sobre el conjunto de prueba, por lo que se mantiene. Los intervalos se ensanchan al crecer la historia: en los ingresos, con $h = 1$ y al 80\,\%, el ancho medio pasa de 0,289 con 8 trimestres a 0,333 con toda la historia, porque una historia larga incluye en la escala las crisis de 2008 y 2020. La Figura~\ref{fig:cobertura-nb02} muestra que las cuatro referencias quedan cerca del nivel nominal en los ingresos; el IEC sobrecubre en $h = 3$ y 4.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\linewidth]{cobertura_ingresos.png}
+\caption{Cobertura empírica frente al nivel nominal (línea discontinua) de las cuatro referencias en los ingresos, Protocolo A; un punto por horizonte.}
+\label{fig:cobertura-nb02}
+\end{figure}
+
+Por sector, las diez celdas más alejadas de su nivel quedan entre 15 y 17,5 puntos por debajo; nueve están al 80\,\% (entre 62,5 y 64,6\,\%). Nueve de las diez son de Materials (flujo de caja libre y resultado operativo) y Utilities (ingresos): tres empresas y 48 filas cada uno, de modo que un trimestre fallado mueve la cobertura unos 2 puntos, y el Protocolo A muestra los mismos sectores con la misma profundidad. La décima, los ingresos de Technology, es distinta: un cambio de régimen y no ruido. Con $H = 20$ y al 80\,\%, en 2022--2024 fallaban unas 2 de sus 9 empresas por trimestre, lo que un intervalo del 80\,\% admite, y desde 2025-Q1 hasta 2026-Q1 fallan entre 6 y 7, encabezadas por Oracle, Microsoft, Cisco y Texas Instruments: su crecimiento se aceleró en 2025, el IE no incorpora crecimiento, y un intervalo calibrado con todos los sectores en trimestres más tranquilos no sigue el cambio de uno solo. Es el costo de no calibrar por sector, que habría dejado unos 100 errores por sector para calibrar; los atributos de crecimiento de NB04 pondrán a prueba si un modelo cubre ese régimen.
+
+\subsection{Historia disponible}
+\label{sec:res-nb02-historia}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{error_por_historia_ingresos.png}
+\caption{MAE de las cuatro referencias en los ingresos según los trimestres de historia de la empresa nueva (Protocolo B), por horizonte.}
+\label{fig:error-historia}
+\end{figure}
+
+\textbf{Resultado.} La deriva es la única referencia cuyo pronóstico depende de la historia disponible; las demás leen como máximo los últimos cinco trimestres, y sus líneas son planas por construcción (Figura~\ref{fig:error-historia}). En los ingresos con $h = 4$, su MAE baja de 0,131 con 8 trimestres a 0,118 con 12, 0,097 con 20 y 0,091 con 40, y sube a 0,095 con toda la historia: una historia corta vuelve ruidosa la tendencia, y los trimestres más antiguos la desvían un poco. Para una empresa nueva con dos años de historia, la deriva es la peor referencia en los cuatro horizontes. Esa es la prueba de NB06: un modelo fundacional que pronostica sin entrenarse debe superar al ingenuo estacional con $H = 8$, donde los métodos que estiman una tendencia tienen menos información.
+
+\paragraph{Implicaciones para los modelos.} La Tabla~\ref{tab:referencia} fija, para cada variable y horizonte, la referencia que NB03 a NB08 deben superar, con la prueba de Diebold--Mariano como juez. Queda una decisión abierta para NB04, que se tomará antes de evaluar cualquier modelo: el Protocolo A escala cada empresa con toda su historia hasta el origen, y una ventana reciente (por ejemplo, los últimos 20 trimestres) podría dar intervalos más angostos con la misma cobertura, como sugieren los resultados del Protocolo B.
 
 \chapter{Valor ético y social}
 Los siguientes párrafos tienen la función de evaluar el valor ético y social del proyecto CFO Copilot, el cual es una solución basada en Inteligencia Artificial Generativa (GenAI) y Machine Learning para la automatización y optimización del análisis financiero. Se procederá a analizar la compatibilidad del proyecto con principios éticos y sociales actuales, destacando su contribución al bien común, sobre todo la transparencia financiera, la sostenibilidad económica y el impacto social positivo en el entorno empresarial, el uso responsable de los datos y más allá.
